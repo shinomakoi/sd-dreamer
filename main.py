@@ -24,9 +24,13 @@ settings_file=(Path(home_dir_path)/'settings.ini')
 
 # define directories
 config.read(Path(home_dir_path)/'settings.ini')
-sd_folder_path = config.get('Settings', 'sd_folder')
+# sd_folder_path = config.get('Settings', 'sd_folder')
+
 inpainting_dir=Path(home_dir_path)/'inpainting'
 print('Inpaint dir= ',inpainting_dir)
+
+sd_folder_path=Path(home_dir_path)
+sd_folder_path=str(sd_folder_path.parent)
 
 class inpainter_window(QMainWindow):
 
@@ -209,8 +213,12 @@ class inpainter_window(QMainWindow):
         self.inpaint_process()
 
     def inpaint_process(self):
+        # inpaint_py='/home/pigeondave/gits/stable-diffusion-ret/scripts/inpaint.py'
 
-        inpaint_py=Path('scripts')/'inpaint.py'
+        # print('inpaint script=', inpaint_py)
+        # print('inpaint dir=', inpainting_dir)
+
+        inpaint_py=Path(home_dir_path)/'scripts'/'inpaint.py'
 
         masky=Path(str(inpainting_dir))/'masking'/'out'
         masky=str(masky / "_")[:-1]
@@ -224,7 +232,6 @@ class inpainter_window(QMainWindow):
         print(sd_dreamer_main(self).pyBinPath.text())
         self.inpainter_process.start(py_bin_path_ini, inpaint_args)
         self.setWindowTitle("Inpainting...")
-
 
     def handle_state(self, state):
         states = {   
@@ -301,6 +308,9 @@ esrbin_models_ini = config.get('Settings', 'esrbin_models')
 up_input_folder_ini = config.get('Settings', 'up_input_folder')
 up_output_folder_ini = config.get('Settings', 'up_output_folder')
 py_bin_path_ini = config.get('Settings', 'py_bin_path')
+first_run_ini = config.get('Settings', 'first_run')
+
+print('first run=',first_run_ini)
 
 class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
@@ -311,15 +321,12 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.w = None
         self.art_win = None
 
-        self.outputFolderLine.setText(str(Path(sd_folder_path)/'outputs'/'sd_dreamer'))
-
         try:
             os.chdir(sd_folder_path)
         except:
             print("SD FOLDER NOT FOUND")
             self.errorMessages.setText("The SD folder not found")
       
-        self.sdFolderPath.setText(sd_folder_path)
         print('SD install working directory: ',sd_folder_path)
 
         def upscale_process():
@@ -343,6 +350,17 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.upImageOutputFolder.setText(up_output_folder_ini)
         self.pyBinPath.setText(py_bin_path_ini)
 
+        if first_run_ini == '0':
+            self.txt2imgPath.setText(str(Path(home_dir_path)/'scripts'/'txt2img_sdd.py'))
+            self.img2imgPath.setText(str(Path(home_dir_path)/'scripts'/'img2img_sdd.py'))
+            config.set('Settings', 'txt2img', self.txt2imgPath.text())
+            config.set('Settings', 'img2img', self.txt2imgPath.text())
+            config.set('Settings', 'first_run', '1')
+            with open(settings_file, 'w') as configfile:
+                config.write(configfile)
+
+        self.outputFolderLine.setText(str(Path(sd_folder_path)/'outputs'/'sd_dreamer'))
+
         try:
             for x in os.listdir(esrbin_models_ini): # generate ESGRAN model list
                 if x.endswith(".bin"):
@@ -351,15 +369,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             print('models not found')
 
 # saving the paths to the ini file
-        def select_sd_folder_select():
-                sd_folder_path=(QFileDialog.getExistingDirectory(self, ("Select the stable-diffusion folder")))
-                if len(sd_folder_path) > 0:
-                    config.set('Settings', 'sd_folder', sd_folder_path)
-                    self.sdFolderPath.setText(sd_folder_path)
-                with open(settings_file, 'w') as configfile:
-                    config.write(configfile)
-        self.sdFolderSelect.clicked.connect(select_sd_folder_select)
-        
 
         def img2img_select():
                 img2img_path=(QFileDialog.getOpenFileName(self, 'Open file', '',"Python scripts (*.py)")[0])
@@ -483,14 +492,31 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.generator_process.readyReadStandardOutput.connect(self.handle_stdout)
         self.generator_process.readyReadStandardError.connect(self.handle_stderr)
 
+        forbiddenChars = (">", "<", "/", ":" '"', "\\", "|", "?", "*")
+        forbiddenChars=str(forbiddenChars)
+
+        prompt=self.promptVal.currentText()
+    
+        for r in ((">", ""), ("<", ""),("/", ""),("<", ""),(":", ""),("|", ""),("?", ""),("*", ""),("\\", ""),('"', "")):
+            prompt = prompt.replace(*r)
+
+        out_folder_create=Path(self.outputFolderLine.text())/prompt.replace(' ', '_')[:160]
+        out_folder_create=str(out_folder_create)+'_'+self.seedVal.text()
+        out_folder_create=(out_folder_create)
+
+        for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_")):
+            out_folder_create = out_folder_create.replace(*r)
+
+        print('folder to make=',out_folder_create)
+
         if upscale_go == True:
             print('Upscaling')
             self.generator_process.start(esrgan_bin_ini, ['-n',self.rnvModelSelect.currentText(),'-s',self.modelScale.currentText(), '-i', up_input_folder_ini, '-o', up_output_folder_ini])
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
-        
+
         else:
-            sd_args=[f'{self.txt2imgPath.text()}', '--prompt', '"'+self.promptVal.currentText().replace('"', '')+'"','--precision',self.precisionToggle.currentText(), '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--n_samples', str(self.batchVal.value()), '--ddim_steps', str(self.stepsVal.value()), '--seed', self.seedVal.text(), '--n_rows', '3','--outdir', self.outputFolderLine.text()+'/'+self.promptVal.currentText().replace('"', '')[:160]+'_'+self.seedVal.text()]
+            sd_args=[f'{self.txt2imgPath.text()}', '--prompt', r'"'+prompt+r'"','--precision',self.precisionToggle.currentText(), '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--n_samples', str(self.batchVal.value()), '--ddim_steps', str(self.stepsVal.value()), '--seed', self.seedVal.text(), '--n_rows', '3','--outdir', str(Path(out_folder_create))]
 
 
             if self.small_batchCheck.isChecked():
@@ -563,6 +589,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
     def stop_process(self):
         if self.generator_process != None:
+            self.generator_process.terminate()
             self.generator_process.terminate()
             self.processOutput.appendPlainText("Procesing has been ended.")
             self.cancelButton.setEnabled(False)

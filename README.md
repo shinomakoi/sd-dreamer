@@ -12,6 +12,6 @@ Qt based Linux/Windows GUI for Stable Diffusion
 
 - For upscaling, download real-esrgan-vulkan-ncnn from https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0, extract the zip then set the paths in the settings tab of the app.
 
-- Use the custom scripts in the 'scripts' folder if you wish. Put the folder in SD base directory
+- Use the custom scripts in the 'scripts' folder if you wish. 
 
 - 'small_batch' only works with 'optimized_txt2img.py'. You can also use other modified txt2img and img2img scripts. The included inpaint.py is recommended for inpainting if you run out of VRAM.

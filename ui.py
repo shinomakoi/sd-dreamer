@@ -56,7 +56,7 @@ class Ui_sd_dreamer_main(object):
         self.label_5 = QLabel(self.tab_3)
         self.label_5.setObjectName(u"label_5")
 
-        self.gridLayout_2.addWidget(self.label_5, 13, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.label_5, 14, 4, 1, 1)
 
         self.label_2 = QLabel(self.tab_3)
         self.label_2.setObjectName(u"label_2")
@@ -68,17 +68,59 @@ class Ui_sd_dreamer_main(object):
         self.precisionToggle.addItem("")
         self.precisionToggle.setObjectName(u"precisionToggle")
 
-        self.gridLayout_2.addWidget(self.precisionToggle, 9, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.precisionToggle, 10, 2, 1, 1)
 
         self.generateButton = QPushButton(self.tab_3)
         self.generateButton.setObjectName(u"generateButton")
 
-        self.gridLayout_2.addWidget(self.generateButton, 29, 1, 1, 5)
+        self.gridLayout_2.addWidget(self.generateButton, 30, 1, 1, 5)
+
+        self.groupBox_3 = QGroupBox(self.tab_3)
+        self.groupBox_3.setObjectName(u"groupBox_3")
+        self.groupBox_3.setAlignment(Qt.AlignCenter)
+        self.gridLayout_7 = QGridLayout(self.groupBox_3)
+        self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.gridCheck = QCheckBox(self.groupBox_3)
+        self.gridCheck.setObjectName(u"gridCheck")
+        self.gridCheck.setEnabled(True)
+        self.gridCheck.setChecked(False)
+
+        self.gridLayout_7.addWidget(self.gridCheck, 3, 0, 1, 1)
+
+        self.fixedCodeCheck = QCheckBox(self.groupBox_3)
+        self.fixedCodeCheck.setObjectName(u"fixedCodeCheck")
+
+        self.gridLayout_7.addWidget(self.fixedCodeCheck, 5, 0, 1, 1)
+
+        self.seedCheck = QCheckBox(self.groupBox_3)
+        self.seedCheck.setObjectName(u"seedCheck")
+        self.seedCheck.setChecked(True)
+
+        self.gridLayout_7.addWidget(self.seedCheck, 1, 0, 1, 1)
+
+        self.small_batchCheck = QCheckBox(self.groupBox_3)
+        self.small_batchCheck.setObjectName(u"small_batchCheck")
+
+        self.gridLayout_7.addWidget(self.small_batchCheck, 4, 0, 1, 1)
+
+
+        self.gridLayout_2.addWidget(self.groupBox_3, 14, 1, 3, 2)
 
         self.outputFolderLine = QLineEdit(self.tab_3)
         self.outputFolderLine.setObjectName(u"outputFolderLine")
 
-        self.gridLayout_2.addWidget(self.outputFolderLine, 13, 5, 1, 1)
+        self.gridLayout_2.addWidget(self.outputFolderLine, 14, 5, 1, 1)
+
+        self.processOutput = QPlainTextEdit(self.tab_3)
+        self.processOutput.setObjectName(u"processOutput")
+        self.processOutput.setAutoFillBackground(True)
+        self.processOutput.setFrameShape(QFrame.NoFrame)
+        self.processOutput.setUndoRedoEnabled(False)
+        self.processOutput.setReadOnly(True)
+        self.processOutput.setOverwriteMode(False)
+        self.processOutput.setBackgroundVisible(False)
+
+        self.gridLayout_2.addWidget(self.processOutput, 1, 4, 10, 3)
 
         self.label_9 = QLabel(self.tab_3)
         self.label_9.setObjectName(u"label_9")
@@ -137,7 +179,7 @@ class Ui_sd_dreamer_main(object):
         self.gridLayout_5.addWidget(self.label_12, 1, 2, 1, 1)
 
 
-        self.gridLayout_2.addWidget(self.groupBox, 14, 4, 2, 3)
+        self.gridLayout_2.addWidget(self.groupBox, 15, 4, 2, 3)
 
         self.samplerToggle = QComboBox(self.tab_3)
         self.samplerToggle.addItem("")
@@ -221,7 +263,7 @@ class Ui_sd_dreamer_main(object):
         self.outputFolderSelect = QPushButton(self.tab_3)
         self.outputFolderSelect.setObjectName(u"outputFolderSelect")
 
-        self.gridLayout_2.addWidget(self.outputFolderSelect, 13, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.outputFolderSelect, 14, 6, 1, 1)
 
         self.label = QLabel(self.tab_3)
         self.label.setObjectName(u"label")
@@ -262,7 +304,7 @@ class Ui_sd_dreamer_main(object):
         self.cancelButton.setObjectName(u"cancelButton")
         self.cancelButton.setEnabled(False)
 
-        self.gridLayout_2.addWidget(self.cancelButton, 29, 6, 1, 1)
+        self.gridLayout_2.addWidget(self.cancelButton, 30, 6, 1, 1)
 
         self.scale = QLabel(self.tab_3)
         self.scale.setObjectName(u"scale")
@@ -272,7 +314,7 @@ class Ui_sd_dreamer_main(object):
         self.label_21 = QLabel(self.tab_3)
         self.label_21.setObjectName(u"label_21")
 
-        self.gridLayout_2.addWidget(self.label_21, 9, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.label_21, 10, 0, 1, 1)
 
         self.seedVal = QLineEdit(self.tab_3)
         self.seedVal.setObjectName(u"seedVal")
@@ -299,47 +341,10 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout_2.addWidget(self.batchVal, 7, 2, 1, 1)
 
-        self.groupBox_3 = QGroupBox(self.tab_3)
-        self.groupBox_3.setObjectName(u"groupBox_3")
-        self.groupBox_3.setAlignment(Qt.AlignCenter)
-        self.gridLayout_7 = QGridLayout(self.groupBox_3)
-        self.gridLayout_7.setObjectName(u"gridLayout_7")
-        self.gridCheck = QCheckBox(self.groupBox_3)
-        self.gridCheck.setObjectName(u"gridCheck")
-        self.gridCheck.setEnabled(True)
-        self.gridCheck.setChecked(False)
+        self.label_10 = QLabel(self.tab_3)
+        self.label_10.setObjectName(u"label_10")
 
-        self.gridLayout_7.addWidget(self.gridCheck, 3, 0, 1, 1)
-
-        self.fixedCodeCheck = QCheckBox(self.groupBox_3)
-        self.fixedCodeCheck.setObjectName(u"fixedCodeCheck")
-
-        self.gridLayout_7.addWidget(self.fixedCodeCheck, 5, 0, 1, 1)
-
-        self.seedCheck = QCheckBox(self.groupBox_3)
-        self.seedCheck.setObjectName(u"seedCheck")
-        self.seedCheck.setChecked(True)
-
-        self.gridLayout_7.addWidget(self.seedCheck, 1, 0, 1, 1)
-
-        self.small_batchCheck = QCheckBox(self.groupBox_3)
-        self.small_batchCheck.setObjectName(u"small_batchCheck")
-
-        self.gridLayout_7.addWidget(self.small_batchCheck, 4, 0, 1, 1)
-
-
-        self.gridLayout_2.addWidget(self.groupBox_3, 13, 1, 3, 2)
-
-        self.processOutput = QPlainTextEdit(self.tab_3)
-        self.processOutput.setObjectName(u"processOutput")
-        self.processOutput.setAutoFillBackground(True)
-        self.processOutput.setFrameShape(QFrame.NoFrame)
-        self.processOutput.setUndoRedoEnabled(False)
-        self.processOutput.setReadOnly(True)
-        self.processOutput.setOverwriteMode(False)
-        self.processOutput.setBackgroundVisible(False)
-
-        self.gridLayout_2.addWidget(self.processOutput, 1, 4, 9, 3)
+        self.gridLayout_2.addWidget(self.label_10, 9, 2, 1, 1)
 
         self.tabby.addTab(self.tab_3, "")
         self.tab_4 = QWidget()
@@ -547,10 +552,30 @@ class Ui_sd_dreamer_main(object):
 #endif // QT_CONFIG(tooltip)
         self.precisionToggle.setCurrentText(QCoreApplication.translate("sd_dreamer_main", u"autocast", None))
         self.generateButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Dream", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Options", None))
+#if QT_CONFIG(tooltip)
+        self.gridCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Don't produce a grid", None))
+#endif // QT_CONFIG(tooltip)
+        self.gridCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"No grid", None))
+#if QT_CONFIG(tooltip)
+        self.fixedCodeCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"If enabled, uses the same starting code across samples", None))
+#endif // QT_CONFIG(tooltip)
+        self.fixedCodeCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Fixed code", None))
+#if QT_CONFIG(tooltip)
+        self.seedCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Enable random seeding", None))
+#endif // QT_CONFIG(tooltip)
+        self.seedCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Random seed", None))
+#if QT_CONFIG(tooltip)
+        self.small_batchCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"For 6 or less outputs. Only for 'optimized' scripts", None))
+#endif // QT_CONFIG(tooltip)
+        self.small_batchCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Small batch", None))
 #if QT_CONFIG(tooltip)
         self.outputFolderLine.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Where images will get output to", None))
 #endif // QT_CONFIG(tooltip)
         self.outputFolderLine.setText("")
+#if QT_CONFIG(tooltip)
+        self.processOutput.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Stable diffusion output", None))
+#endif // QT_CONFIG(tooltip)
         self.label_9.setText(QCoreApplication.translate("sd_dreamer_main", u"1", None))
         self.label_6.setText(QCoreApplication.translate("sd_dreamer_main", u"50", None))
         self.groupBox.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Img2img", None))
@@ -659,26 +684,7 @@ class Ui_sd_dreamer_main(object):
 #if QT_CONFIG(tooltip)
         self.batchVal.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Number of batches", None))
 #endif // QT_CONFIG(tooltip)
-        self.groupBox_3.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Options", None))
-#if QT_CONFIG(tooltip)
-        self.gridCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Don't produce a grid", None))
-#endif // QT_CONFIG(tooltip)
-        self.gridCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"No grid", None))
-#if QT_CONFIG(tooltip)
-        self.fixedCodeCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"If enabled, uses the same starting code across samples", None))
-#endif // QT_CONFIG(tooltip)
-        self.fixedCodeCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Fixed code", None))
-#if QT_CONFIG(tooltip)
-        self.seedCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Enable random seeding", None))
-#endif // QT_CONFIG(tooltip)
-        self.seedCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Random seed", None))
-#if QT_CONFIG(tooltip)
-        self.small_batchCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"For 6 or less outputs. Only for 'optimized' scripts", None))
-#endif // QT_CONFIG(tooltip)
-        self.small_batchCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Small batch", None))
-#if QT_CONFIG(tooltip)
-        self.processOutput.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Stable diffusion output", None))
-#endif // QT_CONFIG(tooltip)
+        self.label_10.setText(QCoreApplication.translate("sd_dreamer_main", u"euler and dpm only for txt2img", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_3), QCoreApplication.translate("sd_dreamer_main", u"Local", None))
         self.inpaint_img_select.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
 #if QT_CONFIG(tooltip)

@@ -16,3 +16,5 @@ Qt based Linux/Windows GUI for Stable Diffusion
 - For upscaling, download real-esrgan-vulkan-ncnn from https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0, extract the zip then set the paths in the settings tab of the app.
 
 - 'small_batch' only works with 'optimized_*' scripts. The included inpaint.py is recommended for inpainting if you run out of VRAM.
+
+![screenshot](https://user-images.githubusercontent.com/112139428/187098367-7ed94f45-023d-4336-928e-fb44ecc7e576.png)

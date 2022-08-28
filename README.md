@@ -2,7 +2,7 @@
 Qt based Linux/Windows GUI for Stable Diffusion
 
 - Have a working Stable Diffusion install (tested on the default CompVis and the basujindal, hlky versions)
-- IMPORTANT: Place the SD Dreamer folder in the base of your stable diffusion folder (e.g. in stable-diffusion-compvis folder), so to launch type for example - python stable-diffusion-main\sd-dreamer\main.py
+- IMPORTANT: Place the SD Dreamer folder in the base of your stable diffusion folder (e.g. in stable-diffusion-compvis folder), so to launch, for example - 'python stable-diffusion-main\sd-dreamer\main.py'
 - Run 'conda activate <ldm/ldp>' or whatever your conda environment is to init SD (in Windows, from inside the Anaconda prompt)
 - Run 'pip install -r requirements.txt' to install any dependencies
 - Run 'python <path-to-sd-dreamer-folder>main.py to start'

@@ -4,7 +4,7 @@ Qt based Linux/Windows GUI for Stable Diffusion
 - Have a working Stable Diffusion install (tested on the default CompVis and the basujindal, hlky versions)
 - IMPORTANT: Place the SD Dreamer folder in the base of your stable diffusion folder (e.g. in stable-diffusion-compvis folder)
 - Run 'conda activate <ldm/ldp>' or whatever your conda environment is to init SD (in Windows, from inside the Anaconda prompt)
-- Run 'pip install -r <path-to-sd-dreamer-folder>\requirements.txt' to install any dependencies
+- Run 'pip install -r requirements.txt' to install any dependencies
 - Run 'python <path-to-sd-dreamer-folder>main.py to start'
 - k_lms sampler requires the *_klms.py scripts provided in the zip file and K-Diffusion installed.
 

@@ -494,14 +494,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
 
-        for r in ((">", ""), ("<", ""),("/", ""),("<", ""),(":", ""),("|", ""),("?", ""),("*", ""),("\\", ""),('"', "")):
+        for r in ((">", ""), ("<", ""),("/", ""),("<", ""),(":", ""),("|", ""),("?", ""),("*", ""),("\\", ""),('"', ""),(',', ""),('.', "")):
             prompt = prompt.replace(*r)
 
         out_folder_create=Path(self.outputFolderLine.text())/prompt.replace(' ', '_')[:160]
         out_folder_create=str(out_folder_create)+'_'+self.seedVal.text()
         out_folder_create=(out_folder_create)
 
-        for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_")):
+        for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_"),(',', ""),('.', "")):
             out_folder_create = out_folder_create.replace(*r)
 
         else:

@@ -497,6 +497,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         prompt=self.promptVal.currentText()
     
+        # print('folder to make=',out_folder_create)
+
+        if upscale_go == True:
+            print('Upscaling')
+            self.generator_process.start(esrgan_bin_ini, ['-n',self.rnvModelSelect.currentText(),'-s',self.modelScale.currentText(), '-i', up_input_folder_ini, '-o', up_output_folder_ini])
+            self.cancelButton.setEnabled(True)
+            self.generateButton.setEnabled(False)
+
         for r in ((">", ""), ("<", ""),("/", ""),("<", ""),(":", ""),("|", ""),("?", ""),("*", ""),("\\", ""),('"', "")):
             prompt = prompt.replace(*r)
 
@@ -507,13 +515,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_")):
             out_folder_create = out_folder_create.replace(*r)
 
-        print('folder to make=',out_folder_create)
-
-        if upscale_go == True:
-            print('Upscaling')
-            self.generator_process.start(esrgan_bin_ini, ['-n',self.rnvModelSelect.currentText(),'-s',self.modelScale.currentText(), '-i', up_input_folder_ini, '-o', up_output_folder_ini])
-            self.cancelButton.setEnabled(True)
-            self.generateButton.setEnabled(False)
 
         else:
             sd_args=[f'{self.txt2imgPath.text()}', '--prompt', r'"'+prompt+r'"','--precision',self.precisionToggle.currentText(), '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--n_samples', str(self.batchVal.value()), '--ddim_steps', str(self.stepsVal.value()), '--seed', self.seedVal.text(), '--n_rows', '3','--outdir', str(Path(out_folder_create))]

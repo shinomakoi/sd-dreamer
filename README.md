@@ -6,9 +6,9 @@ Qt based Linux/Windows GUI for Stable Diffusion
 - Run 'conda activate <ldm/ldp>' or whatever your conda environment is to init SD (in Windows, from inside the Anaconda prompt)
 - Run 'pip install -r requirements.txt' to install any dependencies
 - Run 'python main.py to start'
-- 
+
 - k_ samplers require k-diffusion installed
-- 
+
 - k_euler_a and k_dpm_2_a samplers only supported for txt2img currently, will default to k_lms for img2img
 
 - For inpainting, download the model from https://ommer-lab.com/files/latent-diffusion/inpainting_big.zip and put in the 'stable-diffusion\models\ldm\inpainting_big' folder and rename to last.ckpt

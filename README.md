@@ -14,4 +14,4 @@ Qt based Linux/Windows GUI for Stable Diffusion
 
 - Use the custom scripts in the 'scripts' folder if you wish. 
 
-- 'small_batch' only works with 'optimized_txt2img.py'. You can also use other modified txt2img and img2img scripts. The included inpaint.py is recommended for inpainting if you run out of VRAM.
+- 'small_batch' only works with 'optimized_*' scripts. You can also use other modified txt2img and img2img scripts. The included inpaint.py is recommended for inpainting if you run out of VRAM.

@@ -16,7 +16,7 @@ from PySide2.QtWidgets import *
 
 # print('working dir=',os.getcwd())
 home_dir_path = os.path.dirname(os.path.realpath(__file__))
-print('home dir path=',home_dir_path)
+print('SD Dreamer home directory: ',home_dir_path)
 
 # load settings.ini file
 config = configparser.ConfigParser()
@@ -27,7 +27,7 @@ config.read(Path(home_dir_path)/'settings.ini')
 # sd_folder_path = config.get('Settings', 'sd_folder')
 
 inpainting_dir=Path(home_dir_path)/'inpainting'
-print('Inpaint dir= ',inpainting_dir)
+print('Inpaint directory: ',inpainting_dir)
 
 sd_folder_path=Path(home_dir_path)
 sd_folder_path=str(sd_folder_path.parent)
@@ -38,7 +38,7 @@ class inpainter_window(QMainWindow):
         super().__init__()
         self.inpainter_process = None
 
-        print('inpaintimage=',inpaint_source)
+        print('Inpaint image: ',inpaint_source)
 
         r=png.Reader(inpaint_source)
         png_w=(r.read()[0])
@@ -228,7 +228,7 @@ class inpainter_window(QMainWindow):
         self.inpainter_process.stateChanged.connect(self.handle_state)
         self.inpainter_process.finished.connect(self.process_finished)  # Clean up once done
         inpaint_args=[str(inpaint_py), '--indir', str(Path(inpainting_dir)/'masking'), '--outdir', masky, '--steps', sd_dreamer_main(self).inpaintSteps.text()]
-        print('Inpaint args: ', sd_dreamer_main(self).pyBinPath.text(),inpaint_args)
+        print('Inpaint args - ', sd_dreamer_main(self).pyBinPath.text(),inpaint_args)
         print(sd_dreamer_main(self).pyBinPath.text())
         self.inpainter_process.start(py_bin_path_ini, inpaint_args)
         self.setWindowTitle("Inpainting...")
@@ -310,7 +310,7 @@ up_output_folder_ini = config.get('Settings', 'up_output_folder')
 py_bin_path_ini = config.get('Settings', 'py_bin_path')
 first_run_ini = config.get('Settings', 'first_run')
 
-print('first run=',first_run_ini)
+print('First run: ',first_run_ini)
 
 class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
@@ -366,7 +366,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 if x.endswith(".bin"):
                     self.rnvModelSelect.addItem(x.strip('.bin'))
         except:
-            print('models not found')
+            print('Real-ESGRAN models not found')
 
 # saving the paths to the ini file
 
@@ -515,10 +515,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_")):
             out_folder_create = out_folder_create.replace(*r)
 
-
         else:
             sd_args=[f'{self.txt2imgPath.text()}', '--prompt', r'"'+prompt+r'"','--precision',self.precisionToggle.currentText(), '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--n_samples', str(self.batchVal.value()), '--ddim_steps', str(self.stepsVal.value()), '--seed', self.seedVal.text(), '--n_rows', '3','--outdir', str(Path(out_folder_create))]
-
 
             if self.small_batchCheck.isChecked():
                 sd_args.insert(-4, "--small_batch")
@@ -601,11 +599,14 @@ window = sd_dreamer_main()
 window.show()
 app.exec_()
 
-#notes to fix
+### to do
 # inpaint fix clear
 # windows test
 # fint inpainter save, only saves mask?
 # fix output folder names, paths
 # add GFPGAN
+# add txt2imgHD
+# add optimized k_lms
+# add k_euler etc
+# expand img2img
 # moar stuff
-# tooltips

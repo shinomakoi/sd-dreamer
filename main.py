@@ -12,6 +12,7 @@ from PySide2.QtCore import QProcess
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+
 ################### ALPHA 0.1 ###################
 
 # print('working dir=',os.getcwd())
@@ -312,6 +313,7 @@ first_run_ini = config.get('Settings', 'first_run')
 
 print('First run: ',first_run_ini)
 
+
 class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
     def __init__(self, *args, **kwargs):
@@ -320,6 +322,11 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.generator_process = None
         self.w = None
         self.art_win = None
+
+        check_install = os.path.exists(Path(sd_folder_path) / 'environment.yaml')
+        if check_install == False:
+            self.errorMessages.setText("WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
+            print ("WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
 
         try:
             os.chdir(sd_folder_path)
@@ -492,8 +499,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.generator_process.readyReadStandardOutput.connect(self.handle_stdout)
         self.generator_process.readyReadStandardError.connect(self.handle_stderr)
 
-        forbiddenChars = (">", "<", "/", ":" '"', "\\", "|", "?", "*")
-        forbiddenChars=str(forbiddenChars)
+        # forbiddenChars = (">", "<", "/", ":" '"', "\\", "|", "?", "*")
+        # forbiddenChars=str(forbiddenChars)
 
         prompt=self.promptVal.currentText()
     

@@ -33,6 +33,12 @@ print('Inpaint directory: ',inpainting_dir)
 sd_folder_path=Path(home_dir_path)
 sd_folder_path=str(sd_folder_path.parent)
 
+txt2img_default=Path(home_dir_path)/'scripts'/'txt2img_sdd.py'
+txt2img_k=Path(home_dir_path)/'scripts'/'txt2img_k_sdd.py'
+txt2img_opti=Path(home_dir_path)/'scripts'/'optimized_txt2img.py'
+img2img_default=Path(home_dir_path)/'scripts'/'img2img_sdd.py'
+img2img_k=Path(home_dir_path)/'scripts'/'img2img_klms_sdd.py'
+
 class inpainter_window(QMainWindow):
 
     def __init__(self):
@@ -302,8 +308,7 @@ from painter import paintWindow
 from ui import Ui_sd_dreamer_main
 
 # load settings from settings.ini
-txt2img_ini = config.get('Settings', 'txt2img')
-img2img_ini = config.get('Settings', 'img2img')
+
 esrgan_bin_ini = config.get('Settings', 'esrgan_bin')
 esrbin_models_ini = config.get('Settings', 'esrbin_models')
 up_input_folder_ini = config.get('Settings', 'up_input_folder')
@@ -312,7 +317,6 @@ py_bin_path_ini = config.get('Settings', 'py_bin_path')
 first_run_ini = config.get('Settings', 'first_run')
 
 print('First run: ',first_run_ini)
-
 
 class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
@@ -323,7 +327,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.w = None
         self.art_win = None
 
-        check_install = os.path.exists(Path(sd_folder_path) / 'environment.yaml')
+# check for the base SD install
+        check_install = os.path.exists(Path(sd_folder_path) / 'environment.yaml') 
         if check_install == False:
             self.errorMessages.setText("WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
             print ("WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
@@ -349,8 +354,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if self.seedCheck.isChecked():
             self.seedVal.setText(str(random.randint(0,1632714927)))
 
-        self.img2imgPath.setText(img2img_ini)
-        self.txt2imgPath.setText(txt2img_ini)
         self.rnvBinPath.setText(esrgan_bin_ini)
         self.rnvModelPath.setText(esrbin_models_ini)
         self.upImageInputFolder.setText(up_input_folder_ini)
@@ -358,10 +361,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.pyBinPath.setText(py_bin_path_ini)
 
         if first_run_ini == '0':
-            self.txt2imgPath.setText(str(Path(home_dir_path)/'scripts'/'txt2img_sdd.py'))
-            self.img2imgPath.setText(str(Path(home_dir_path)/'scripts'/'img2img_sdd.py'))
-            config.set('Settings', 'txt2img', self.txt2imgPath.text())
-            config.set('Settings', 'img2img', self.txt2imgPath.text())
+
             config.set('Settings', 'first_run', '1')
             with open(settings_file, 'w') as configfile:
                 config.write(configfile)
@@ -376,24 +376,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             print('Real-ESGRAN models not found')
 
 # saving the paths to the ini file
-
-        def img2img_select():
-                img2img_path=(QFileDialog.getOpenFileName(self, 'Open file', '',"Python scripts (*.py)")[0])
-                if len(img2img_path) > 0:
-                    self.img2imgPath.setText(img2img_path)
-                    config.set('Settings', 'img2img', img2img_path)
-                with open(settings_file, 'w') as configfile:
-                    config.write(configfile)
-        self.img2imgSelect.clicked.connect(img2img_select)
-
-        def txt2img_select():
-                txt2img_path=(QFileDialog.getOpenFileName(self, 'Open file', '',"Python scripts (*.py)")[0])
-                if len(txt2img_path) > 0:
-                    self.txt2imgPath.setText(txt2img_path)
-                    config.set('Settings', 'txt2img', txt2img_path)
-                with open(settings_file, 'w') as configfile:
-                    config.write(configfile)
-        self.txt2imgSelect.clicked.connect(txt2img_select)
 
         def rnvBinPathSelect_select():
                 rnvBin=(QFileDialog.getOpenFileName(self, 'Open file', '',"All files (*.*)")[0])
@@ -523,31 +505,52 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             out_folder_create = out_folder_create.replace(*r)
 
         else:
-            sd_args=[f'{self.txt2imgPath.text()}', '--prompt', r'"'+prompt+r'"','--precision',self.precisionToggle.currentText(), '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--n_samples', str(self.batchVal.value()), '--ddim_steps', str(self.stepsVal.value()), '--seed', self.seedVal.text(), '--n_rows', '3','--outdir', str(Path(out_folder_create))]
+            txt2img_file=txt2img_k
+            img2img_file=img2img_k
+
+            if self.samplerToggle.currentText() == 'ddim' or self.samplerToggle.currentText() == 'plms':
+                txt2img_file=txt2img_default
+            if self.samplerToggle.currentText() == 'ddim' or self.samplerToggle.currentText() == 'plms':
+                img2img_file=img2img_default
+
+            print('txt2img file: ',txt2img_file)
+            print('img2img file: ',img2img_file)
+                
+            sd_args=[f'{txt2img_file}', '--prompt', r'"'+prompt+r'"','--precision',self.precisionToggle.currentText(), '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--n_samples', str(self.batchVal.value()), '--ddim_steps', str(self.stepsVal.value()), '--seed', self.seedVal.text(), '--n_rows', '3','--outdir', str(Path(out_folder_create))]
 
             if self.small_batchCheck.isChecked():
                 sd_args.insert(-4, "--small_batch")
 
             if self.img2imgCheck.isChecked():
-                sd_args[0] = self.img2imgPath.text()
+                sd_args[0] = str(Path(img2img_file))
                 sd_args.pop(5),sd_args.pop(5),sd_args.pop(5),sd_args.pop(5),
                 sd_args.insert(-4, "--init-img")
                 sd_args.insert(-4, self.img2imgFile.text())
                 sd_args.insert(-4, "--strength")
                 sd_args.insert(-4, self.img2imgStrength.text())
-
+                if img2img_file==img2img_k:
+                    sd_args.insert(3, "--klms")
+                    print("Inserted KLMS into img2img")
+                    
             if self.gridCheck.isChecked():
                     sd_args.insert(3, "--skip_grid")
 
             if self.fixedCodeCheck.isChecked():
                     sd_args.insert(3, "--fixed_code")
 
-            if self.samplerToggle.currentText() == 'plms':
+            if self.samplerToggle.currentText() == 'ddim' or 'plms' and self.img2imgCheck.isChecked() == False:
+                if self.samplerToggle.currentText() == 'plms':
                     sd_args.insert(3, "--plms")
-            
-            if self.samplerToggle.currentText() == 'k_lms':
-                    sd_args.insert(3, "--klms")
 
+            if self.img2imgCheck.isChecked() == False:
+                if self.samplerToggle.currentText() == 'k_lms':
+                    sd_args.insert(3, "lms")
+                if self.samplerToggle.currentText() == 'k_euler_a':
+                    sd_args.insert(3, "euler")
+                if self.samplerToggle.currentText() == 'k_dpm_2_a':
+                    sd_args.insert(3, "dpm")
+                if txt2img_file==txt2img_k:
+                    sd_args.insert(3, "--sampler")     
 
             self.promptVal.addItem(self.promptVal.currentText())
             f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")

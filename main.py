@@ -494,15 +494,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
 
-        for r in ((">", ""), ("<", ""),("/", ""),("<", ""),(":", ""),("|", ""),("?", ""),("*", ""),("\\", ""),('"', ""),(',', ""),('.', "")):
-            prompt = prompt.replace(*r)
+        for r in ((">", ""), ("<", ""),("/", ""),("<", ""),(":", ""),("|", ""),("?", ""),("*", ""),("\\", ""),('"', ""),(',', ""),('.', ""),('\n', "")):
+            prompt = prompt.replace(*r).strip()
 
         out_folder_create=Path(self.outputFolderLine.text())/prompt.replace(' ', '_')[:160]
         out_folder_create=str(out_folder_create)+'_'+self.seedVal.text()
-        out_folder_create=(out_folder_create)
 
-        for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_"),(',', ""),('.', "")):
-            out_folder_create = out_folder_create.replace(*r)
+        for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_"),(',', ""),('.', ""),('\n', "")):
+            out_folder_create = out_folder_create.replace(*r).strip()
 
         else:
             txt2img_file=txt2img_k
@@ -592,7 +591,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.generator_process = None
         if self.seedCheck.isChecked():
             self.seedVal.setText(str(random.randint(0,1632714927)))
-        self.cancelButton.setEnabled(False)
+        # self.cancelButton.setEnabled(False)
         self.generateButton.setEnabled(True)
         self.upscaleButton.setEnabled(True)
 
@@ -601,7 +600,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             self.generator_process.terminate()
             self.generator_process.terminate()
             self.processOutput.appendPlainText("Procesing has been ended.")
-            self.cancelButton.setEnabled(False)
+            # self.cancelButton.setEnabled(False)
             self.generateButton.setEnabled(True)
 
 app = QtWidgets.QApplication(sys.argv)

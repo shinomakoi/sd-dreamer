@@ -35,9 +35,13 @@ sd_folder_path=str(sd_folder_path.parent)
 
 txt2img_default=Path(home_dir_path)/'scripts'/'txt2img_sdd.py'
 txt2img_k=Path(home_dir_path)/'scripts'/'txt2img_k_sdd.py'
-txt2img_opti=Path(home_dir_path)/'scripts'/'optimized_txt2img.py'
+txt2img_opti=Path(home_dir_path)/'scripts'/'optimized_txt2img_sdd.py'
+txt2img_opti_k=Path(home_dir_path)/'scripts'/'optimized_txt2img_k_sdd.py'
+
 img2img_default=Path(home_dir_path)/'scripts'/'img2img_sdd.py'
-img2img_k=Path(home_dir_path)/'scripts'/'img2img_klms_sdd.py'
+img2img_k=Path(home_dir_path)/'scripts'/'img2img_k_sdd.py'
+img2img_opti=Path(home_dir_path)/'scripts'/'optimized_img2img_sdd.py'
+img2img_opti_k=Path(home_dir_path)/'scripts'/'optimized_img2img_k_sdd.py'
 
 class inpainter_window(QMainWindow):
 
@@ -297,7 +301,6 @@ class inpainter_window(QMainWindow):
     def whiteColor(self):
         self.brushColor = Qt.white
 
-
 from PySide2 import QtWidgets
 from PySide2.QtCore import QUrl  # , QPropertyAnimation
 from PySide2.QtCore import QProcess
@@ -326,6 +329,36 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.generator_process = None
         self.w = None
         self.art_win = None
+        # image_list=[]
+        pixmap = QPixmap(str(Path(home_dir_path)/('view_default.png')))
+        self.imageView.setPixmap(pixmap)
+
+        def cycle_images(button):
+            try:
+                image_count=len(image_list)
+            except: 
+                print('image list is empty')
+                image_count=0
+            image_index=int(int(self.imgIndex.text()))
+
+            if button == 'next' and int(image_index) < image_count-1:
+                image_index=int(int(self.imgIndex.text())) + 1
+                image_to_display=image_list[image_index]
+                pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
+                self.imageView.setPixmap(pixmap)
+                print('next to',image_to_display)
+                self.imgIndex.setText(str(image_index))
+
+            if button == 'previous'and int(image_index) > 0:
+                image_index=int(int(self.imgIndex.text()))-1
+                image_to_display=image_list[image_index]
+                pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
+                self.imageView.setPixmap(pixmap)
+                print('next to',image_to_display)
+                self.imgIndex.setText(str(image_index))
+
+        self.nextImageButton.clicked.connect(lambda: cycle_images('next'))
+        self.previousImgButton.clicked.connect(lambda: cycle_images('previous'))
 
 # check for the base SD install
         check_install = os.path.exists(Path(sd_folder_path) / 'environment.yaml') 
@@ -489,36 +522,40 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         # print('folder to make=',out_folder_create)
 
         if upscale_go == True:
-            print('Upscaling')
-            self.generator_process.start(esrgan_bin_ini, ['-n',self.rnvModelSelect.currentText(),'-s',self.modelScale.currentText(), '-i', up_input_folder_ini, '-o', up_output_folder_ini])
+            print('Upscaling, folder in: ', self.upImageInputFolder.text())
+            print('Upscaling, folder out ', self.upImageOutputFolder.text())
+
+            self.generator_process.start(esrgan_bin_ini, ['-n',self.rnvModelSelect.currentText(),'-s',self.modelScale.currentText(), '-i', self.upImageInputFolder.text(), '-o', self.upImageOutputFolder.text()])
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
 
-        for r in ((">", ""), ("<", ""),("/", ""),("<", ""),(":", ""),("|", ""),("?", ""),("*", ""),("\\", ""),('"', ""),(',', ""),('.', ""),('\n', "")):
+        for r in ((">", ""), ("<", ""),("/", ""),("<", ""),("?", ""),("*", ""),("\\", ""),('"', ""),(',', ""),('.', ""),('\n', "")):
             prompt = prompt.replace(*r).strip()
-
-        out_folder_create=Path(self.outputFolderLine.text())/prompt.replace(' ', '_')[:160]
+        global out_folder_create
+        out_folder_create=Path(self.outputFolderLine.text())/prompt.replace(' ', '_')[:150]
         out_folder_create=str(out_folder_create)+'_'+self.seedVal.text()
 
         for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_"),(',', ""),('.', ""),('\n', "")):
             out_folder_create = out_folder_create.replace(*r).strip()
 
         else:
-            txt2img_file=txt2img_k
-            img2img_file=img2img_k
-
             if self.samplerToggle.currentText() == 'ddim' or self.samplerToggle.currentText() == 'plms':
                 txt2img_file=txt2img_default
-            if self.samplerToggle.currentText() == 'ddim' or self.samplerToggle.currentText() == 'plms':
                 img2img_file=img2img_default
-
-            print('txt2img file: ',txt2img_file)
-            print('img2img file: ',img2img_file)
+                if self.optimizedCheck.isChecked():
+                    txt2img_file=txt2img_opti
+                    img2img_file=img2img_opti
+            else:
+                txt2img_file=txt2img_k
+                img2img_file=img2img_k
+                if self.optimizedCheck.isChecked():
+                    txt2img_file=txt2img_opti_k
+                    img2img_file=img2img_opti_k
                 
             sd_args=[f'{txt2img_file}', '--prompt', r'"'+prompt+r'"','--precision',self.precisionToggle.currentText(), '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--n_samples', str(self.batchVal.value()), '--ddim_steps', str(self.stepsVal.value()), '--seed', self.seedVal.text(), '--n_rows', '3','--outdir', str(Path(out_folder_create))]
 
             if self.small_batchCheck.isChecked():
-                sd_args.insert(-4, "--small_batch")
+                sd_args.insert(-4, "--turbo")
 
             if self.img2imgCheck.isChecked():
                 sd_args[0] = str(Path(img2img_file))
@@ -527,9 +564,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 sd_args.insert(-4, self.img2imgFile.text())
                 sd_args.insert(-4, "--strength")
                 sd_args.insert(-4, self.img2imgStrength.text())
-                if img2img_file==img2img_k:
-                    sd_args.insert(3, "--klms")
-                    print("Inserted KLMS into img2img")
+                # if img2img_file==img2img_k:
+                #     sd_args.insert(3, "--klms")
+                #     print("Inserted KLMS into img2img")
                     
             if self.gridCheck.isChecked():
                     sd_args.insert(3, "--skip_grid")
@@ -541,15 +578,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 if self.samplerToggle.currentText() == 'plms':
                     sd_args.insert(3, "--plms")
 
-            if self.img2imgCheck.isChecked() == False:
+            if txt2img_file==txt2img_k or txt2img_file==txt2img_opti_k or txt2img_file==img2img_opti_k or txt2img_file==img2img_k:
+                print('k file detected')
                 if self.samplerToggle.currentText() == 'k_lms':
                     sd_args.insert(3, "lms")
                 if self.samplerToggle.currentText() == 'k_euler_a':
                     sd_args.insert(3, "euler")
                 if self.samplerToggle.currentText() == 'k_dpm_2_a':
                     sd_args.insert(3, "dpm")
-                if txt2img_file==txt2img_k:
-                    sd_args.insert(3, "--sampler")     
+                sd_args.insert(3, "--sampler")
+            else:
+                print('kfile not detected')
+            print('txt2img file: ',txt2img_file)
+            print('img2img file: ',img2img_file)
 
             self.promptVal.addItem(self.promptVal.currentText())
             f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")
@@ -587,6 +628,24 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.errorMessages.setText(f"SD Dreamer: {state_name}")
 
     def process_finished(self):
+        
+        def load_images(img_path=out_folder_create):
+            global images_path
+            images_path=str(Path(img_path)/('samples'))
+            global image_list
+            image_list = os.listdir(images_path)
+            image_count=len(image_list)
+            image_index=image_count-image_count
+
+            print(image_count,'images in folder:', image_list)
+            print('image_index=',image_index)
+            
+            image_to_display=image_list[image_index]
+            pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
+            self.imageView.setPixmap(pixmap)
+            self.imgIndex.setText(str(image_index))
+        load_images()
+    
         self.processOutput.appendPlainText("Generation finished.")
         self.generator_process = None
         if self.seedCheck.isChecked():
@@ -594,6 +653,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         # self.cancelButton.setEnabled(False)
         self.generateButton.setEnabled(True)
         self.upscaleButton.setEnabled(True)
+
 
     def stop_process(self):
         if self.generator_process != None:
@@ -610,12 +670,16 @@ app.exec_()
 
 ### to do
 # inpaint fix clear
-# windows test
 # fint inpainter save, only saves mask?
-# fix output folder names, paths
 # add GFPGAN
-# add txt2imgHD
-# add optimized k_lms
-# add k_euler etc
+# add txt2imgHD, upsample
 # expand img2img
+# image viewer, redo output
+# prompt tags
 # moar stuff
+# keep in memory
+# clean up code
+# moar comments
+# img2img view direct, upscale/upsample direct
+# vram, ram
+# appicon fix

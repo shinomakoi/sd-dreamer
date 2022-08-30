@@ -9,14 +9,14 @@ Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Rea
 - Run 'pip install -r requirements.txt' to install any dependencies
 - Run 'python main.py to start'
 
-- k_ samplers require k-diffusion installed
-
-- k_euler_a and k_dpm_2_a samplers only supported for txt2img currently, will default to k_lms for img2img
+- k_ samplers require k-diffusion installed (already included in most forks)
 
 - For inpainting, download the model from https://ommer-lab.com/files/latent-diffusion/inpainting_big.zip and put in the 'stable-diffusion\models\ldm\inpainting_big' folder and rename to last.ckpt
 
 - For upscaling, download real-esrgan-vulkan-ncnn from https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0, extract the zip then set the paths in the settings tab of the app.
 
-- 'small_batch' only works with 'optimized_*' scripts. The included inpaint.py is recommended for inpainting if you run out of VRAM.
+- The included inpaint.py is recommended for inpainting if you run out of VRAM.
 
-![screenshot](https://user-images.githubusercontent.com/112139428/187098367-7ed94f45-023d-4336-928e-fb44ecc7e576.png)
+![sdd4](https://user-images.githubusercontent.com/112139428/187556946-dc0da6b9-cd2a-49fb-bed6-94c9a5252970.png)
+
+Credit to stability.ai for Stable Diffusion, basujindal, nights192 and anons

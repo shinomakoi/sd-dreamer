@@ -601,7 +601,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             print(sd_args)
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
-            self.upscaleButton.setEnabled(False)
+            # self.upscaleButton.setEnabled(False)
 
     def handle_stderr(self):
         data = self.generator_process.readAllStandardError()

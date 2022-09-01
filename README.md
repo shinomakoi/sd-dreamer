@@ -1,7 +1,7 @@
 # sd-dreamer
 Qt based Linux/Windows GUI for Stable Diffusion
 
-Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Real-ESGRAN and k-diffusion samplers.
+Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Real-ESGRAN, txt2imgHD, optimized scripts and k-diffusion samplers.
 
 - Have a working Stable Diffusion install (tested on the default CompVis and the basujindal, hlky versions) 
 - IMPORTANT: Place the SD Dreamer folder in the base of your stable diffusion folder (e.g. in stable-diffusion-main folder, where environment.yaml file is), so to launch, for example - 'python stable-diffusion-main\sd-dreamer\main.py'
@@ -15,8 +15,6 @@ Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Rea
 
 - For upscaling, download real-esrgan-vulkan-ncnn from https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0, extract the zip then set the paths in the settings tab of the app.
 
-- The included inpaint.py is recommended for inpainting if you run out of VRAM.
-
 ![sdd4](https://user-images.githubusercontent.com/112139428/187556946-dc0da6b9-cd2a-49fb-bed6-94c9a5252970.png)
 
-Credit to stability.ai for Stable Diffusion, basujindal, nights192 and anons
+Credit to stability.ai etc, for Stable Diffusion, basujindal, nights192, jquesnelle, and anons

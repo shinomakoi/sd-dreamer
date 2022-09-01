@@ -1,4 +1,28 @@
-# importing libraries
+################### BETA 0.1 ###################
+################### Work in progress ###################
+
+########## to do ##########
+# inpaint fix clear
+# fint inpainter save, only saves mask?
+# add GFPGAN
+# expand img2img
+# image viewer, redo output
+# prompt tags
+# keep in memory
+# clean up code
+# moar comments
+# img2img view direct, upscale/upsample direct
+# vram, ram
+# appicon fix
+# prevent changing size after paint saved
+# fix buttons/cancel
+# reorganise design for clarity. options etc
+# fix turbo
+# inpaint feedback, errors etc
+# fix windows not cancelling?
+# save more settings
+# fix potential img2img/txt2imgHD conflict, checkboxes etc. radio buttons!
+
 import configparser
 import os
 import random
@@ -11,9 +35,6 @@ from PySide2.QtCore import *
 from PySide2.QtCore import QProcess
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-
-
-################### ALPHA 0.1 ###################
 
 # print('working dir=',os.getcwd())
 home_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -42,6 +63,9 @@ img2img_default=Path(home_dir_path)/'scripts'/'img2img_sdd.py'
 img2img_k=Path(home_dir_path)/'scripts'/'img2img_k_sdd.py'
 img2img_opti=Path(home_dir_path)/'scripts'/'optimized_img2img_sdd.py'
 img2img_opti_k=Path(home_dir_path)/'scripts'/'optimized_img2img_k_sdd.py'
+txt2img_hd=Path(home_dir_path)/'scripts'/'txt2imghd.py'
+anon_upscale=Path(home_dir_path)/'scripts'/'upsample.py'
+
 
 class inpainter_window(QMainWindow):
 
@@ -148,13 +172,11 @@ class inpainter_window(QMainWindow):
 
         self.load_img(False)
 
-
     def load_img(self, inpainted):
 
         if inpainted==True:
             im_rgb = Image.open(Path(str(inpainting_dir))/'masking'/'out'/'image.png')
         else:
-            
             im_rgb = Image.open(inpaint_source)
             im_rgb.save(Path(str(inpainting_dir))/'masking'/'image.png')
             im_rgb.save(Path(str(inpainting_dir))/'masking'/'out'/'image.png')
@@ -163,7 +185,6 @@ class inpainter_window(QMainWindow):
             im_rgba.putalpha(200)
             im_rgba.save(Path(str(inpainting_dir))/'inpaint_view.png')
 
-        # print('view=Path(str(inpainting_dir)+'/inpaint_view.png')
         label = QLabel(self)
         pixy=Path(inpainting_dir)/'inpaint_view.png'
         pixmap = QPixmap(str(pixy))
@@ -224,15 +245,14 @@ class inpainter_window(QMainWindow):
         self.inpaint_process()
 
     def inpaint_process(self):
-        # inpaint_py='/home/pigeondave/gits/stable-diffusion-ret/scripts/inpaint.py'
-
-        # print('inpaint script=', inpaint_py)
-        # print('inpaint dir=', inpainting_dir)
 
         inpaint_py=Path(home_dir_path)/'scripts'/'inpaint.py'
 
         masky=Path(str(inpainting_dir))/'masking'/'out'
         masky=str(masky / "_")[:-1]
+
+        print('inpaint script=', inpaint_py)
+        print('inpaint dir=', inpainting_dir)
 
         print('Working directory: ',os.getcwd())
         self.inpainter_process = QProcess()  # Keep a reference to the QProcess
@@ -374,15 +394,11 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
       
         print('SD install working directory: ',sd_folder_path)
 
-        def upscale_process():
-            self.start_process(True)
-
-        def dream_process():
-            self.start_process(False)
-
-        self.generateButton.pressed.connect(dream_process)
+        self.generateButton.pressed.connect(lambda: self.start_process('dream'))
         self.cancelButton.pressed.connect(self.stop_process)
-        self.upscaleButton.pressed.connect(upscale_process)
+        self.upscaleButton.pressed.connect(lambda: self.start_process('esrgan'))
+        self.anonUpscale.pressed.connect(lambda: self.start_process('anon'))
+
 
         if self.seedCheck.isChecked():
             self.seedVal.setText(str(random.randint(0,1632714927)))
@@ -480,6 +496,12 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.img2imgFile.setText(file_x)
         self.imgFileSelect.clicked.connect(select_img2imgimg)
 
+        def select_anon_img():
+            file_x=(QFileDialog.getOpenFileName(self, 'Open file', '',"Images (*.png *.jpg *.bmp *.webp)")[0])
+            if len(file_x) > 0:
+                self.anonFilePath.setText(file_x)
+        self.anonFileSelect.clicked.connect(select_anon_img)
+
         def select_outputFolder():
             file_y=(QFileDialog.getExistingDirectory(self, ("Select output folder")))
             if len(file_y) > 0:
@@ -510,7 +532,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.processOutput.appendPlainText("Starting up process")
         self.generator_process = QProcess()  # Keep a reference to the QProcess (e.g. on self) while it's running.
         self.generator_process.stateChanged.connect(self.handle_state)
-        self.generator_process.finished.connect(self.process_finished)  # Clean up once complete.
+        self.generator_process.finished.connect(lambda: self.process_finished(upscale_go))  # Clean up once complete.
         self.generator_process.readyReadStandardOutput.connect(self.handle_stdout)
         self.generator_process.readyReadStandardError.connect(self.handle_stderr)
 
@@ -520,14 +542,26 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         prompt=self.promptVal.currentText()
     
         # print('folder to make=',out_folder_create)
-
-        if upscale_go == True:
+#upscale with real_esrgan
+        if upscale_go == 'esrgan':
             print('Upscaling, folder in: ', self.upImageInputFolder.text())
             print('Upscaling, folder out ', self.upImageOutputFolder.text())
+        
 
-            self.generator_process.start(esrgan_bin_ini, ['-n',self.rnvModelSelect.currentText(),'-s',self.modelScale.currentText(), '-i', self.upImageInputFolder.text(), '-o', self.upImageOutputFolder.text()])
+            self.generator_process.start(self.rnvBinPath.text(), ['-n',self.rnvModelSelect.currentText(),'-s',self.modelScale.currentText(), '-i', self.upImageInputFolder.text(), '-o', self.upImageOutputFolder.text()])
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
+            return
+        if upscale_go == 'anon':
+            print('ANON UPSCALE')
+            anon_args=[f'{anon_upscale}', '--prompt', r'"'+prompt+r'"','--image', self.anonFilePath.text(), '--seed', self.seedVal.text(), '--strength', (self.anonStrength.text())]
+
+            self.generator_process.start('python', anon_args)
+            self.cancelButton.setEnabled(True)
+            self.generateButton.setEnabled(False)
+            return
+        
+        print('this part is after upscale and shouldnt be seen when upscaling')
 
         for r in ((">", ""), ("<", ""),("/", ""),("<", ""),("?", ""),("*", ""),("\\", ""),('"', ""),(',', ""),('.', ""),('\n', "")):
             prompt = prompt.replace(*r).strip()
@@ -537,6 +571,18 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_"),(',', ""),('.', ""),('\n', "")):
             out_folder_create = out_folder_create.replace(*r).strip()
+
+        if self.txt2imgHDCheck.isChecked():
+            txt2imghd_args=[f'{txt2img_hd}', '--prompt', r'"'+prompt+r'"', '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--steps', str(self.stepsVal.value()), '--detail_scale', str(self.txt2imgHD_scale.value()),'--detail_steps',str(self.txt2imgHD_steps.value()), '--realesrgan', self.rnvBinPath.text(), '--seed', self.seedVal.text(),'--outdir', str(Path(out_folder_create))]
+            if self.txt2imgHDImg.isChecked():
+                self.img2imgCheck.setChecked(False)
+                txt2imghd_args.insert(1, self.img2imgFile.text())
+                txt2imghd_args.insert(1, "--img")
+
+            print(txt2imghd_args)
+            self.generator_process.start('python', txt2imghd_args)
+            self.cancelButton.setEnabled(True)
+            self.generateButton.setEnabled(False)
 
         else:
             if self.samplerToggle.currentText() == 'ddim' or self.samplerToggle.currentText() == 'plms':
@@ -558,6 +604,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 sd_args.insert(-4, "--turbo")
 
             if self.img2imgCheck.isChecked():
+                self.txt2imgHDCheck.setChecked(False)
                 sd_args[0] = str(Path(img2img_file))
                 sd_args.pop(5),sd_args.pop(5),sd_args.pop(5),sd_args.pop(5),
                 sd_args.insert(-4, "--init-img")
@@ -598,10 +645,10 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             f.close()
 
             self.generator_process.start(py_bin_path_ini, sd_args)
-            print(sd_args)
+            print('SD arguments:',sd_args)
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
-            # self.upscaleButton.setEnabled(False)
+            self.upscaleButton.setEnabled(False)
 
     def handle_stderr(self):
         data = self.generator_process.readAllStandardError()
@@ -627,59 +674,43 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.processOutput.appendPlainText(f"SD Dreamer: {state_name}")
         self.errorMessages.setText(f"SD Dreamer: {state_name}")
 
-    def process_finished(self):
+    def process_finished(self, upscale_go):
         
-        def load_images(img_path=out_folder_create):
-            global images_path
-            images_path=str(Path(img_path)/('samples'))
-            global image_list
-            image_list = os.listdir(images_path)
-            image_count=len(image_list)
-            image_index=image_count-image_count
+        if upscale_go == 'dream':
+            def load_images(img_path=out_folder_create):
+                global images_path
+                images_path=str(Path(img_path)/('samples'))
+                global image_list
+                image_list = os.listdir(images_path)
+                image_count=len(image_list)
+                image_index=image_count-image_count
 
-            print(image_count,'images in folder:', image_list)
-            print('image_index=',image_index)
-            
-            image_to_display=image_list[image_index]
-            pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
-            self.imageView.setPixmap(pixmap)
-            self.imgIndex.setText(str(image_index))
-        load_images()
+                print(image_count,'images in folder:', image_list)
+                print('image_index=',image_index)
+                
+                image_to_display=image_list[image_index]
+                pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
+                self.imageView.setPixmap(pixmap)
+                self.imgIndex.setText(str(image_index))
+            load_images()
     
         self.processOutput.appendPlainText("Generation finished.")
         self.generator_process = None
         if self.seedCheck.isChecked():
             self.seedVal.setText(str(random.randint(0,1632714927)))
-        # self.cancelButton.setEnabled(False)
+        self.cancelButton.setEnabled(False)
         self.generateButton.setEnabled(True)
         self.upscaleButton.setEnabled(True)
-
 
     def stop_process(self):
         if self.generator_process != None:
             self.generator_process.terminate()
             self.generator_process.terminate()
             self.processOutput.appendPlainText("Procesing has been ended.")
-            # self.cancelButton.setEnabled(False)
+            self.cancelButton.setEnabled(False)
             self.generateButton.setEnabled(True)
 
 app = QtWidgets.QApplication(sys.argv)
 window = sd_dreamer_main()
 window.show()
 app.exec_()
-
-### to do
-# inpaint fix clear
-# fint inpainter save, only saves mask?
-# add GFPGAN
-# add txt2imgHD, upsample
-# expand img2img
-# image viewer, redo output
-# prompt tags
-# moar stuff
-# keep in memory
-# clean up code
-# moar comments
-# img2img view direct, upscale/upsample direct
-# vram, ram
-# appicon fix

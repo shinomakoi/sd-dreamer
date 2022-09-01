@@ -23,7 +23,7 @@ from ldm.util import instantiate_from_config
 opt_C = 4
 opt_f = 8
 os.chdir(os.path.dirname(sys.argv[0]))
-outdir = r'C:\Users\davey\Software\stable-diffusion-main-hlky\outputs\sd_dreamer'
+outdir = 'outputs/sd_dreamer'
 origWidth = 0
 origHeight = 0
 print(outdir)

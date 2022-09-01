@@ -13,6 +13,7 @@ from itertools import islice
 from einops import rearrange, repeat
 from pytorch_lightning import seed_everything
 from torch import autocast
+from pathlib import Path
 
 # import accelerate
 import k_diffusion as K
@@ -23,7 +24,11 @@ from ldm.util import instantiate_from_config
 opt_C = 4
 opt_f = 8
 os.chdir(os.path.dirname(sys.argv[0]))
-outdir = 'outputs/sd_dreamer'
+outdir = Path(__file__).resolve().parents[2] 
+outdir = Path(outdir/'outputs'/'sd_dreamer')
+
+print
+
 origWidth = 0
 origHeight = 0
 print(outdir)
@@ -378,5 +383,4 @@ if __name__ == "__main__":
     for r in ((">", ""), ("<", ""),("<", ""),("|", ""),("?", ""),("*", ""),('"', ""),(' ', "_"),(',', ""),('.', ""),('\n', "")):
         sample_path = sample_path.replace(*r).strip()
     esr.save(name_gen(prompt, sample_path, base_count, seed))
-
-
+    print(prompt, sample_path, seed)

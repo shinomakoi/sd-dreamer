@@ -18,7 +18,7 @@ class Ui_sd_dreamer_main(object):
         if not sd_dreamer_main.objectName():
             sd_dreamer_main.setObjectName(u"sd_dreamer_main")
         sd_dreamer_main.setWindowModality(Qt.NonModal)
-        sd_dreamer_main.resize(1299, 981)
+        sd_dreamer_main.resize(1235, 831)
         sd_dreamer_main.setMaximumSize(QSize(16777215, 16777215))
         icon = QIcon()
         icon.addFile(u"appicon.png", QSize(), QIcon.Normal, QIcon.Off)
@@ -29,12 +29,6 @@ class Ui_sd_dreamer_main(object):
         self.errorMessages.setObjectName(u"errorMessages")
 
         self.gridLayout.addWidget(self.errorMessages, 10, 0, 1, 1)
-
-        self.cancelButton = QPushButton(sd_dreamer_main)
-        self.cancelButton.setObjectName(u"cancelButton")
-        self.cancelButton.setEnabled(False)
-
-        self.gridLayout.addWidget(self.cancelButton, 7, 2, 1, 1)
 
         self.processOutput = QPlainTextEdit(sd_dreamer_main)
         self.processOutput.setObjectName(u"processOutput")
@@ -54,13 +48,19 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout.addWidget(self.processOutput, 9, 0, 1, 3)
 
+        self.cancelButton = QPushButton(sd_dreamer_main)
+        self.cancelButton.setObjectName(u"cancelButton")
+        self.cancelButton.setEnabled(False)
+
+        self.gridLayout.addWidget(self.cancelButton, 7, 2, 1, 1)
+
         self.scrollArea = QScrollArea(sd_dreamer_main)
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setAlignment(Qt.AlignCenter)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 710, 778))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 693, 658))
         self.verticalLayout_3 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.imageView = QLabel(self.scrollAreaWidgetContents)
@@ -74,18 +74,6 @@ class Ui_sd_dreamer_main(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.gridLayout.addWidget(self.scrollArea, 0, 1, 1, 2)
-
-        self.nextImageButton = QPushButton(sd_dreamer_main)
-        self.nextImageButton.setObjectName(u"nextImageButton")
-        self.nextImageButton.setMinimumSize(QSize(353, 0))
-
-        self.gridLayout.addWidget(self.nextImageButton, 1, 1, 1, 1)
-
-        self.previousImgButton = QPushButton(sd_dreamer_main)
-        self.previousImgButton.setObjectName(u"previousImgButton")
-        self.previousImgButton.setMinimumSize(QSize(353, 0))
-
-        self.gridLayout.addWidget(self.previousImgButton, 1, 2, 1, 1)
 
         self.generateButton = QPushButton(sd_dreamer_main)
         self.generateButton.setObjectName(u"generateButton")
@@ -243,7 +231,7 @@ class Ui_sd_dreamer_main(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 537, 378))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 473, 303))
         self.gridLayout_2 = QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.label_21 = QLabel(self.scrollAreaWidgetContents_3)
@@ -669,6 +657,18 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout.addWidget(self.tabby, 0, 0, 7, 1)
 
+        self.previousImgButton = QPushButton(sd_dreamer_main)
+        self.previousImgButton.setObjectName(u"previousImgButton")
+        self.previousImgButton.setMinimumSize(QSize(353, 0))
+
+        self.gridLayout.addWidget(self.previousImgButton, 1, 1, 1, 1)
+
+        self.nextImageButton = QPushButton(sd_dreamer_main)
+        self.nextImageButton.setObjectName(u"nextImageButton")
+        self.nextImageButton.setMinimumSize(QSize(353, 0))
+
+        self.gridLayout.addWidget(self.nextImageButton, 1, 2, 1, 1)
+
 
         self.retranslateUi(sd_dreamer_main)
         self.scaleVal.valueChanged.connect(self.label_25.setNum)
@@ -690,13 +690,11 @@ class Ui_sd_dreamer_main(object):
     def retranslateUi(self, sd_dreamer_main):
         sd_dreamer_main.setWindowTitle(QCoreApplication.translate("sd_dreamer_main", u"SD Dreamer", None))
         self.errorMessages.setText(QCoreApplication.translate("sd_dreamer_main", u"Ready", None))
-        self.cancelButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Cancel", None))
 #if QT_CONFIG(tooltip)
         self.processOutput.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Stable diffusion output", None))
 #endif // QT_CONFIG(tooltip)
+        self.cancelButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Cancel", None))
         self.imageView.setText("")
-        self.nextImageButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Next", None))
-        self.previousImgButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Previous", None))
         self.generateButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Dream", None))
 #if QT_CONFIG(tooltip)
         self.seedCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Enable random seeding", None))
@@ -906,5 +904,7 @@ class Ui_sd_dreamer_main(object):
         self.pyBinSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.label_18.setText(QCoreApplication.translate("sd_dreamer_main", u"Python path (don't change)", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_6), QCoreApplication.translate("sd_dreamer_main", u"Settings", None))
+        self.previousImgButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Previous", None))
+        self.nextImageButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Next", None))
     # retranslateUi
 

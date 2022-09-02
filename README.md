@@ -15,6 +15,6 @@ Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Rea
 
 - For upscaling, download real-esrgan-vulkan-ncnn from https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0, extract the zip then set the paths in the settings tab of the app.
 
-![sdd4](https://user-images.githubusercontent.com/112139428/187556946-dc0da6b9-cd2a-49fb-bed6-94c9a5252970.png)
+![sdd62](https://user-images.githubusercontent.com/112139428/188243996-622b3ae3-4414-48d3-b8e3-368a6a6c8058.png)
 
 Credit to stability.ai etc, for Stable Diffusion, basujindal, nights192, jquesnelle, and anons

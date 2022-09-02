@@ -1,7 +1,7 @@
 # sd-dreamer
 Qt based Linux/Windows GUI for Stable Diffusion
 
-Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Real-ESGRAN, txt2imgHD, optimized scripts and k-diffusion samplers.
+Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Real-ESRGAN, txt2imgHD, optimized scripts and k-diffusion samplers.
 
 - Have a working Stable Diffusion install (tested on the default CompVis and the basujindal, hlky versions) 
 - IMPORTANT: Place the SD Dreamer folder in the base of your stable diffusion folder (e.g. in stable-diffusion-main folder, where environment.yaml file is), so to launch, for example - 'python stable-diffusion-main\sd-dreamer\main.py'

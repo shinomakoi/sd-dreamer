@@ -17,4 +17,4 @@ Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Rea
 
 ![sdd62](https://user-images.githubusercontent.com/112139428/188243996-622b3ae3-4414-48d3-b8e3-368a6a6c8058.png)
 
-Credit to stability.ai etc, for Stable Diffusion, basujindal, nights192, jquesnelle, and anons
+Credit to stability.ai et al for Stable Diffusion, basujindal, nights192, jquesnelle and anons

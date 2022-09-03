@@ -506,6 +506,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.artButton.pressed.connect(art)
 
         def operations_hub():
+            global images_path
+            images_path='/home/pigeondave/gits/stable-diffusion-ret2/outputs/sd_dreamer/hjru/samples/'
             print("Operations hub started")
             try:
                 images_path
@@ -591,7 +593,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         if process_type == 'anon_upscale_op':
             print ('Anon: path to images:',images_path)
-            self.generator_process.start(self.pyBinPath.text(),[anon_upscale, '--prompt', prompt, '--seed', self.seedVal.text(), '--strength', self.anonStrength.text(), '--img_path', images_path])
+            self.generator_process.start(self.pyBinPath.text(),[str(anon_upscale), '--prompt', prompt, '--seed', self.seedVal.text(), '--strength', self.anonStrength.text(), '--img_path', images_path])
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
             return

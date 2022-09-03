@@ -164,7 +164,7 @@ class Ui_sd_dreamer_main(object):
 
         self.txt2imgHDImg = QCheckBox(self.tab_7)
         self.txt2imgHDImg.setObjectName(u"txt2imgHDImg")
-        self.txt2imgHDImg.setEnabled(True)
+        self.txt2imgHDImg.setEnabled(False)
 
         self.gridLayout_5.addWidget(self.txt2imgHDImg, 5, 0, 1, 1)
 
@@ -178,7 +178,7 @@ class Ui_sd_dreamer_main(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, -12, 579, 402))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 600, 402))
         self.gridLayout_2 = QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.widthThing = QComboBox(self.scrollAreaWidgetContents_3)
@@ -583,9 +583,6 @@ class Ui_sd_dreamer_main(object):
         self.operationBox = QComboBox(self.groupBox_4)
         self.operationBox.addItem("")
         self.operationBox.addItem("")
-        self.operationBox.addItem("")
-        self.operationBox.addItem("")
-        self.operationBox.addItem("")
         self.operationBox.setObjectName(u"operationBox")
 
         self.gridLayout_12.addWidget(self.operationBox, 1, 1, 1, 1)
@@ -684,7 +681,7 @@ class Ui_sd_dreamer_main(object):
         self.batchVal.valueChanged.connect(self.label_22.setNum)
 
         self.tabby.setCurrentIndex(0)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         self.widthThing.setCurrentIndex(4)
         self.heightThing.setCurrentIndex(4)
         self.promptVal.setCurrentIndex(-1)
@@ -887,11 +884,8 @@ class Ui_sd_dreamer_main(object):
         self.label_9.setText(QCoreApplication.translate("sd_dreamer_main", u"Operation:", None))
         self.operationalAll.setText(QCoreApplication.translate("sd_dreamer_main", u"All images", None))
         self.operationsGoButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Go", None))
-        self.operationBox.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"Upscale: Real-ESGRAN", None))
+        self.operationBox.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"Upscale: Real-ESRGAN", None))
         self.operationBox.setItemText(1, QCoreApplication.translate("sd_dreamer_main", u"Upscale: Anon's upsample", None))
-        self.operationBox.setItemText(2, QCoreApplication.translate("sd_dreamer_main", u"Upscale: GOBIG", None))
-        self.operationBox.setItemText(3, QCoreApplication.translate("sd_dreamer_main", u"Inpaint", None))
-        self.operationBox.setItemText(4, QCoreApplication.translate("sd_dreamer_main", u"Paint", None))
 
         self.operationOne.setText(QCoreApplication.translate("sd_dreamer_main", u"Selected image", None))
         self.customFolderCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Custom folder", None))

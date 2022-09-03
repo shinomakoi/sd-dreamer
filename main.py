@@ -506,8 +506,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.artButton.pressed.connect(art)
 
         def operations_hub():
-            global images_path
-            images_path='/home/pigeondave/gits/stable-diffusion-ret2/outputs/sd_dreamer/hjru/samples/'
             print("Operations hub started")
             try:
                 images_path

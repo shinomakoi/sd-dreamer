@@ -67,7 +67,6 @@ img2img_opti_k=Path(home_dir_path)/'scripts'/'optimized_img2img_k_sdd.py'
 txt2img_hd=Path(home_dir_path)/'scripts'/'txt2imghd.py'
 anon_upscale=Path(home_dir_path)/'scripts'/'upsample.py'
 
-
 class inpainter_window(QMainWindow):
 
     def __init__(self):
@@ -246,9 +245,7 @@ class inpainter_window(QMainWindow):
         self.inpaint_process()
 
     def inpaint_process(self):
-
         inpaint_py=Path(home_dir_path)/'scripts'/'inpaint.py'
-
         masky=Path(str(inpainting_dir))/'masking'/'out'
         masky=str(masky / "_")[:-1]
 
@@ -387,11 +384,11 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             self.errorMessages.setText("WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
             print ("WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
 
-        try:
-            os.chdir(sd_folder_path)
-        except:
-            print("SD FOLDER NOT FOUND")
-            self.errorMessages.setText("The SD folder not found")
+        # try:
+        #     os.chdir(sd_folder_path)
+        # except:
+        #     print("SD FOLDER NOT FOUND")
+        #     self.errorMessages.setText("The SD folder not found")
       
         print('SD install working directory: ',sd_folder_path)
 
@@ -509,8 +506,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.artButton.pressed.connect(art)
 
         def operations_hub():
-            global images_path
-            images_path='/home/pigeondave/gits/stable-diffusion-ret2/outputs/sd_dreamer/hjru/samples/'
             print("Operations hub started")
             try:
                 images_path

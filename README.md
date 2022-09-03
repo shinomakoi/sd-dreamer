@@ -9,6 +9,8 @@ Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Rea
 - Run 'pip install -r requirements.txt' to install any dependencies
 - Run 'python main.py to start'
 
+- LatentSR requires download of https://ommer-lab.com/files/latent-diffusion/sr_bsr.zip - put the model.ckpt file in the models/ldm/bsr_sr/ folder.
+
 - k_ samplers require k-diffusion installed (already included in most forks)
 
 - For inpainting, download the model from https://ommer-lab.com/files/latent-diffusion/inpainting_big.zip and put in the 'stable-diffusion\models\ldm\inpainting_big' folder and rename to last.ckpt

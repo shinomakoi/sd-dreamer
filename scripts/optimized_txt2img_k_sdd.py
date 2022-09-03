@@ -20,11 +20,9 @@ from transformers import logging
 import pandas as pd
 logging.set_verbosity_error()
 
-
 def chunk(it, size):
     it = iter(it)
     return iter(lambda: tuple(islice(it, size)), ())
-
 
 def load_model_from_config(ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
@@ -211,14 +209,21 @@ parser.add_argument(
 parser.add_argument(
     "--sampler",
     type=str,
-    help="Choose the sampler used, lms is the default, euler is k_euler_a, dpm is k_dpm_2_a",
-    choices=["lms", "euler", "dpm"],
+    help="Choose the sampler used",
+    choices=["lms", "euler", "euler_a", "dpm", "dpm_a", "heun"],
     default="lms"
 )
-opt = parser.parse_args()
-ksamplers = {'lms': K.sampling.sample_lms, 'euler': K.sampling.sample_euler_ancestral, 'dpm': K.sampling.sample_dpm_2_ancestral}
-sampler = ksamplers[opt.sampler]
 
+opt = parser.parse_args()
+
+ksamplers = {'lms': K.sampling.sample_lms, 
+'euler': K.sampling.sample_euler, 
+'euler_a': K.sampling.sample_euler_ancestral, 
+'dpm': K.sampling.sample_dpm_2, 
+'dpm_a': K.sampling.sample_dpm_2_ancestral,
+'heun': K.sampling.sample_heun }
+
+sampler = ksamplers[opt.sampler]
 
 tic = time.time()
 os.makedirs(opt.outdir, exist_ok=True)

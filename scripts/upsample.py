@@ -68,7 +68,7 @@ opt = parser.parse_args()
 
 def load_model_from_config(config, ckpt, verbose=False):
     print(f"Loading model from {ckpt}")
-    pl_sd = torch.load(ckpt, map_location="cpu")
+    pl_sd = torch.load(ckpt, map_location="cuda")
     if "global_step" in pl_sd:
         print(f"Global Step: {pl_sd['global_step']}")
     sd = pl_sd["state_dict"]
@@ -85,7 +85,6 @@ def load_model_from_config(config, ckpt, verbose=False):
     model.eval()
     return model
 
-
 config = OmegaConf.load("../../configs/stable-diffusion/v1-inference.yaml")
 model = load_model_from_config(config, "../../models/ldm/stable-diffusion-v1/model.ckpt")
 
@@ -97,7 +96,6 @@ model = model.half().to(device)
 
 def batch_upscaler(imgz):
     opt.image=imgz
-    # opt.prompt='ice queen'
 
     def i2np(i):
         return np.array(i).astype(np.float32) / 255.0
@@ -336,7 +334,7 @@ def batch_upscaler(imgz):
         total.show()
 
 
-    def make_big(S, seed, margin, totS, sampler=K.sampling.sample_euler_ancestral):
+    def make_big(S, seed, margin, totS, sampler=K.sampling.sample_euler):
         # sample_lms
         # sample_euler
         # sample_euler_ancestral

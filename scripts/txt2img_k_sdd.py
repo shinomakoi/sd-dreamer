@@ -1,5 +1,4 @@
 import argparse, os, sys, glob
-import time
 import torch
 import numpy as np
 
@@ -177,8 +176,8 @@ def main():
     parser.add_argument(
         "--sampler",
         type=str,
-        help="Choose the sampler used, lms is the default, euler is k_euler_a, dpm is k_dpm_2_a",
-        choices=["lms", "euler", "dpm"],
+        help="Choose the sampler used",
+        choices=["lms", "euler", "euler_a", "dpm", "dpm_a", "heun"],
         default="lms"
     )
     parser.add_argument(
@@ -201,7 +200,12 @@ def main():
 
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     #model = model.to(device)
-    ksamplers = {'lms': K.sampling.sample_lms, 'euler': K.sampling.sample_euler_ancestral, 'dpm': K.sampling.sample_dpm_2_ancestral}
+    ksamplers = {'lms': K.sampling.sample_lms, 
+    'euler': K.sampling.sample_euler, 
+    'euler_a': K.sampling.sample_euler_ancestral, 
+    'dpm': K.sampling.sample_dpm_2, 
+    'dpm_a': K.sampling.sample_dpm_2_ancestral,
+    'heun': K.sampling.sample_heun }
 
     model_wrap = K.external.CompVisDenoiser(model)
     sampler = ksamplers[opt.sampler]

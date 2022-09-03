@@ -43,17 +43,13 @@ print('SD Dreamer home directory: ',home_dir_path)
 config = configparser.ConfigParser()
 settings_file=(Path(home_dir_path)/'settings.ini')
 
-# define directories
 config.read(Path(home_dir_path)/'settings.ini')
-# sd_folder_path = config.get('Settings', 'sd_folder')
 
 inpainting_dir=Path(home_dir_path)/'inpainting'
 print('Inpaint directory: ',inpainting_dir)
 
 sd_folder_path=Path(home_dir_path)
 sd_folder_path=str(sd_folder_path.parent)
-print('aghwagawgawgwa',sd_folder_path)
-
 
 txt2img_default=Path(home_dir_path)/'scripts'/'txt2img_sdd.py'
 txt2img_k=Path(home_dir_path)/'scripts'/'txt2img_k_sdd.py'
@@ -66,6 +62,7 @@ img2img_opti=Path(home_dir_path)/'scripts'/'optimized_img2img_sdd.py'
 img2img_opti_k=Path(home_dir_path)/'scripts'/'optimized_img2img_k_sdd.py'
 txt2img_hd=Path(home_dir_path)/'scripts'/'txt2imghd.py'
 anon_upscale=Path(home_dir_path)/'scripts'/'upsample.py'
+latent_sr_path=Path(home_dir_path)/'scripts'/'predict_sr.py'
 
 class inpainter_window(QMainWindow):
 
@@ -528,22 +525,21 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 print("ESRGAN op")
                 op_launcher('esrgan_upscale_op', )
                 
-
             def anon_upscale_op():
                 print("Anon op")
                 op_launcher('anon_upscale_op')
 
-            def gobig_upscale_op():
-                print("GOBIG op")
-                op_launcher('gobig_upscale_op')
+            def latent_sr():
+                print("LatentSR op")
+                op_launcher('latent_sr_op')
 
             def inpaint_op():
                 print("Inpaint op")
-                op_launcher('inpaint_op')
+                # op_launcher('inpaint_op')
 
-            def painter_op():
-                print("Painter op")
-                op_launcher('painter_op')
+            def paint_op():
+                print("Paint op")
+                # op_launcher('painter_op')
 
             if self.operationBox.currentIndex() == 0:
                 esrgan_upscale_op()
@@ -552,20 +548,21 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 anon_upscale_op()
 
             if self.operationBox.currentIndex() == 2:
-                gobig_upscale_op()
+                latent_sr()
 
             if self.operationBox.currentIndex() == 3:
                 inpaint_op()
 
-            if self.operationBox.currentIndex() == 3:
-                painter_op()
+            if self.operationBox.currentIndex() == 4:
+                paint_op()
                 
         self.operationsGoButton.pressed.connect(operations_hub)
 
     def start_process(self, process_type, op_enable=False):
         if self.customFolderCheck.isChecked() and op_enable is True:
+            global images_path
             images_path=self.operationFolder.text()
-
+            'op images path=',images_path
         self.processOutput.appendPlainText("Starting process")
         self.generator_process = QProcess()  # Keep a reference to the QProcess (e.g. on self) while it's running.
         self.generator_process.stateChanged.connect(self.handle_state)
@@ -581,15 +578,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             prompt = prompt.replace(*r).strip()
 
         if process_type == 'esrgan_upscale_op':
-            if self.operationOne.isChecked():
-                print('Using just one image')
-                # images_path=Path(images_path)/self.imgFilename.text().replace("Filename: ")
-            esrgan_out_path=Path(self.outputFolderLine.text())/'upscales'/'real_esrgan_out'
 
-            try: 
-                os.makedirs(esrgan_out_path) 
-            except OSError: 
-                print('Path exists')
+            esrgan_out_path=Path(self.outputFolderLine.text())/'upscales'/'real_esrgan_out'
+            os.makedirs(esrgan_out_path, exist_ok=True)
             print('Upscaling, folder in: ', images_path)
 
             print('Upscaling, folder out ', esrgan_out_path)
@@ -601,6 +592,15 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if process_type == 'anon_upscale_op':
             print ('Anon: path to images:',images_path)
             self.generator_process.start(self.pyBinPath.text(),[str(anon_upscale), '--prompt', prompt, '--seed', self.seedVal.text(), '--strength', self.anonStrength.text(), '--img_path', images_path])
+            self.cancelButton.setEnabled(True)
+            self.generateButton.setEnabled(False)
+            return
+
+        if process_type == 'latent_sr_op':
+            print ('Latent-SR: path to images:',images_path)
+            latent_sr_out=Path(self.outputFolderLine.text())/'upscales'/'latent_sr'
+            os.makedirs(latent_sr_out, exist_ok=True)
+            self.generator_process.start(self.pyBinPath.text(),[str(latent_sr_path),'--img_path', images_path, '--steps', self.latentSRSteps.text(),'--out_path', str(latent_sr_out)])
             self.cancelButton.setEnabled(True)
             self.generateButton.setEnabled(False)
             return
@@ -619,7 +619,10 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
 # check for txt2imgHD gobig checked
         if self.txt2imgHDCheck.isChecked():
-            txt2imghd_args=[f'{txt2img_hd}', '--prompt', r'"'+prompt+r'"', '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--steps', str(self.stepsVal.value()), '--detail_scale', str(self.txt2imgHD_scale.value()),'--detail_steps',str(self.txt2imgHD_steps.value()), '--realesrgan', self.rnvBinPath.text(), '--seed', self.seedVal.text(),'--outdir', str(Path(out_folder_create))]
+            txt2imghd_args=[f'{txt2img_hd}', '--prompt', r'"'+prompt+r'"', '--W', self.widthThing.currentText(),'--H', self.heightThing.currentText(), 
+            '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--steps', str(self.stepsVal.value()), '--detail_scale', str(self.txt2imgHD_scale.value()),
+            '--detail_steps',str(self.txt2imgHD_steps.value()), '--realesrgan', self.rnvBinPath.text(), '--seed', self.seedVal.text(),'--outdir', str(Path(out_folder_create))]
+
             if self.txt2imgHDImg.isChecked():
                 self.img2imgRadio.setChecked(False)
                 txt2imghd_args.insert(1, self.img2imgFile.text())
@@ -663,6 +666,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             if self.samplerToggle.currentText() == 'ddim' or 'plms' and self.img2imgRadio.isChecked() == False:
                 if self.samplerToggle.currentText() == 'plms':
                     sd_args.insert(3, "--plms")
+
             if self.custCheckpointCheck.isChecked():
                 sd_args.insert(3, self.custCheckpointLine.text())
                 sd_args.insert(3, "--ckpt")
@@ -673,9 +677,15 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 if self.samplerToggle.currentText() == 'k_lms':
                     sd_args.insert(3, "lms")
                 if self.samplerToggle.currentText() == 'k_euler_a':
-                    sd_args.insert(3, "euler")
+                    sd_args.insert(3, "euler_a")
                 if self.samplerToggle.currentText() == 'k_dpm_2_a':
+                    sd_args.insert(3, "dpm_a")
+                if self.samplerToggle.currentText() == 'k_euler':
+                    sd_args.insert(3, "euler")
+                if self.samplerToggle.currentText() == 'k_dpm':
                     sd_args.insert(3, "dpm")
+                if self.samplerToggle.currentText() == 'k_heun':
+                    sd_args.insert(3, "heun")
                 sd_args.insert(3, "--sampler")
 
             print('txt2img file: ',txt2img_file)
@@ -719,23 +729,29 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
     def process_finished(self, process_type):
 # add the generated images to the image view
         if process_type == 'dream':
-            def load_images(img_path=out_folder_create):
-                global images_path
-                images_path=str(Path(img_path)/'samples')
-                global image_list
-                print("images_path - ",images_path)
-                image_list = os.listdir(images_path)
-                image_count=len(image_list)
-                image_index=image_count-image_count
+            img_pathz=out_folder_create
+            images_pathz=str(Path(img_pathz)/'samples')
+            image_listz = os.listdir(images_pathz)
+            if len(image_listz) > 0:
+                print('list not empty')
 
-                print(image_count,'images in folder:', image_list)
-                print('image_index=',image_index)
-                
-                image_to_display=image_list[image_index]
-                pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
-                self.imageView.setPixmap(pixmap)
-                self.imgIndex.setText(str(image_index))
-            load_images()
+                def load_images(img_path=out_folder_create):
+                    global images_path
+                    images_path=str(Path(img_path)/'samples')
+                    global image_list
+                    print("images_path - ",images_path)
+                    image_list = os.listdir(images_path)
+                    image_count=len(image_list)
+                    image_index=image_count-image_count
+
+                    print(image_count,'images in folder:', image_list)
+                    print('image_index=',image_index)
+                    
+                    image_to_display=image_list[image_index]
+                    pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
+                    self.imageView.setPixmap(pixmap)
+                    self.imgIndex.setText(str(image_index))
+                load_images()
 
         self.processOutput.appendPlainText("Generation finished.")
         self.generator_process = None

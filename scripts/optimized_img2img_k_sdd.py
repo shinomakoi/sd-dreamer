@@ -189,12 +189,20 @@ parser.add_argument(
 parser.add_argument(
     "--sampler",
     type=str,
-    help="Choose the sampler used, lms is the default, euler is k_euler_a, dpm is k_dpm_2_a",
-    choices=["lms", "euler", "dpm"],
+    help="Choose the sampler used",
+    choices=["lms", "euler", "euler_a", "dpm", "dpm_a", "heun"],
     default="lms"
 )
+
 opt = parser.parse_args()
-ksamplers = {'lms': K.sampling.sample_lms, 'euler': K.sampling.sample_euler_ancestral, 'dpm': K.sampling.sample_dpm_2_ancestral}
+
+ksamplers = {'lms': K.sampling.sample_lms, 
+'euler': K.sampling.sample_euler, 
+'euler_a': K.sampling.sample_euler_ancestral, 
+'dpm': K.sampling.sample_dpm_2, 
+'dpm_a': K.sampling.sample_dpm_2_ancestral,
+'heun': K.sampling.sample_heun }
+
 sampler = ksamplers[opt.sampler]
 
 tic = time.time()

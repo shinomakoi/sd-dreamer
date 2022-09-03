@@ -12,17 +12,15 @@
 # clean up code
 # moar comments
 # img2img view direct, upscale/upsample direct
-# vram, ram
+# vram, ram view
 # appicon fix
 # prevent changing size after paint saved
 # fix buttons/cancel
-# reorganise design for clarity. options etc
 # fix turbo
 # inpaint feedback, errors etc
 # fix windows not cancelling?
 # save more settings
-# fix potential img2img/txt2imgHD conflict, checkboxes etc. radio buttons!
-# custom checkpoints
+# add global arguments to passs to SD
 
 import configparser
 import os
@@ -54,6 +52,8 @@ print('Inpaint directory: ',inpainting_dir)
 
 sd_folder_path=Path(home_dir_path)
 sd_folder_path=str(sd_folder_path.parent)
+print('aghwagawgawgwa',sd_folder_path)
+
 
 txt2img_default=Path(home_dir_path)/'scripts'/'txt2img_sdd.py'
 txt2img_k=Path(home_dir_path)/'scripts'/'txt2img_k_sdd.py'
@@ -378,17 +378,16 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.nextImageButton.clicked.connect(lambda: cycle_images('next'))
         self.previousImgButton.clicked.connect(lambda: cycle_images('previous'))
 
-# check for the base SD install
         check_install = os.path.exists(Path(sd_folder_path) / 'environment.yaml') 
         if check_install == False:
             self.errorMessages.setText("WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
             print ("WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
 
-        # try:
-        #     os.chdir(sd_folder_path)
-        # except:
-        #     print("SD FOLDER NOT FOUND")
-        #     self.errorMessages.setText("The SD folder not found")
+        try:
+            os.chdir(sd_folder_path)
+        except:
+            print("SD FOLDER NOT FOUND")
+            self.errorMessages.setText("The SD folder not found")
       
         print('SD install working directory: ',sd_folder_path)
 
@@ -420,10 +419,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 # saving the paths to the ini file
 
         def operationFolderSelect_select():
-                opf=(QFileDialog.getExistingDirectory(self, ("Select model folder")))
+                opf=(QFileDialog.getExistingDirectory(self, ("Select images folder")))
                 if len(opf) > 0:
                     self.operationFolder.setText(opf)
-
         self.operationFolderSelect.clicked.connect(operationFolderSelect_select)
 
         def rnvBinPathSelect_select():
@@ -459,6 +457,12 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 with open(settings_file, 'w') as configfile:
                     config.write(configfile)
         self.pyBinSelect.clicked.connect(py_binSelect_select)
+
+        def custCheckpointSelect_select():
+                ckpt_path=(QFileDialog.getOpenFileName(self, 'Open file', '',"Checkpoints (*.ckpt*)")[0])
+                if len(ckpt_path) > 0:
+                    self.custCheckpointLine.setText(ckpt_path)
+        self.custCheckpointSelect.clicked.connect(custCheckpointSelect_select)
 
  # add prompts and remove duplicates       
         prompt_list=[]
@@ -507,20 +511,23 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         def operations_hub():
             print("Operations hub started")
+
             try:
                 images_path
             except NameError:
                 print('Image folder is empty')
-                return
+                if self.customFolderCheck.isChecked() == False:
+                    return
 
             def op_launcher(op_type):
                 print("OP launcher")
-                self.start_process(op_type)
+                self.start_process(op_type, op_enable=True)
 
             def esrgan_upscale_op():
-   
+                # images_path
                 print("ESRGAN op")
-                op_launcher('esrgan_upscale_op')
+                op_launcher('esrgan_upscale_op', )
+                
 
             def anon_upscale_op():
                 print("Anon op")
@@ -555,7 +562,10 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 
         self.operationsGoButton.pressed.connect(operations_hub)
 
-    def start_process(self, process_type):
+    def start_process(self, process_type, op_enable=False):
+        if self.customFolderCheck.isChecked() and op_enable is True:
+            images_path=self.operationFolder.text()
+
         self.processOutput.appendPlainText("Starting process")
         self.generator_process = QProcess()  # Keep a reference to the QProcess (e.g. on self) while it's running.
         self.generator_process.stateChanged.connect(self.handle_state)
@@ -574,15 +584,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             if self.operationOne.isChecked():
                 print('Using just one image')
                 # images_path=Path(images_path)/self.imgFilename.text().replace("Filename: ")
-            txt2img_default=Path(home_dir_path)/'scripts'/'txt2img_sdd.py'
             esrgan_out_path=Path(self.outputFolderLine.text())/'upscales'/'real_esrgan_out'
 
             try: 
                 os.makedirs(esrgan_out_path) 
             except OSError: 
                 print('Path exists')
-
             print('Upscaling, folder in: ', images_path)
+
             print('Upscaling, folder out ', esrgan_out_path)
             self.generator_process.start(self.rnvBinPath.text(), ['-n',self.rnvModelSelect.currentText(),'-s',self.modelScale.currentText(), '-i', str(images_path), '-o', str(esrgan_out_path)])
             self.cancelButton.setEnabled(True)
@@ -654,6 +663,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             if self.samplerToggle.currentText() == 'ddim' or 'plms' and self.img2imgRadio.isChecked() == False:
                 if self.samplerToggle.currentText() == 'plms':
                     sd_args.insert(3, "--plms")
+            if self.custCheckpointCheck.isChecked():
+                sd_args.insert(3, self.custCheckpointLine.text())
+                sd_args.insert(3, "--ckpt")
 
 #insert the sampler if using a K script
             if txt2img_file==txt2img_k or txt2img_file==txt2img_opti_k or txt2img_file==img2img_opti_k or txt2img_file==img2img_k: 
@@ -709,8 +721,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if process_type == 'dream':
             def load_images(img_path=out_folder_create):
                 global images_path
-                images_path=str(Path(img_path)/('samples'))
+                images_path=str(Path(img_path)/'samples')
                 global image_list
+                print("images_path - ",images_path)
                 image_list = os.listdir(images_path)
                 image_count=len(image_list)
                 image_index=image_count-image_count

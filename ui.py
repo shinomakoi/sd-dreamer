@@ -56,16 +56,25 @@ class Ui_sd_dreamer_main(object):
         self.tab.setObjectName(u"tab")
         self.gridLayout_7 = QGridLayout(self.tab)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.custCheckpointSelect = QToolButton(self.tab)
+        self.custCheckpointSelect.setObjectName(u"custCheckpointSelect")
+
+        self.gridLayout_7.addWidget(self.custCheckpointSelect, 8, 2, 1, 1)
+
+        self.custCheckpointLine = QLineEdit(self.tab)
+        self.custCheckpointLine.setObjectName(u"custCheckpointLine")
+
+        self.gridLayout_7.addWidget(self.custCheckpointLine, 8, 1, 1, 1)
+
+        self.custCheckpointCheck = QCheckBox(self.tab)
+        self.custCheckpointCheck.setObjectName(u"custCheckpointCheck")
+
+        self.gridLayout_7.addWidget(self.custCheckpointCheck, 8, 0, 1, 1)
+
         self.optimizedCheck = QCheckBox(self.tab)
         self.optimizedCheck.setObjectName(u"optimizedCheck")
 
-        self.gridLayout_7.addWidget(self.optimizedCheck, 3, 0, 1, 1)
-
-        self.seedCheck = QCheckBox(self.tab)
-        self.seedCheck.setObjectName(u"seedCheck")
-        self.seedCheck.setChecked(True)
-
-        self.gridLayout_7.addWidget(self.seedCheck, 0, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.optimizedCheck, 2, 0, 1, 1)
 
         self.gridCheck = QCheckBox(self.tab)
         self.gridCheck.setObjectName(u"gridCheck")
@@ -74,11 +83,17 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout_7.addWidget(self.gridCheck, 1, 0, 1, 1)
 
+        self.seedCheck = QCheckBox(self.tab)
+        self.seedCheck.setObjectName(u"seedCheck")
+        self.seedCheck.setChecked(True)
+
+        self.gridLayout_7.addWidget(self.seedCheck, 0, 0, 1, 1)
+
         self.small_batchCheck = QCheckBox(self.tab)
         self.small_batchCheck.setObjectName(u"small_batchCheck")
         self.small_batchCheck.setEnabled(False)
 
-        self.gridLayout_7.addWidget(self.small_batchCheck, 2, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.small_batchCheck, 3, 0, 1, 1)
 
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QWidget()
@@ -595,7 +610,7 @@ class Ui_sd_dreamer_main(object):
 
         self.customFolderCheck = QCheckBox(self.groupBox_4)
         self.customFolderCheck.setObjectName(u"customFolderCheck")
-        self.customFolderCheck.setEnabled(False)
+        self.customFolderCheck.setEnabled(True)
 
         self.gridLayout_12.addWidget(self.customFolderCheck, 2, 0, 1, 1)
 
@@ -695,18 +710,20 @@ class Ui_sd_dreamer_main(object):
         sd_dreamer_main.setWindowTitle(QCoreApplication.translate("sd_dreamer_main", u"SD Dreamer", None))
         self.errorMessages.setText(QCoreApplication.translate("sd_dreamer_main", u"Ready", None))
         self.previousImgButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Previous", None))
+        self.custCheckpointSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
+        self.custCheckpointCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Custom checkpoint", None))
 #if QT_CONFIG(tooltip)
         self.optimizedCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Slower but less VRAM usage. Use more batches", None))
 #endif // QT_CONFIG(tooltip)
         self.optimizedCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Optimized mode", None))
 #if QT_CONFIG(tooltip)
-        self.seedCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Enable random seeding", None))
-#endif // QT_CONFIG(tooltip)
-        self.seedCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Random seed", None))
-#if QT_CONFIG(tooltip)
         self.gridCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Don't produce a grid", None))
 #endif // QT_CONFIG(tooltip)
         self.gridCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"No grid", None))
+#if QT_CONFIG(tooltip)
+        self.seedCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Enable random seeding", None))
+#endif // QT_CONFIG(tooltip)
+        self.seedCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Random seed", None))
 #if QT_CONFIG(tooltip)
         self.small_batchCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"For 6 or less outputs. Only for 'optimized' scripts", None))
 #endif // QT_CONFIG(tooltip)

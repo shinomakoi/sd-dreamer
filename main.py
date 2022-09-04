@@ -632,13 +632,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if self.operationOne.isChecked():
             single_image = self.imgFilename.text().replace('Filename: ', '')
             op_input_path = Path(images_path)/(single_image)
-
+        if self.operationalAll.isChecked():
+            op_input_path = Path(images_path)
 
         if process_type == 'esrgan_upscale_op':
             esrgan_out_path = Path(
                 self.outputFolderLine.text())/'upscales'/'real_esrgan_out'
             os.makedirs(esrgan_out_path, exist_ok=True)
-            print('Upscaling, folder in: ', op_input_path)
+            # print('Upscaling, folder in: ', op_input_path)
             print('Upscaling, folder out ', esrgan_out_path)
 
             esrgan_args = ['-n', self.rnvModelSelect.currentText(

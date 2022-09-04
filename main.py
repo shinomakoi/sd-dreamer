@@ -632,8 +632,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if self.operationOne.isChecked():
             single_image = self.imgFilename.text().replace('Filename: ', '')
             op_input_path = Path(images_path)/(single_image)
-        else:
-            op_input_path = Path(images_path)
+
 
         if process_type == 'esrgan_upscale_op':
             esrgan_out_path = Path(

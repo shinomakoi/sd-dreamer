@@ -349,6 +349,7 @@ print('First run: ', first_run_ini)
 
 # from scripts.txt2img_k_sdd_batch import*
 
+
 class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
     def __init__(self, *args, **kwargs):
@@ -360,7 +361,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         # image_list=[]
         pixmap = QPixmap(str(Path(home_dir_path)/('view_default.png')))
         self.imageView.setPixmap(pixmap)
-
 
         def cycle_images(button):
             try:
@@ -490,6 +490,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.custCheckpointLine.setText(ckpt_path)
         self.custCheckpointSelect.clicked.connect(custCheckpointSelect_select)
 
+        # def testyButton():
+        #     prompt='pretty pigeons in the city'
+        #     steps=17
+        #     iterations=2
+        #     batch=1
+        #     img_vram(prompt, steps, iterations, batch)
+        # self.testyButton.clicked.connect(testyButton)
+
  # add prompts and remove duplicates
         prompt_list = []
         try:
@@ -568,8 +576,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             def inpaint_op():
                 global inpaint_source
-                inpaint_source = Path(images_path)/self.imgFilename.text().replace('Filename: ', '')
-                inpaint_source=str(inpaint_source)
+                inpaint_source = Path(
+                    images_path)/self.imgFilename.text().replace('Filename: ', '')
+                inpaint_source = str(inpaint_source)
                 print(inpaint_source)
                 inpaint()
                 print("Inpaint op")
@@ -623,6 +632,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if self.operationOne.isChecked():
             single_image = self.imgFilename.text().replace('Filename: ', '')
             op_input_path = Path(images_path)/(single_image)
+        else:
+            op_input_path = Path(images_path)
 
         if process_type == 'esrgan_upscale_op':
             esrgan_out_path = Path(

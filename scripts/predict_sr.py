@@ -57,7 +57,6 @@ parser.add_argument(
 )
 
 opt = parser.parse_args()
-opt.single = ''
 
 # class Predictor(BasePredictor):
 def setup():
@@ -80,6 +79,7 @@ setup()
 
 def predict(image, up_f, steps, outPath):
     global config, model, global_step
+    
 
     save_intermediate_vid = False
     n_runs = 1
@@ -318,7 +318,7 @@ def make_convolutional_sample(
     return log
 
 def scale_list():
-    if os.path.isfile(Path(opt.single)):
+    if opt.single != '':
         predict(opt.single, 4, opt.steps, opt.out_path)
         print('lsdr single file:', opt.single)
     else:

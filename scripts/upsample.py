@@ -40,7 +40,13 @@ parser.add_argument(
         default="",
         help="description of your image to help guide the sampler"
     )
-
+parser.add_argument(
+        "--single",
+        type=str,
+        nargs="?",
+        default="",
+        help="single image"
+    )
 parser.add_argument(
         "--seed",
         type=int,
@@ -62,6 +68,7 @@ parser.add_argument(
     )
 
 opt = parser.parse_args()
+opt.single=''
 
 # if not opt.image: raise SystemExit('Error: You must provide an image file to upscale using --image')
 # if not opt.prompt: raise SystemExit('Error: You must provide a prompt describing your image to help guide the sampler using --prompt')
@@ -386,14 +393,19 @@ def batch_upscaler(imgz):
         print('Prompt=',prompt, 'Path saved to:',sample_path, seed)
 
 def scale_list():
-    i = 0
-    image_list = os.listdir(opt.img_path)
-    image_count=len(image_list)
-    while i < image_count:
-        print('Image count is:',image_count)
-        imgz=image_list[i]
-        imgz=(Path(opt.img_path)/(imgz))
-        print('imgz =', imgz)
-        batch_upscaler(imgz)
-        i += 1
+    if os.path.isfile(Path(opt.single)):
+        batch_upscaler(opt.single, 4, opt.steps, opt.out_path)
+        print('anon single file:', opt.single)
+    else:
+        print('anon batch folder', opt.img_path)    
+        i = 0
+        image_list = os.listdir(opt.img_path)
+        image_count=len(image_list)
+        while i < image_count:
+            print('Image count is:',image_count)
+            imgz=image_list[i]
+            imgz=(Path(opt.img_path)/(imgz))
+            print('imgz =', imgz)
+            batch_upscaler(imgz)
+            i += 1
 scale_list()

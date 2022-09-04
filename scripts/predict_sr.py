@@ -4,24 +4,21 @@
 # from cog import BasePredictor, Input, Path, File
 # batch version modified
 
-import argparse, os, sys, glob
-import torch, torchvision
-import numpy as np
-from omegaconf import OmegaConf
-from PIL import Image
-from tqdm import tqdm, trange
-from einops import rearrange, repeat
-from torchvision.utils import make_grid
-from datetime import datetime
-from ldm.util import ismap
+import argparse
+import os
+import sys
 import time
-import tempfile, typing
-import subprocess
 from pathlib import Path
 
-from ldm.util import instantiate_from_config
+import numpy as np
+import torch
+import torchvision
+from einops import rearrange, repeat
 from ldm.models.diffusion.ddim import DDIMSampler
-from ldm.models.diffusion.plms import PLMSSampler
+from ldm.util import instantiate_from_config, ismap
+from omegaconf import OmegaConf
+from PIL import Image
+from tqdm import trange
 
 sys.path.append("latent-diffusion")
 
@@ -32,19 +29,26 @@ sizes = [128, 256, 384, 448, 512]
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-        "--img_path",
-        type=str,
-        nargs="?",
-        default="",
-        help="path to images"
-    )
+    "--img_path",
+    type=str,
+    nargs="?",
+    default="",
+    help="path to images"
+)
 parser.add_argument(
-        "--out_path",
-        type=str,
-        nargs="?",
-        default="",
-        help="output path for images"
-    )
+    "--single",
+    type=str,
+    nargs="?",
+    default="",
+    help="single image"
+)
+parser.add_argument(
+    "--out_path",
+    type=str,
+    nargs="?",
+    default="",
+    help="output path for images"
+)
 parser.add_argument(
     "--steps",
     type=int,
@@ -53,6 +57,7 @@ parser.add_argument(
 )
 
 opt = parser.parse_args()
+opt.single = ''
 
 # class Predictor(BasePredictor):
 def setup():
@@ -313,14 +318,19 @@ def make_convolutional_sample(
     return log
 
 def scale_list():
-    i = 0
-    image_list = os.listdir(opt.img_path)
-    image_count=len(image_list)
-    while i < image_count:
-        print('Image count is:',image_count)
-        imgz=image_list[i]
-        imgz=(Path(opt.img_path)/(imgz))
-        print('imgz =', imgz)
-        predict(imgz, 4, opt.steps, opt.out_path)
-        i += 1
+    if os.path.isfile(Path(opt.single)):
+        predict(opt.single, 4, opt.steps, opt.out_path)
+        print('lsdr single file:', opt.single)
+    else:
+        print('lsdr batch folder', opt.img_path)
+        i = 0
+        image_list = os.listdir(opt.img_path)
+        image_count=len(image_list)
+        while i < image_count:
+            print('Image count is:',image_count)
+            imgz=image_list[i]
+            imgz=(Path(opt.img_path)/(imgz))
+            print('imgz =', imgz)
+            predict(imgz, 4, opt.steps, opt.out_path)
+            i += 1
 scale_list()

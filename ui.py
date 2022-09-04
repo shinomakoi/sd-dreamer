@@ -25,76 +25,20 @@ class Ui_sd_dreamer_main(object):
         sd_dreamer_main.setWindowIcon(icon)
         self.gridLayout = QGridLayout(sd_dreamer_main)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.groupBox_4 = QGroupBox(sd_dreamer_main)
-        self.groupBox_4.setObjectName(u"groupBox_4")
-        self.groupBox_4.setAlignment(Qt.AlignCenter)
-        self.gridLayout_12 = QGridLayout(self.groupBox_4)
-        self.gridLayout_12.setObjectName(u"gridLayout_12")
-        self.label_9 = QLabel(self.groupBox_4)
-        self.label_9.setObjectName(u"label_9")
+        self.imgFilename = QLabel(sd_dreamer_main)
+        self.imgFilename.setObjectName(u"imgFilename")
 
-        self.gridLayout_12.addWidget(self.label_9, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.imgFilename, 5, 2, 1, 1)
 
-        self.operationalAll = QRadioButton(self.groupBox_4)
-        self.operationalAll.setObjectName(u"operationalAll")
-        self.operationalAll.setChecked(True)
+        self.generateButton = QPushButton(sd_dreamer_main)
+        self.generateButton.setObjectName(u"generateButton")
 
-        self.gridLayout_12.addWidget(self.operationalAll, 1, 2, 1, 1)
-
-        self.operationsGoButton = QPushButton(self.groupBox_4)
-        self.operationsGoButton.setObjectName(u"operationsGoButton")
-
-        self.gridLayout_12.addWidget(self.operationsGoButton, 2, 3, 1, 1)
-
-        self.operationBox = QComboBox(self.groupBox_4)
-        self.operationBox.addItem("")
-        self.operationBox.addItem("")
-        self.operationBox.addItem("")
-        self.operationBox.setObjectName(u"operationBox")
-
-        self.gridLayout_12.addWidget(self.operationBox, 1, 1, 1, 1)
-
-        self.operationOne = QRadioButton(self.groupBox_4)
-        self.operationOne.setObjectName(u"operationOne")
-        self.operationOne.setEnabled(False)
-
-        self.gridLayout_12.addWidget(self.operationOne, 1, 3, 1, 1)
-
-        self.customFolderCheck = QCheckBox(self.groupBox_4)
-        self.customFolderCheck.setObjectName(u"customFolderCheck")
-        self.customFolderCheck.setEnabled(True)
-
-        self.gridLayout_12.addWidget(self.customFolderCheck, 2, 0, 1, 1)
-
-        self.operationFolder = QLineEdit(self.groupBox_4)
-        self.operationFolder.setObjectName(u"operationFolder")
-
-        self.gridLayout_12.addWidget(self.operationFolder, 2, 1, 1, 1)
-
-        self.operationFolderSelect = QToolButton(self.groupBox_4)
-        self.operationFolderSelect.setObjectName(u"operationFolderSelect")
-
-        self.gridLayout_12.addWidget(self.operationFolderSelect, 2, 2, 1, 1)
-
-
-        self.gridLayout.addWidget(self.groupBox_4, 6, 2, 1, 2)
+        self.gridLayout.addWidget(self.generateButton, 13, 0, 1, 3)
 
         self.errorMessages = QLabel(sd_dreamer_main)
         self.errorMessages.setObjectName(u"errorMessages")
 
         self.gridLayout.addWidget(self.errorMessages, 16, 0, 1, 1)
-
-        self.nextImageButton = QPushButton(sd_dreamer_main)
-        self.nextImageButton.setObjectName(u"nextImageButton")
-        self.nextImageButton.setMinimumSize(QSize(353, 0))
-
-        self.gridLayout.addWidget(self.nextImageButton, 7, 2, 1, 1)
-
-        self.cancelButton = QPushButton(sd_dreamer_main)
-        self.cancelButton.setObjectName(u"cancelButton")
-        self.cancelButton.setEnabled(False)
-
-        self.gridLayout.addWidget(self.cancelButton, 13, 3, 1, 1)
 
         self.scrollArea = QScrollArea(sd_dreamer_main)
         self.scrollArea.setObjectName(u"scrollArea")
@@ -116,6 +60,97 @@ class Ui_sd_dreamer_main(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.gridLayout.addWidget(self.scrollArea, 1, 2, 1, 2)
+
+        self.processOutput = QPlainTextEdit(sd_dreamer_main)
+        self.processOutput.setObjectName(u"processOutput")
+        self.processOutput.setEnabled(True)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.processOutput.sizePolicy().hasHeightForWidth())
+        self.processOutput.setSizePolicy(sizePolicy)
+        self.processOutput.setMaximumSize(QSize(16777215, 100))
+        self.processOutput.setAutoFillBackground(True)
+        self.processOutput.setFrameShape(QFrame.StyledPanel)
+        self.processOutput.setUndoRedoEnabled(False)
+        self.processOutput.setReadOnly(True)
+        self.processOutput.setOverwriteMode(False)
+        self.processOutput.setBackgroundVisible(False)
+
+        self.gridLayout.addWidget(self.processOutput, 15, 0, 1, 4)
+
+        self.cancelButton = QPushButton(sd_dreamer_main)
+        self.cancelButton.setObjectName(u"cancelButton")
+        self.cancelButton.setEnabled(False)
+
+        self.gridLayout.addWidget(self.cancelButton, 13, 3, 1, 1)
+
+        self.previousImgButton = QPushButton(sd_dreamer_main)
+        self.previousImgButton.setObjectName(u"previousImgButton")
+        self.previousImgButton.setMinimumSize(QSize(353, 0))
+
+        self.gridLayout.addWidget(self.previousImgButton, 7, 3, 1, 1)
+
+        self.groupBox_4 = QGroupBox(sd_dreamer_main)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        self.groupBox_4.setAlignment(Qt.AlignCenter)
+        self.gridLayout_12 = QGridLayout(self.groupBox_4)
+        self.gridLayout_12.setObjectName(u"gridLayout_12")
+        self.operationOne = QRadioButton(self.groupBox_4)
+        self.operationOne.setObjectName(u"operationOne")
+        self.operationOne.setEnabled(True)
+
+        self.gridLayout_12.addWidget(self.operationOne, 1, 3, 1, 1)
+
+        self.customFolderCheck = QCheckBox(self.groupBox_4)
+        self.customFolderCheck.setObjectName(u"customFolderCheck")
+        self.customFolderCheck.setEnabled(True)
+
+        self.gridLayout_12.addWidget(self.customFolderCheck, 2, 0, 1, 1)
+
+        self.operationFolder = QLineEdit(self.groupBox_4)
+        self.operationFolder.setObjectName(u"operationFolder")
+
+        self.gridLayout_12.addWidget(self.operationFolder, 2, 1, 1, 1)
+
+        self.operationFolderSelect = QToolButton(self.groupBox_4)
+        self.operationFolderSelect.setObjectName(u"operationFolderSelect")
+
+        self.gridLayout_12.addWidget(self.operationFolderSelect, 2, 2, 1, 1)
+
+        self.label_9 = QLabel(self.groupBox_4)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout_12.addWidget(self.label_9, 1, 0, 1, 1)
+
+        self.operationalAll = QRadioButton(self.groupBox_4)
+        self.operationalAll.setObjectName(u"operationalAll")
+        self.operationalAll.setChecked(True)
+
+        self.gridLayout_12.addWidget(self.operationalAll, 1, 2, 1, 1)
+
+        self.operationsGoButton = QPushButton(self.groupBox_4)
+        self.operationsGoButton.setObjectName(u"operationsGoButton")
+
+        self.gridLayout_12.addWidget(self.operationsGoButton, 2, 3, 1, 1)
+
+        self.operationBox = QComboBox(self.groupBox_4)
+        self.operationBox.addItem("")
+        self.operationBox.addItem("")
+        self.operationBox.addItem("")
+        self.operationBox.addItem("")
+        self.operationBox.setObjectName(u"operationBox")
+
+        self.gridLayout_12.addWidget(self.operationBox, 1, 1, 1, 1)
+
+
+        self.gridLayout.addWidget(self.groupBox_4, 6, 2, 1, 2)
+
+        self.nextImageButton = QPushButton(sd_dreamer_main)
+        self.nextImageButton.setObjectName(u"nextImageButton")
+        self.nextImageButton.setMinimumSize(QSize(353, 0))
+
+        self.gridLayout.addWidget(self.nextImageButton, 7, 2, 1, 1)
 
         self.tabby = QTabWidget(sd_dreamer_main)
         self.tabby.setObjectName(u"tabby")
@@ -311,7 +346,7 @@ class Ui_sd_dreamer_main(object):
         self.stepsVal.setObjectName(u"stepsVal")
         self.stepsVal.setMinimum(1)
         self.stepsVal.setMaximum(300)
-        self.stepsVal.setValue(50)
+        self.stepsVal.setValue(40)
         self.stepsVal.setOrientation(Qt.Horizontal)
         self.stepsVal.setTickInterval(20)
 
@@ -485,15 +520,15 @@ class Ui_sd_dreamer_main(object):
         self.tab_4.setAutoFillBackground(True)
         self.gridLayout_4 = QGridLayout(self.tab_4)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.inpaintSteps = QLineEdit(self.tab_4)
-        self.inpaintSteps.setObjectName(u"inpaintSteps")
+        self.label_17 = QLabel(self.tab_4)
+        self.label_17.setObjectName(u"label_17")
 
-        self.gridLayout_4.addWidget(self.inpaintSteps, 1, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.label_17, 1, 0, 1, 1)
 
-        self.inpaintButton = QPushButton(self.tab_4)
-        self.inpaintButton.setObjectName(u"inpaintButton")
+        self.inpaint_img_select = QToolButton(self.tab_4)
+        self.inpaint_img_select.setObjectName(u"inpaint_img_select")
 
-        self.gridLayout_4.addWidget(self.inpaintButton, 2, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.inpaint_img_select, 0, 2, 1, 1)
 
         self.inpaint_img = QLineEdit(self.tab_4)
         self.inpaint_img.setObjectName(u"inpaint_img")
@@ -501,20 +536,20 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout_4.addWidget(self.inpaint_img, 0, 1, 1, 1)
 
+        self.inpaintButton = QPushButton(self.tab_4)
+        self.inpaintButton.setObjectName(u"inpaintButton")
+
+        self.gridLayout_4.addWidget(self.inpaintButton, 2, 1, 1, 1)
+
         self.label_19 = QLabel(self.tab_4)
         self.label_19.setObjectName(u"label_19")
 
         self.gridLayout_4.addWidget(self.label_19, 0, 0, 1, 1)
 
-        self.inpaint_img_select = QToolButton(self.tab_4)
-        self.inpaint_img_select.setObjectName(u"inpaint_img_select")
+        self.inpaintSteps = QLineEdit(self.tab_4)
+        self.inpaintSteps.setObjectName(u"inpaintSteps")
 
-        self.gridLayout_4.addWidget(self.inpaint_img_select, 0, 2, 1, 1)
-
-        self.label_17 = QLabel(self.tab_4)
-        self.label_17.setObjectName(u"label_17")
-
-        self.gridLayout_4.addWidget(self.label_17, 1, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.inpaintSteps, 1, 1, 1, 1)
 
         self.tabby.addTab(self.tab_4, "")
         self.tab_5 = QWidget()
@@ -683,40 +718,6 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout.addWidget(self.tabby, 1, 0, 12, 2)
 
-        self.previousImgButton = QPushButton(sd_dreamer_main)
-        self.previousImgButton.setObjectName(u"previousImgButton")
-        self.previousImgButton.setMinimumSize(QSize(353, 0))
-
-        self.gridLayout.addWidget(self.previousImgButton, 7, 3, 1, 1)
-
-        self.processOutput = QPlainTextEdit(sd_dreamer_main)
-        self.processOutput.setObjectName(u"processOutput")
-        self.processOutput.setEnabled(True)
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.processOutput.sizePolicy().hasHeightForWidth())
-        self.processOutput.setSizePolicy(sizePolicy)
-        self.processOutput.setMaximumSize(QSize(16777215, 100))
-        self.processOutput.setAutoFillBackground(True)
-        self.processOutput.setFrameShape(QFrame.StyledPanel)
-        self.processOutput.setUndoRedoEnabled(False)
-        self.processOutput.setReadOnly(True)
-        self.processOutput.setOverwriteMode(False)
-        self.processOutput.setBackgroundVisible(False)
-
-        self.gridLayout.addWidget(self.processOutput, 15, 0, 1, 4)
-
-        self.imgFilename = QLabel(sd_dreamer_main)
-        self.imgFilename.setObjectName(u"imgFilename")
-
-        self.gridLayout.addWidget(self.imgFilename, 5, 2, 1, 1)
-
-        self.generateButton = QPushButton(sd_dreamer_main)
-        self.generateButton.setObjectName(u"generateButton")
-
-        self.gridLayout.addWidget(self.generateButton, 13, 0, 1, 3)
-
 
         self.retranslateUi(sd_dreamer_main)
         self.scaleVal.valueChanged.connect(self.label_25.setNum)
@@ -728,6 +729,7 @@ class Ui_sd_dreamer_main(object):
         self.tabWidget.setCurrentIndex(0)
         self.widthThing.setCurrentIndex(4)
         self.heightThing.setCurrentIndex(4)
+        self.samplerToggle.setCurrentIndex(3)
         self.promptVal.setCurrentIndex(-1)
         self.modelScale.setCurrentIndex(2)
 
@@ -737,22 +739,29 @@ class Ui_sd_dreamer_main(object):
 
     def retranslateUi(self, sd_dreamer_main):
         sd_dreamer_main.setWindowTitle(QCoreApplication.translate("sd_dreamer_main", u"SD Dreamer", None))
+        self.imgFilename.setText(QCoreApplication.translate("sd_dreamer_main", u"Filename:", None))
+        self.generateButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Dream", None))
+        self.errorMessages.setText(QCoreApplication.translate("sd_dreamer_main", u"Ready", None))
+        self.imageView.setText("")
+#if QT_CONFIG(tooltip)
+        self.processOutput.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Stable diffusion output", None))
+#endif // QT_CONFIG(tooltip)
+        self.cancelButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Cancel", None))
+        self.previousImgButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Previous", None))
         self.groupBox_4.setTitle("")
+        self.operationOne.setText(QCoreApplication.translate("sd_dreamer_main", u"Selected image", None))
+        self.customFolderCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Custom folder", None))
+        self.operationFolder.setPlaceholderText(QCoreApplication.translate("sd_dreamer_main", u"Load custom folder", None))
+        self.operationFolderSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.label_9.setText(QCoreApplication.translate("sd_dreamer_main", u"Operation:", None))
         self.operationalAll.setText(QCoreApplication.translate("sd_dreamer_main", u"All images", None))
         self.operationsGoButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Go", None))
         self.operationBox.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"Upscale: Real-ESRGAN", None))
         self.operationBox.setItemText(1, QCoreApplication.translate("sd_dreamer_main", u"Upscale: Anon's upsample", None))
         self.operationBox.setItemText(2, QCoreApplication.translate("sd_dreamer_main", u"Upscale: Latent-SR", None))
+        self.operationBox.setItemText(3, QCoreApplication.translate("sd_dreamer_main", u"Inpaint", None))
 
-        self.operationOne.setText(QCoreApplication.translate("sd_dreamer_main", u"Selected image", None))
-        self.customFolderCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Custom folder", None))
-        self.operationFolder.setPlaceholderText(QCoreApplication.translate("sd_dreamer_main", u"Load custom folder", None))
-        self.operationFolderSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
-        self.errorMessages.setText(QCoreApplication.translate("sd_dreamer_main", u"Ready", None))
         self.nextImageButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Next", None))
-        self.cancelButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Cancel", None))
-        self.imageView.setText("")
         self.custCheckpointSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.custCheckpointCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Custom checkpoint", None))
 #if QT_CONFIG(tooltip)
@@ -811,7 +820,7 @@ class Ui_sd_dreamer_main(object):
         self.widthThing.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Width of output image", None))
 #endif // QT_CONFIG(tooltip)
         self.widthThing.setCurrentText(QCoreApplication.translate("sd_dreamer_main", u"512", None))
-        self.label_6.setText(QCoreApplication.translate("sd_dreamer_main", u"50", None))
+        self.label_6.setText(QCoreApplication.translate("sd_dreamer_main", u"40", None))
         self.precisionToggle.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"autocast", None))
         self.precisionToggle.setItemText(1, QCoreApplication.translate("sd_dreamer_main", u"full", None))
 
@@ -887,18 +896,18 @@ class Ui_sd_dreamer_main(object):
         self.img2imgRadio.setText(QCoreApplication.translate("sd_dreamer_main", u"img2img", None))
         self.txt2imgRadio.setText(QCoreApplication.translate("sd_dreamer_main", u"txt2img", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_3), QCoreApplication.translate("sd_dreamer_main", u"Generate", None))
-#if QT_CONFIG(tooltip)
-        self.inpaintSteps.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Steps. More = slower", None))
-#endif // QT_CONFIG(tooltip)
-        self.inpaintSteps.setText(QCoreApplication.translate("sd_dreamer_main", u"30", None))
-        self.inpaintButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Inpaint", None))
+        self.label_17.setText(QCoreApplication.translate("sd_dreamer_main", u"Steps", None))
+        self.inpaint_img_select.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
 #if QT_CONFIG(tooltip)
         self.inpaint_img.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Image to inpaint", None))
 #endif // QT_CONFIG(tooltip)
         self.inpaint_img.setText("")
+        self.inpaintButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Inpaint", None))
         self.label_19.setText(QCoreApplication.translate("sd_dreamer_main", u"Image", None))
-        self.inpaint_img_select.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
-        self.label_17.setText(QCoreApplication.translate("sd_dreamer_main", u"Steps", None))
+#if QT_CONFIG(tooltip)
+        self.inpaintSteps.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Steps. More = slower", None))
+#endif // QT_CONFIG(tooltip)
+        self.inpaintSteps.setText(QCoreApplication.translate("sd_dreamer_main", u"30", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_4), QCoreApplication.translate("sd_dreamer_main", u"Inpainting", None))
         self.groupBox.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Real-ESRGAN", None))
         self.label_32.setText(QCoreApplication.translate("sd_dreamer_main", u"Model select", None))
@@ -946,11 +955,5 @@ class Ui_sd_dreamer_main(object):
         self.pyBinSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.label_18.setText(QCoreApplication.translate("sd_dreamer_main", u"Python path (don't change)", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_6), QCoreApplication.translate("sd_dreamer_main", u"Settings", None))
-        self.previousImgButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Previous", None))
-#if QT_CONFIG(tooltip)
-        self.processOutput.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Stable diffusion output", None))
-#endif // QT_CONFIG(tooltip)
-        self.imgFilename.setText(QCoreApplication.translate("sd_dreamer_main", u"Filename:", None))
-        self.generateButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Dream", None))
     # retranslateUi
 

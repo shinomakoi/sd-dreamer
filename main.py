@@ -630,7 +630,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         for r in ((">", ""), ("<", ""), ("/", ""), ("<", ""), ("?", ""), ("*", ""), ("\\", ""), ('"', ""), (',', ""), ('.', ""), ('\n', "")):
             prompt = prompt.replace(*r).strip()
 
-        if self.operationOne.isChecked():
+        if self.operationOne.isChecked() and process_type != 'dream':
             single_image = self.imgFilename.text().replace('Filename: ', '')
             op_input_path = Path(images_path)/(single_image)
         if self.operationalAll.isChecked() and process_type != 'dream':

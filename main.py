@@ -610,6 +610,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             global images_path
             images_path = self.operationFolder.text()
             'Operation images input path:', images_path
+            
         self.processOutput.appendPlainText("Starting process")
         # Keep a reference to the QProcess (e.g. on self) while it's running.
         self.generator_process = QProcess()
@@ -632,7 +633,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if self.operationOne.isChecked():
             single_image = self.imgFilename.text().replace('Filename: ', '')
             op_input_path = Path(images_path)/(single_image)
-        if self.operationalAll.isChecked():
+        if self.operationalAll.isChecked() and process_type != 'dream':
             op_input_path = Path(images_path)
 
         if process_type == 'esrgan_upscale_op':

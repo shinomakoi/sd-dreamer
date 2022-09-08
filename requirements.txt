@@ -2,3 +2,4 @@ Pillow==9.2.0
 pypng==0.20220715.0
 PySide2==5.15.2.1
 shiboken2==5.15.2.1
+-e git+https://github.com/hlky/k-diffusion-sd#egg=k_diffusion

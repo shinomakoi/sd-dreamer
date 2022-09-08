@@ -8,28 +8,35 @@
 # expand img2img
 # image viewer, redo output
 # prompt tags
-# keep in memory
 # clean up code
 # moar comments
 # vram, ram view
 # appicon fix
 # prevent changing size after paint saved
-# fix buttons/cancel
-# fix turbo
 # inpaint feedback, errors etc
-# fix windows not cancelling?
+# fix not cancelling?
 # save more settings
-# add global arguments to passs to SD
 # txt2imgHD using img2img even when unchecked? when paint?
 # add drag and drop for images
 # redo inpaint/clear?
 # add img2img to op center
-# filter out folders etc from imageview
+# filter out folders and other files from imageview
+# add noise to paint
+# add paint to img view
+# add stdout to UI
+# img2img upscale
+# increase max res
+# add noise to paint
+# new inpainting
+# ksamplers to txt2imgHD
+# change seeding in scripts
+# rename txt2imgbatch file
 
 import configparser
 import os
 import random
 import sys
+import threading
 from pathlib import Path
 
 import png
@@ -45,8 +52,6 @@ from PySide2.QtWidgets import QFileDialog
 
 from painter import paintWindow
 from ui import Ui_sd_dreamer_main
-
-# from scripts.txt2img_k_sdd_batch import *
 
 # print('working dir=',os.getcwd())
 home_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -65,13 +70,10 @@ sd_folder_path = str(sd_folder_path.parent)
 
 txt2img_default = Path(home_dir_path)/'scripts'/'txt2img_sdd.py'
 txt2img_k = Path(home_dir_path)/'scripts'/'txt2img_k_sdd.py'
-txt2img_opti = Path(home_dir_path)/'scripts'/'optimized_txt2img_sdd.py'
-txt2img_opti_k = Path(home_dir_path)/'scripts'/'optimized_txt2img_k_sdd.py'
 
 img2img_default = Path(home_dir_path)/'scripts'/'img2img_sdd.py'
 img2img_k = Path(home_dir_path)/'scripts'/'img2img_k_sdd.py'
-img2img_opti = Path(home_dir_path)/'scripts'/'optimized_img2img_sdd.py'
-img2img_opti_k = Path(home_dir_path)/'scripts'/'optimized_img2img_k_sdd.py'
+
 txt2img_hd = Path(home_dir_path)/'scripts'/'txt2imghd.py'
 anon_upscale = Path(home_dir_path)/'scripts'/'upsample.py'
 latent_sr_path = Path(home_dir_path)/'scripts'/'predict_sr.py'
@@ -344,6 +346,7 @@ esrgan_bin_ini = config.get('Settings', 'esrgan_bin')
 esrbin_models_ini = config.get('Settings', 'esrbin_models')
 py_bin_path_ini = config.get('Settings', 'py_bin_path')
 first_run_ini = config.get('Settings', 'first_run')
+chkpt_ini = config.get('Settings', 'ckpt_path')
 
 print('First run: ', first_run_ini)
 
@@ -408,9 +411,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         print('SD install working directory: ', sd_folder_path)
 
-        self.generateButton.pressed.connect(
-            lambda: self.start_process('dream'))
-        self.cancelButton.pressed.connect(self.stop_process)
+        # self.generateButton.pressed.connect(
+        #     lambda: self.start_process('dream'))
+        # self.cancelButton.pressed.connect(self.stop_process)
 
         if self.seedCheck.isChecked():
             self.seedVal.setText(str(random.randint(0, 1632714927)))
@@ -418,10 +421,16 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.rnvBinPath.setText(esrgan_bin_ini)
         self.rnvModelPath.setText(esrbin_models_ini)
         self.pyBinPath.setText(py_bin_path_ini)
+        self.custCheckpointLine.setText(chkpt_ini)
 
         if first_run_ini == '0':
 
+            self.custCheckpointLine.setText(
+                str(Path(sd_folder_path)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
+
             config.set('Settings', 'first_run', '1')
+            config.set('Settings', 'ckpt_path', str(
+                Path(sd_folder_path)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
             with open(settings_file, 'w') as configfile:
                 config.write(configfile)
 
@@ -488,15 +497,10 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self, 'Open file', '', "Checkpoints (*.ckpt*)")[0])
             if len(ckpt_path) > 0:
                 self.custCheckpointLine.setText(ckpt_path)
+                config.set('Settings', 'ckpt_path', ckpt_path)
+            with open(settings_file, 'w') as configfile:
+                config.write(configfile)
         self.custCheckpointSelect.clicked.connect(custCheckpointSelect_select)
-
-        # def testyButton():
-        #     prompt='pretty pigeons in the city'
-        #     steps=17
-        #     iterations=2
-        #     batch=1
-        #     img_vram(prompt, steps, iterations, batch)
-        # self.testyButton.clicked.connect(testyButton)
 
  # add prompts and remove duplicates
         prompt_list = []
@@ -568,7 +572,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             def anon_upscale_op():
                 print("Anon op")
-                op_launcher('anon_upscale_op')
+                # op_launcher('anon_upscale_op')
 
             def latent_sr():
                 print("LatentSR op")
@@ -584,33 +588,134 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 print("Inpaint op")
                 # op_launcher('inpaint_op')
 
-            def img2img_op():
+            def art_op():
                 print("img2img op")
                 # op_launcher('img2img_op')
 
             if self.operationBox.currentIndex() == 0:
                 esrgan_upscale_op()
 
-            if self.operationBox.currentIndex() == 1:
-                anon_upscale_op()
+            # if self.operationBox.currentIndex() == 1:
+            #     anon_upscale_op()
 
-            if self.operationBox.currentIndex() == 2:
+            if self.operationBox.currentIndex() == 1:
                 latent_sr()
 
-            if self.operationBox.currentIndex() == 3:
+            if self.operationBox.currentIndex() == 2:
                 inpaint_op()
 
-            if self.operationBox.currentIndex() == 4:
-                img2img_op()
+            if self.operationBox.currentIndex() == 3:
+                art_op()
 
         self.operationsGoButton.pressed.connect(operations_hub)
+
+        def dreamer_new():
+            prompt = str(self.promptVal.currentText())
+            steps = int(self.stepsVal.value())
+            iterations = int(self.itsVal.value())
+            batch = int(self.batchVal.value())
+            seed = int(self.seedVal.text())
+            precision = str(self.precisionToggle.currentText())
+            rows = 3
+            outpath = Path(self.outputFolderLine.text())
+            width = int(self.widthThing.currentText())
+            height = int(self.heightThing.currentText())
+            scale = float(self.scaleVal.value())
+            set_sampler = str(self.samplerToggle.currentText())
+            init_img = self.img2imgFile.text()
+            strength = float(self.img2imgStrength.text())
+            detail_steps = int(self.txt2imgHD_steps.text())
+            detail_scale = int(self.txt2imgHD_scale.text())
+            realesrgan = esrgan_bin_ini
+            img = init_img
+
+            out_folder_create = Path(self.outputFolderLine.text())/prompt[:120]
+            out_folder_create = str(out_folder_create)+'_'+self.seedVal.text()
+
+            for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (' ', "_"), (',', ""), ('.', ""), ('\n', ""), (' ', '_')):
+                out_folder_create = out_folder_create.replace(*r).strip()
+
+            outpath = out_folder_create
+
+            if self.txt2imgRadio.isChecked():
+                txt2img_args = prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler
+                print('txt2imgargs-', txt2img_args)
+
+                def launch_txt2img(*txt2img_args):
+
+                    self.errorMessages.setText(f"SD Dreamer: Loading model...")
+                    from scripts.txt2img_k_sdd_batch import txt2img_main
+                    self.errorMessages.setText(
+                        f"SD Dreamer: Dreaming (txt2img)...")
+                    txt2img_main(*txt2img_args)
+                    self.errorMessages.setText(f"SD Dreamer: Finished")
+                    self.load_images(outpath)
+                t1 = threading.Thread(
+                    target=launch_txt2img, args=(txt2img_args))
+
+            if self.img2imgRadio.isChecked():
+                if self.img2imgDisplayed.isChecked() and self.imgFilename.text() == 'Filename: ':
+                    print('no image in viewer')
+                    return
+                elif self.img2imgDisplayed.isChecked() and self.imgFilename.text() != 'Filename: ':
+                    init_img = Path(
+                        images_path)/self.imgFilename.text().replace('Filename: ', '')
+                img2img_args = prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, str(
+                    init_img), strength
+                print('img2imgargs-', img2img_args)
+
+                def launch_img2img(*img2img_args):
+                    self.errorMessages.setText(f"SD Dreamer: Loading model...")
+                    from scripts.txt2img_k_sdd_batch import img2img_main
+                    self.errorMessages.setText(
+                        f"SD Dreamer: Dreaming (img2img)...")
+                    img2img_main(*img2img_args)
+                    self.errorMessages.setText(f"SD Dreamer: Finished")
+                    self.load_images(outpath)
+                t1 = threading.Thread(
+                    target=launch_img2img, args=(img2img_args))
+
+            if self.txt2imgHDCheck.isChecked():
+                txt2imghd_args = prompt, steps, iterations, seed, outpath, scale, width, height, detail_steps, detail_scale, realesrgan, strength
+                if self.txt2imgHDImg.isChecked():
+                    txt2imghd_args = prompt, steps, iterations, seed, outpath, scale, width, height, detail_steps, detail_scale, realesrgan, strength, img
+                print('txt2imghdargs-', txt2imghd_args)
+
+                def launch_txt2imghd(*txt2imghd_args):
+
+                    self.errorMessages.setText(f"SD Dreamer: Loading model...")
+                    from scripts.txt2img_k_sdd_batch import txt2imghd_main
+                    self.errorMessages.setText(
+                        f"SD Dreamer: Dreaming (txt2imgHD)...")
+                    txt2imghd_main(*txt2imghd_args)
+                    self.errorMessages.setText(f"SD Dreamer: Finished")
+                    self.load_images(outpath)
+
+                t1 = threading.Thread(
+                    target=launch_txt2imghd, args=(txt2imghd_args))
+
+            self.generateButton.setEnabled(False)
+            t1.start()
+            
+
+            self.promptVal.addItem(self.promptVal.currentText())
+            f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")
+            f.write('\n'+self.promptVal.currentText())
+            f.close()
+
+            if self.seedCheck.isChecked():
+                self.seedVal.setText(str(random.randint(0, 1632714927)))
+
+        self.generateButton.clicked.connect(dreamer_new)
+
+# tests
 
     def start_process(self, process_type, op_enable=False):
         if self.customFolderCheck.isChecked() and op_enable is True:
             global images_path
             images_path = self.operationFolder.text()
             'Operation images input path:', images_path
-            
+
         self.processOutput.appendPlainText("Starting process")
         # Keep a reference to the QProcess (e.g. on self) while it's running.
         self.generator_process = QProcess()
@@ -622,25 +727,22 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             self.handle_stdout)
         self.generator_process.readyReadStandardError.connect(
             self.handle_stderr)
+        self.generateButton.setEnabled(False)
 
         # forbiddenChars = (">", "<", "/", ":" '"', "\\", "|", "?", "*")
         # forbiddenChars=str(forbiddenChars)
 
-        prompt = self.promptVal.currentText()
-        for r in ((">", ""), ("<", ""), ("/", ""), ("<", ""), ("?", ""), ("*", ""), ("\\", ""), ('"', ""), (',', ""), ('.', ""), ('\n', "")):
-            prompt = prompt.replace(*r).strip()
-
-        if self.operationOne.isChecked() and process_type != 'dream':
+        if self.operationOne.isChecked():
             single_image = self.imgFilename.text().replace('Filename: ', '')
             op_input_path = Path(images_path)/(single_image)
-        if self.operationalAll.isChecked() and process_type != 'dream':
+        if self.operationalAll.isChecked():
             op_input_path = Path(images_path)
 
         if process_type == 'esrgan_upscale_op':
             esrgan_out_path = Path(
                 self.outputFolderLine.text())/'upscales'/'real_esrgan_out'
             os.makedirs(esrgan_out_path, exist_ok=True)
-            # print('Upscaling, folder in: ', op_input_path)
+            print('Upscaling, folder in: ', op_input_path)
             print('Upscaling, folder out ', esrgan_out_path)
 
             esrgan_args = ['-n', self.rnvModelSelect.currentText(
@@ -650,24 +752,12 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 esrgan_args[-1] = str(Path(esrgan_out_path)/(single_image))
             print('ESGRAN args: ', esrgan_args)
 
+
             self.generator_process.start(self.rnvBinPath.text(), esrgan_args)
             self.cancelButton.setEnabled(True)
-            self.generateButton.setEnabled(False)
-            return
+            
 
-        if process_type == 'anon_upscale_op':
-            print('Anon: path to images:', op_input_path)
-            anon_args = [str(anon_upscale), '--prompt', prompt, '--seed', self.seedVal.text(),
-                         '--strength', self.anonStrength.text(), '--img_path', str(op_input_path)]
 
-            if self.operationOne.isChecked():
-                anon_args[-2] = "--single"
-            print('anon_args:', anon_args)
-
-            self.generator_process.start(self.pyBinPath.text(), anon_args)
-            self.cancelButton.setEnabled(True)
-            self.generateButton.setEnabled(False)
-            return
 
         if process_type == 'latent_sr_op':
             print('Latent-SR: path to images:', op_input_path)
@@ -684,109 +774,10 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             self.generator_process.start(self.pyBinPath.text(), latent_sr_args)
             self.cancelButton.setEnabled(True)
-            self.generateButton.setEnabled(False)
             return
 
         print('This part is after upscale and shouldnt be seen when upscaling')
 
-# trim prompt and path characters
-        for r in ((">", ""), ("<", ""), ("/", ""), ("<", ""), ("?", ""), ("*", ""), ("\\", ""), ('"', ""), (',', ""), ('.', ""), ('\n', "")):
-            prompt = prompt.replace(*r).strip()
-        global out_folder_create
-        out_folder_create = Path(self.outputFolderLine.text())/prompt[:150]
-        out_folder_create = str(out_folder_create)+'_'+self.seedVal.text()
-
-        for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (' ', "_"), (',', ""), ('.', ""), ('\n', ""), (' ', '_')):
-            out_folder_create = out_folder_create.replace(*r).strip()
-
-# check for txt2imgHD gobig checked
-        if self.txt2imgHDCheck.isChecked():
-            txt2imghd_args = [f'{txt2img_hd}', '--prompt', r'"'+prompt+r'"', '--W', self.widthThing.currentText(), '--H', self.heightThing.currentText(),
-                              '--scale', str(self.scaleVal.value()), '--n_iter', str(self.itsVal.value()), '--steps', str(
-                                  self.stepsVal.value()), '--detail_scale', str(self.txt2imgHD_scale.value()),
-                              '--detail_steps', str(self.txt2imgHD_steps.value()), '--realesrgan', self.rnvBinPath.text(), '--seed', self.seedVal.text(), '--outdir', str(Path(out_folder_create))]
-
-            if self.txt2imgHDImg.isChecked():
-                self.img2imgRadio.setChecked(False)
-                txt2imghd_args.insert(1, self.img2imgFile.text())
-                txt2imghd_args.insert(1, "--img")  # modify args for gobig
-# launch GOBIG
-            print(txt2imghd_args)
-            self.generator_process.start(self.pyBinPath.text(), txt2imghd_args)
-            self.cancelButton.setEnabled(True)
-            self.generateButton.setEnabled(False)
-
-        else:
-            if self.samplerToggle.currentText() == 'ddim' or self.samplerToggle.currentText() == 'plms':
-                txt2img_file = txt2img_default
-                img2img_file = img2img_default
-                if self.optimizedCheck.isChecked():
-                    txt2img_file = txt2img_opti
-                    img2img_file = img2img_opti
-            else:
-                txt2img_file = txt2img_k
-                img2img_file = img2img_k
-                if self.optimizedCheck.isChecked():
-                    txt2img_file = txt2img_opti_k
-                    img2img_file = img2img_opti_k
-            # base SD args
-            sd_args = [f'{txt2img_file}', '--prompt', r'"'+prompt+r'"', '--precision', self.precisionToggle.currentText(), '--W', self.widthThing.currentText(), '--H', self.heightThing.currentText(), '--scale', str(self.scaleVal.value(
-            )), '--n_iter', str(self.itsVal.value()), '--n_samples', str(self.batchVal.value()), '--ddim_steps', str(self.stepsVal.value()), '--seed', self.seedVal.text(), '--n_rows', '3', '--outdir', str(Path(out_folder_create))]
-
-            if self.small_batchCheck.isChecked():  # add turbo for optimized scripts as required
-                sd_args.insert(-4, "--turbo")
-
-            if self.img2imgRadio.isChecked():
-                # replace txt2img script with img2img script
-                sd_args[0] = str(Path(img2img_file))
-                sd_args.pop(5), sd_args.pop(5), sd_args.pop(5), sd_args.pop(5),
-                sd_args.insert(-4, "--init-img")
-                sd_args.insert(-4, self.img2imgFile.text())
-                sd_args.insert(-4, "--strength")
-                sd_args.insert(-4, self.img2imgStrength.text())
-
-            if self.gridCheck.isChecked():
-                sd_args.insert(3, "--skip_grid")
-
-            if self.samplerToggle.currentText() == 'ddim' or 'plms' and self.img2imgRadio.isChecked() == False:
-                if self.samplerToggle.currentText() == 'plms':
-                    sd_args.insert(3, "--plms")
-
-            if self.custCheckpointCheck.isChecked():
-                sd_args.insert(3, self.custCheckpointLine.text())
-                sd_args.insert(3, "--ckpt")
-
-# insert the sampler if using a K script
-            if txt2img_file == txt2img_k or txt2img_file == txt2img_opti_k or txt2img_file == img2img_opti_k or txt2img_file == img2img_k:
-                print('k file detected')
-                if self.samplerToggle.currentText() == 'k_lms':
-                    sd_args.insert(3, "lms")
-                if self.samplerToggle.currentText() == 'k_euler_a':
-                    sd_args.insert(3, "euler_a")
-                if self.samplerToggle.currentText() == 'k_dpm_2_a':
-                    sd_args.insert(3, "dpm_a")
-                if self.samplerToggle.currentText() == 'k_euler':
-                    sd_args.insert(3, "euler")
-                if self.samplerToggle.currentText() == 'k_dpm':
-                    sd_args.insert(3, "dpm")
-                if self.samplerToggle.currentText() == 'k_heun':
-                    sd_args.insert(3, "heun")
-                sd_args.insert(3, "--sampler")
-
-            print('txt2img file: ', txt2img_file)
-            print('img2img file: ', img2img_file)
-
-# write the prompt to the prompt archive. todo: check for duplicates
-            self.promptVal.addItem(self.promptVal.currentText())
-            f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")
-            f.write('\n'+self.promptVal.currentText())
-            f.close()
-
-# start the generator process
-            self.generator_process.start(py_bin_path_ini, sd_args)
-            print('SD arguments:', sd_args)
-            self.cancelButton.setEnabled(True)
-            self.generateButton.setEnabled(False)
 
     def handle_stderr(self):
         data = self.generator_process.readAllStandardError()
@@ -813,12 +804,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
     def load_images(self, img_path, cust_load=False):
         global images_path
+
         if cust_load == True:
             images_path = str(Path(img_path))
             print('custom folder load')
         else:
             print('not custom folder load')
             images_path = str(Path(img_path)/'samples')
+
         global image_list
         print("images_path - ", images_path)
         image_list = os.listdir(images_path)
@@ -829,22 +822,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         print('image_index=', image_index)
 
         # global image_to_display
-        image_to_display = image_list[image_index]
+        image_to_display = image_list[-1]
         self.imgFilename.setText('Filename: '+image_to_display)
 
         pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
         self.imageView.setPixmap(pixmap)
         self.imgIndex.setText(str(image_index))
+        self.generateButton.setEnabled(True)
 
     def process_finished(self, process_type):
         # add the generated images to the image view
         if process_type == 'dream':
-            img_pathz = out_folder_create
-            images_pathz = str(Path(img_pathz)/'samples')
-            image_listz = os.listdir(images_pathz)
-            if len(image_listz) > 0:
-                print('list not empty')
-                self.load_images(img_pathz)
+            print('proc fin, dream')
+
 
         self.processOutput.appendPlainText("Generation finished.")
         self.generator_process = None
@@ -858,7 +848,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             self.generator_process.terminate()
             # self.generator_process.terminate()
             self.processOutput.appendPlainText("Procesing has been ended.")
-            self.cancelButton.setEnabled(False)
+            # self.cancelButton.setEnabled(False)
             self.generateButton.setEnabled(True)
 
 

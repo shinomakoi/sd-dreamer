@@ -623,7 +623,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             scale = float(self.scaleVal.value())
             set_sampler = str(self.samplerToggle.currentText())
             init_img = self.img2imgFile.text()
-            strength = float(self.img2imgStrength.text())
+            strength = float(self.img2imgStrength.value())
             detail_steps = int(self.txt2imgHD_steps.text())
             detail_scale = int(self.txt2imgHD_scale.text())
             realesrgan = esrgan_bin_ini
@@ -696,7 +696,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             self.generateButton.setEnabled(False)
             t1.start()
-            
+
 
             self.promptVal.addItem(self.promptVal.currentText())
             f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")
@@ -755,7 +755,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             self.generator_process.start(self.rnvBinPath.text(), esrgan_args)
             self.cancelButton.setEnabled(True)
-            
+
 
 
 

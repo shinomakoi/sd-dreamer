@@ -197,9 +197,12 @@ opt = parser.parse_args()
 # if opt.seed is None:
 #     opt.seed = hash(opt)
 
+settings_path=(os.path.dirname(os.path.realpath(__file__)))
+settings_path=(Path(settings_path).parent/'settings.ini')
+
 config = configparser.ConfigParser()
-settings_file = ('sd_dreamer/settings.ini')
-config.read('sd_dreamer/settings.ini')
+settings_file = (settings_path)
+config.read(settings_path)
 chkpt_ini=config.get('Settings', 'ckpt_path')
 
 config = OmegaConf.load(f"{opt.config}")
@@ -215,7 +218,6 @@ outpath = opt.outdir
 from scripts.txt2img_k_sdd import txt2img
 from scripts.img2img_k_sdd import img2img
 from scripts.txt2imghd import txt2imghd
-
 
 def torch_gc():
     if torch.cuda.is_available():

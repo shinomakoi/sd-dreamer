@@ -1,40 +1,57 @@
-
-# importing libraries
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+import os
 from pathlib import Path
 
-# window class
+import png
+from PySide2.QtCore import *
+from PySide2.QtCore import QUrl  # , QPropertyAnimation
+from PySide2.QtCore import QProcess
+from PySide2.QtGui import *
+from PySide2.QtGui import QPixmap
+from PySide2.QtWidgets import *
+from PySide2.QtWidgets import QFileDialog
+
 class paintWindow(QMainWindow):
-    def __init__(self, paint_w, paint_h):
+    def __init__(self, sd_folder_path, art_source,paint_w,paint_h):
         super().__init__()
 
-        print(paint_w, paint_h)
-
-        # setting title
+        print('Art image: ', art_source)
         self.setWindowTitle("SD Art studio")
 
-        # setting geometry to main window
-        self.setGeometry(100, 100, paint_w, paint_h)
-        self.setMaximumHeight(paint_h)
-        self.setMaximumWidth(paint_w)
-        self.setMinimumHeight(paint_h)
-        self.setMinimumWidth(paint_w)
+        if art_source != False:
+            r = png.Reader(art_source)
+            png_w = (r.read()[0])
+            png_h = (r.read()[1])
+            os.chdir(sd_folder_path)
 
-        # creating image object
-        self.image = QImage(self.size(), QImage.Format_RGB32)
+            print(png_w, png_h)
 
-        # making image color to white
-        self.image.fill(Qt.white)
+            # setting geometry to main window
+            self.setMaximumHeight(png_h)
+            self.setMaximumWidth(png_w)
+            self.setMinimumHeight(png_h)
+            self.setMinimumWidth(png_w)
 
-        # variables
-        # drawing flag
+            self.image = QImage(art_source)
+        else:
+            print(paint_w, paint_h)
+
+            self.setWindowTitle("SD Art studio")
+
+            self.setGeometry(100, 100, paint_w, paint_h)
+            self.setMaximumHeight(paint_h)
+            self.setMaximumWidth(paint_w)
+            self.setMinimumHeight(paint_h)
+            self.setMinimumWidth(paint_w)
+
+            self.image = QImage(self.size(), QImage.Format_RGB32)
+
+            self.image.fill(Qt.white)
+
         self.drawing = False
         # default brush size
         self.brushSize = 24
         # default color
-        self.brushColor = Qt.black
+        self.brushColor = QColor(0, 0, 0, 20)
 
         # QPoint object to tract the point
         self.lastPoint = QPoint()
@@ -51,9 +68,8 @@ class paintWindow(QMainWindow):
         # adding brush color to ain menu
         b_color = mainMenu.addMenu("Brush Color")
 
-
         # creating save action
-        saveAction = QAction("Save (then Dream to generate)", self)
+        saveAction = QAction("Dream", self)
         # adding short cut for save action
         saveAction.setShortcut("Ctrl + S")
         # adding save to the file menu
@@ -68,8 +84,7 @@ class paintWindow(QMainWindow):
         # adding clear to the file menu
         fileMenu.addAction(clearAction)
         # adding action to the clear
-        clearAction.triggered.connect(self.clear)
-
+        clearAction.triggered.connect(lambda: self.clear(art_source))
 
         # creating options for brush sizes
         # creating action for selecting pixel of 4px
@@ -95,11 +110,10 @@ class paintWindow(QMainWindow):
         pix_24 = QAction("24px", self)
         b_size.addAction(pix_24)
         pix_24.triggered.connect(self.Pixel_24)
- 
+
         pix_32 = QAction("32px", self)
         b_size.addAction(pix_32)
         pix_32.triggered.connect(self.Pixel_32)
-
 
         # creating options for brush color
         # creating action for black color
@@ -154,7 +168,7 @@ class paintWindow(QMainWindow):
         b_color.addAction(darkgreen)
         darkgreen.triggered.connect(self.darkgreenColor)
 
-        darkred= QAction("Dark red", self)
+        darkred = QAction("Dark red", self)
         b_color.addAction(darkred)
         darkred.triggered.connect(self.darkredColor)
 
@@ -166,7 +180,6 @@ class paintWindow(QMainWindow):
         b_color.addAction(lightskin)
         lightskin.triggered.connect(self.lightskinColor)
 
-    # method for checking mouse cicks
     def mousePressEvent(self, event):
 
         # if left mouse button is pressed
@@ -187,7 +200,7 @@ class paintWindow(QMainWindow):
 
             # set the pen of the painter
             painter.setPen(QPen(self.brushColor, self.brushSize,
-                            Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
 
             # draw line from the last point of cursor to the current point
             # this will draw only one step
@@ -215,18 +228,23 @@ class paintWindow(QMainWindow):
 
     # method for saving canvas
     def save(self):
-        
-        img_paint_s=(str(Path('outputs')/'sd_dreamer'/'paint.png'))
+        img_paint_s = (str(Path('outputs')/'sd_dreamer'/'art.png'))
         self.image.save(img_paint_s)
-        print('saved to : ',img_paint_s)
-    
-        # self.image.save(Path(str('outputs')/'sd_dreamer'/'paint.png'))
-        self.setWindowTitle("Saved - press 'Dream' to generate")
+        print('saved to : ', img_paint_s)
+        self.setWindowTitle("Art studio")
+        from main import sd_dreamer_main
+        sd_dreamer_main(img_paint_s)
 
     # method for clearing every thing on canvas
-    def clear(self):
+
+    def clear(self, art_source):
         # make the whole canvas white
-        self.image.fill(Qt.white)
+            
+        if art_source == False:
+            self.image.fill(Qt.white)
+        else:
+            self.image = QImage(art_source)
+
         # update
         self.update()
 
@@ -251,58 +269,49 @@ class paintWindow(QMainWindow):
 
     # methods for changing brush color
     def blackColor(self):
-        self.brushColor = Qt.black
+        self.brushColor = QColor(0, 0, 0, 20)
 
     def whiteColor(self):
-        self.brushColor = Qt.white
+        self.brushColor = QColor(255, 255, 255, 20)
 
     def greenColor(self):
-        self.brushColor = Qt.green
+        self.brushColor = QColor(85, 170, 0, 20)
 
     def yellowColor(self):
-        self.brushColor = Qt.yellow
+        self.brushColor = QColor(255, 255, 0, 20)
 
     def redColor(self):
-        self.brushColor = Qt.red
+        self.brushColor = QColor(255, 0, 0, 20)
 
     def brownColor(self):
-        self.brushColor = QColor(85, 0, 0, 255)
+        self.brushColor = QColor(85, 0, 0, 20)
 
     def blueColor(self):
-        self.brushColor = Qt.blue
+        self.brushColor = QColor(0, 85, 255, 20)
 
     def cyanColor(self):
-        self.brushColor = Qt.cyan
+        self.brushColor = QColor(85, 255, 255, 20)
 
     def grayColor(self):
-        self.brushColor = Qt.gray
+        self.brushColor = QColor(180, 180, 180, 20)
 
     def magentaColor(self):
-        self.brushColor = Qt.magenta
+        self.brushColor = QColor(211, 70, 211, 20)
 
     def darkblueColor(self):
-        self.brushColor = Qt.darkBlue
+        self.brushColor = QColor(0, 0, 127, 20)
 
     def darkgreenColor(self):
-        self.brushColor = Qt.darkGreen
+        self.brushColor = QColor(0, 85, 0, 20)
 
     def darkyellowColor(self):
-        self.brushColor = Qt.darkYellow
+        self.brushColor = QColor(118, 110, 0, 20)
 
     def darkredColor(self):
-        self.brushColor = Qt.darkRed
+        self.brushColor = QColor(170, 0, 0, 20)
 
     def darkgrayColor(self):
-        self.brushColor = Qt.darkGray
+        self.brushColor = QColor(52, 52, 52, 20)
 
     def lightskinColor(self):
-        self.brushColor = QColor(249, 228, 221, 255)
-
-
-# App = QApplication(sys.argv)
-
-# window = Window()
-
-# # window.show()
-
-# # sys.exit(App.exec_())
+        self.brushColor = QColor(249, 228, 221, 20)

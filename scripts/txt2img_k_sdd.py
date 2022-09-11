@@ -14,7 +14,7 @@ from torch import autocast
 from torchvision.utils import make_grid
 from tqdm import tqdm, trange
 
-from scripts.txt2img_k_sdd_batch import (CFGDenoiser, create_random_tensors,
+from scripts.launcher import (CFGDenoiser, create_random_tensors,
                                          model)
 
 parser = argparse.ArgumentParser()
@@ -35,7 +35,7 @@ parser.add_argument(
 opt = parser.parse_args()
 
 
-def txt2img_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler):
+def txt2img_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, turbo):
     if set_sampler == 'k_lms' or set_sampler == 'k_euler' or set_sampler == 'k_euler_a' or set_sampler == 'k_dpm_2' or set_sampler == 'k_dpm_2_a' or set_sampler == 'k_heun':
         device = torch.device(
             "cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -60,7 +60,7 @@ def txt2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
         assert prompt is not None
         data = batch_size * [prompt]
 
-        sample_path = os.path.join(outpath, 'samples')
+        sample_path = os.path.join(outpath, 'txt2img_samples')
         os.makedirs(sample_path, exist_ok=True)
         base_count = len(os.listdir(sample_path))
         grid_count = len(os.listdir(outpath)) - 1
@@ -96,7 +96,9 @@ def txt2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
                     x_sample = 255. * \
                         rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
                     Image.fromarray(x_sample.astype(np.uint8)).save(
-                        os.path.join(sample_path, f"{base_count:05}.png"))
+                        os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
+                    seeds += str(seed) + ","
+                    seed+= 1
                     base_count += 1
 
                 all_samples.append(x_samples_ddim)

@@ -17,7 +17,7 @@ from torch import autocast
 from torchvision.utils import make_grid
 from tqdm import tqdm, trange
 
-from scripts.txt2img_k_sdd_batch import CFGDenoiser, model
+from scripts.launcher import CFGDenoiser, model
 
 parser = argparse.ArgumentParser()
 
@@ -34,7 +34,7 @@ parser.add_argument(
     help="downsampling factor, most often 8 or 16",
 )
 
-def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, init_img, strength):
+def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, init_img, strength, turbo):
 
     device = torch.device(
         "cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -42,7 +42,7 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
     ksamplers = {'k_lms': K.sampling.sample_lms,
                  'k_euler': K.sampling.sample_euler,
                  'k_euler_a': K.sampling.sample_euler_ancestral,
-                 'k_dpm': K.sampling.sample_dpm_2,
+                 'k_dpm_2': K.sampling.sample_dpm_2,
                  'k_dpm_2_a': K.sampling.sample_dpm_2_ancestral,
                  'k_heun': K.sampling.sample_heun}
 
@@ -81,7 +81,7 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
     seeds = torch.randint(-2 ** 63, 2 ** 63 - 1, [accelerator.num_processes])
     torch.manual_seed(seeds[accelerator.process_index].item())
 
-    sample_path = os.path.join(outpath, 'samples')
+    sample_path = os.path.join(outpath, 'img2img_samples')
     os.makedirs(sample_path, exist_ok=True)
     base_count = len(os.listdir(sample_path))
     grid_count = len(os.listdir(outpath)) - 1
@@ -137,7 +137,8 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
                                     rearrange(x_sample.cpu().numpy(),
                                               'c h w -> h w c')
                                 Image.fromarray(x_sample.astype(np.uint8)).save(
-                                    os.path.join(sample_path, f"{base_count:05}.png"))
+                                    os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
+                                seed+= 1
                                 base_count += 1
 
                         if accelerator.is_main_process:
@@ -161,7 +162,6 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
           f" \nEnjoy.")
 
 
-def img2img(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, init_img, strength):
+def img2img(*img2imgargs):
 
-    img2img_predict(prompt, steps, iterations, batch, seed, precision,
-                    rows, outpath, scale, width, height, set_sampler, init_img, strength)
+    img2img_predict(*img2imgargs)

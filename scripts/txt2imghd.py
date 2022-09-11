@@ -224,7 +224,7 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
         type=str,
         nargs="?",
         help="dir to write results to",
-        default="outputs/txt2imghd-samples"
+        default="outputs/txt2imghd_samples"
     )
 
     parser.add_argument(
@@ -279,7 +279,7 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
     )
     opt = parser.parse_args()
 
-    from scripts.txt2img_k_sdd_batch import model
+    from scripts.launcher import model
 
     seed_everything(seed)
 
@@ -292,7 +292,7 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
     os.makedirs(outpath, exist_ok=True)
     outpath = outpath
 
-    sample_path = os.path.join(outpath, 'samples')
+    sample_path = os.path.join(outpath, 'txt2imghd_samples')
     os.makedirs(sample_path, exist_ok=True)
 
     #wm_encoder = WatermarkEncoder()
@@ -452,8 +452,9 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
             torch.cuda.empty_cache()
             gc.collect()
 
-        final_output.save(os.path.join(sample_path, f"{base_filename}.png"))
-
+        final_output.save(os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
+        seed+= 1
+        base_count += 1
 
 def txt2imghd(*txt2imghd_args):
 

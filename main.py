@@ -27,6 +27,7 @@
 # fix art paint using view image from img2img
 # make art paint refresh load images
 # fix painting make 2 images instead of 1
+# prevent multi paint windows open
 
 import configparser
 import multiprocessing
@@ -352,12 +353,10 @@ chkpt_ini = config.get('Settings', 'ckpt_path')
 
 print('First run: ', first_run_ini)
 
-# from scripts.launcher import*
-
 
 class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
-    def __init__(self, img_paint_source=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupUi(self)
         self.generator_process = None
@@ -546,6 +545,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.inpaintButton.pressed.connect(inpaint)
 
         def art(art_source, width, height):
+            self.img2imgFile.setText(str(Path(sd_output_folder)/'art.png'))
+            self.dreamTab.setCurrentIndex(1)
             self.art_win = paintWindow(
                 sd_folder_path, art_source, int(width), int(height))
             self.art_win.show()
@@ -595,9 +596,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                     images_path)/self.imgFilename.text().replace('Filename: ', '')
                 art_source = str(art_source)
                 art(art_source, 0, 0)
-                self.dreamTab.setCurrentIndex(1)
-                # self.img2imgFile.setText('/home/pigeondave/gits/stable-diffusion-ret2/outputs/sd_dreamer/art.png')
-                # self.generateButton.click()
 
             if self.operationBox.currentIndex() == 0:
                 esrgan_upscale_op()
@@ -616,7 +614,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         self.operationsGoButton.pressed.connect(operations_hub)
 
-        def dreamer_new(img_paint_source=None):
+        def dreamer_new():
 
             prompt = str(self.promptVal.currentText())
             steps = int(self.stepsVal.value())
@@ -625,26 +623,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             seed = int(self.seedVal.text())
             precision = str(self.precisionToggle.currentText())
             rows = 3
-            outpath = Path(self.outputFolderLine.text())
+            outpath = sd_output_folder
             width = int(self.widthThing.currentText())
             height = int(self.heightThing.currentText())
             scale = float(self.scaleVal.value())
             set_sampler = str(self.samplerToggle.currentText())
             init_img = self.img2imgFile.text()
-
-            # print('imgpaintsource',img_paint_source)
-            if img_paint_source:
-                init_img = img_paint_source
-                iterations = 1
-            else:
-                init_img = self.img2imgFile.text()
-
             strength = float(self.img2imgStrength.value())
             detail_steps = int(self.txt2imgHD_steps.text())
             detail_scale = int(self.txt2imgHD_scale.text())
             realesrgan = esrgan_bin_ini
             img = init_img
             turbo = None
+
             # if self.turboCheckbox.isChecked():
             #     turbo=True
 
@@ -754,13 +745,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             if self.seedCheck.isChecked():
                 self.seedVal.setText(str(random.randint(0, 1632714927)))
-            img_paint_source = None
 
         self.generateButton.clicked.connect(dreamer_new)
-
-        if img_paint_source:
-            self.dreamTab.setCurrentIndex(1)
-            dreamer_new(img_paint_source)
 
     def load_images(self, img_path, cust_load, img_mode):
         self.generateButton.setEnabled(True)
@@ -781,7 +767,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         image_count = len(image_list)
         image_index = image_count-image_count
 
-        print(image_count, 'images in folder:', image_list)
+        print(image_count, 'images in folder')
         print('image_index=', image_index)
 
         # global image_to_display

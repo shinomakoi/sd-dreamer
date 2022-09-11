@@ -1,5 +1,7 @@
 import os
+import random
 from pathlib import Path
+from random import choice
 
 import png
 from PySide2.QtCore import *
@@ -10,8 +12,11 @@ from PySide2.QtGui import QPixmap
 from PySide2.QtWidgets import *
 from PySide2.QtWidgets import QFileDialog
 
+SPRAY_PARTICLES = 60
+SPRAY_DIAMETER = 12
+
 class paintWindow(QMainWindow):
-    def __init__(self, sd_folder_path, art_source,paint_w,paint_h):
+    def __init__(self, sd_folder_path, art_source, paint_w, paint_h):
         super().__init__()
 
         print('Art image: ', art_source)
@@ -68,6 +73,8 @@ class paintWindow(QMainWindow):
         # adding brush color to ain menu
         b_color = mainMenu.addMenu("Brush Color")
 
+        noise_toggle = mainMenu.addMenu("Noise/color")
+
         # creating save action
         saveAction = QAction("Dream", self)
         # adding short cut for save action
@@ -85,6 +92,14 @@ class paintWindow(QMainWindow):
         fileMenu.addAction(clearAction)
         # adding action to the clear
         clearAction.triggered.connect(lambda: self.clear(art_source))
+
+        noiseOnAction = QAction("Noise mode", self)
+        noise_toggle.addAction(noiseOnAction)
+        noiseOnAction.triggered.connect(lambda: self.noiseOn())
+
+        noiseOffAction = QAction("Paint brush mode", self)
+        noise_toggle.addAction(noiseOffAction)
+        noiseOffAction.triggered.connect(lambda: self.noiseOff())
 
         # creating options for brush sizes
         # creating action for selecting pixel of 4px
@@ -190,10 +205,14 @@ class paintWindow(QMainWindow):
             self.lastPoint = event.pos()
 
     # method for tracking mouse activity
+
+    global noise
+    noise = False
+
     def mouseMoveEvent(self, event):
 
         # checking if left button is pressed and drawing flag is true
-        if (event.buttons() & Qt.LeftButton) & self.drawing:
+        if (event.buttons() & Qt.LeftButton) & self.drawing and noise == False:
 
             # creating painter object
             painter = QPainter(self.image)
@@ -201,6 +220,8 @@ class paintWindow(QMainWindow):
             # set the pen of the painter
             painter.setPen(QPen(self.brushColor, self.brushSize,
                                 Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
+            pen2 = QPen()
+            pen2.setWidth(3)
 
             # draw line from the last point of cursor to the current point
             # this will draw only one step
@@ -210,6 +231,23 @@ class paintWindow(QMainWindow):
             self.lastPoint = event.pos()
             # update
             self.update()
+        else:
+            colors = [QColor(255, 0, 0, 20), QColor(
+                0, 255, 0, 20), QColor(0, 0, 255, 20)]
+
+            painter = QPainter(self.image)
+            pen = QPen()
+            pen.setWidth(2)
+            painter.setPen(QPen(self.brushSize))
+            for n in range(SPRAY_PARTICLES):
+                pen.setColor((choice(colors)))
+                xo = random.gauss(0, SPRAY_DIAMETER)
+                yo = random.gauss(0, SPRAY_DIAMETER)
+                painter.setPen(pen)
+                painter.drawPoint(event.x() + xo, event.y() + yo)
+
+                self.update()
+            painter.end()
 
     # method for mouse left button release
     def mouseReleaseEvent(self, event):
@@ -231,21 +269,29 @@ class paintWindow(QMainWindow):
         img_paint_s = (str(Path('outputs')/'sd_dreamer'/'art.png'))
         self.image.save(img_paint_s)
         print('saved to : ', img_paint_s)
-        self.setWindowTitle("Art studio")
-        from main import sd_dreamer_main
-        sd_dreamer_main(img_paint_s)
+        self.setWindowTitle("Saved - press Dream to generate")
 
     # method for clearing every thing on canvas
 
     def clear(self, art_source):
         # make the whole canvas white
-            
+
         if art_source == False:
             self.image.fill(Qt.white)
         else:
             self.image = QImage(art_source)
 
         # update
+        self.update()
+
+    def noiseOn(self):
+        global noise
+        noise = True
+
+    def noiseOff(self):
+        global noise
+        noise = False
+
         self.update()
 
     # methods for changing pixel sizes
@@ -268,11 +314,12 @@ class paintWindow(QMainWindow):
         self.brushSize = 32
 
     # methods for changing brush color
-    def blackColor(self):
-        self.brushColor = QColor(0, 0, 0, 20)
 
     def whiteColor(self):
         self.brushColor = QColor(255, 255, 255, 20)
+
+    def blackColor(self):
+        self.brushColor = QColor(0, 0, 0, 20)
 
     def greenColor(self):
         self.brushColor = QColor(85, 170, 0, 20)

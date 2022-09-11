@@ -98,7 +98,8 @@ class Ui_sd_dreamer_main(object):
         self.stepsVal.setObjectName(u"stepsVal")
         self.stepsVal.setMinimum(1)
         self.stepsVal.setMaximum(300)
-        self.stepsVal.setValue(28)
+        self.stepsVal.setValue(30)
+        self.stepsVal.setSliderPosition(30)
         self.stepsVal.setOrientation(Qt.Horizontal)
         self.stepsVal.setTickInterval(20)
 
@@ -287,6 +288,31 @@ class Ui_sd_dreamer_main(object):
         self.tab_5.setAutoFillBackground(True)
         self.gridLayout_10 = QGridLayout(self.tab_5)
         self.gridLayout_10.setObjectName(u"gridLayout_10")
+        self.groupBox_5 = QGroupBox(self.tab_5)
+        self.groupBox_5.setObjectName(u"groupBox_5")
+        self.gridLayout_13 = QGridLayout(self.groupBox_5)
+        self.gridLayout_13.setObjectName(u"gridLayout_13")
+        self.latentSRSteps = QSpinBox(self.groupBox_5)
+        self.latentSRSteps.setObjectName(u"latentSRSteps")
+        self.latentSRSteps.setMinimum(1)
+        self.latentSRSteps.setMaximum(200)
+        self.latentSRSteps.setValue(40)
+
+        self.gridLayout_13.addWidget(self.latentSRSteps, 0, 1, 1, 1)
+
+        self.label_7 = QLabel(self.groupBox_5)
+        self.label_7.setObjectName(u"label_7")
+
+        self.gridLayout_13.addWidget(self.label_7, 0, 0, 1, 1)
+
+        self.label_11 = QLabel(self.groupBox_5)
+        self.label_11.setObjectName(u"label_11")
+
+        self.gridLayout_13.addWidget(self.label_11, 0, 2, 1, 1)
+
+
+        self.gridLayout_10.addWidget(self.groupBox_5, 1, 0, 1, 1)
+
         self.groupBox = QGroupBox(self.tab_5)
         self.groupBox.setObjectName(u"groupBox")
         self.gridLayout_9 = QGridLayout(self.groupBox)
@@ -317,56 +343,6 @@ class Ui_sd_dreamer_main(object):
 
 
         self.gridLayout_10.addWidget(self.groupBox, 0, 0, 1, 1)
-
-        self.groupBox_3 = QGroupBox(self.tab_5)
-        self.groupBox_3.setObjectName(u"groupBox_3")
-        self.gridLayout_11 = QGridLayout(self.groupBox_3)
-        self.gridLayout_11.setObjectName(u"gridLayout_11")
-        self.label_28 = QLabel(self.groupBox_3)
-        self.label_28.setObjectName(u"label_28")
-
-        self.gridLayout_11.addWidget(self.label_28, 0, 1, 1, 1)
-
-        self.anonStrength = QDoubleSpinBox(self.groupBox_3)
-        self.anonStrength.setObjectName(u"anonStrength")
-        self.anonStrength.setMaximum(0.990000000000000)
-        self.anonStrength.setSingleStep(0.010000000000000)
-        self.anonStrength.setValue(0.250000000000000)
-
-        self.gridLayout_11.addWidget(self.anonStrength, 0, 2, 1, 1)
-
-        self.label_31 = QLabel(self.groupBox_3)
-        self.label_31.setObjectName(u"label_31")
-
-        self.gridLayout_11.addWidget(self.label_31, 0, 3, 1, 1)
-
-
-        self.gridLayout_10.addWidget(self.groupBox_3, 2, 0, 1, 1)
-
-        self.groupBox_5 = QGroupBox(self.tab_5)
-        self.groupBox_5.setObjectName(u"groupBox_5")
-        self.gridLayout_13 = QGridLayout(self.groupBox_5)
-        self.gridLayout_13.setObjectName(u"gridLayout_13")
-        self.latentSRSteps = QSpinBox(self.groupBox_5)
-        self.latentSRSteps.setObjectName(u"latentSRSteps")
-        self.latentSRSteps.setMinimum(1)
-        self.latentSRSteps.setMaximum(200)
-        self.latentSRSteps.setValue(40)
-
-        self.gridLayout_13.addWidget(self.latentSRSteps, 0, 1, 1, 1)
-
-        self.label_7 = QLabel(self.groupBox_5)
-        self.label_7.setObjectName(u"label_7")
-
-        self.gridLayout_13.addWidget(self.label_7, 0, 0, 1, 1)
-
-        self.label_11 = QLabel(self.groupBox_5)
-        self.label_11.setObjectName(u"label_11")
-
-        self.gridLayout_13.addWidget(self.label_11, 0, 2, 1, 1)
-
-
-        self.gridLayout_10.addWidget(self.groupBox_5, 1, 0, 1, 1)
 
         self.tabby.addTab(self.tab_5, "")
         self.tab_6 = QWidget()
@@ -481,6 +457,17 @@ class Ui_sd_dreamer_main(object):
         self.gridLayout_3.addWidget(self.groupBox_2, 1, 0, 1, 4)
 
         self.tabby.addTab(self.tab_6, "")
+        self.tab_8 = QWidget()
+        self.tab_8.setObjectName(u"tab_8")
+        self.gridLayout_11 = QGridLayout(self.tab_8)
+        self.gridLayout_11.setObjectName(u"gridLayout_11")
+        self.plainTextEdit = QPlainTextEdit(self.tab_8)
+        self.plainTextEdit.setObjectName(u"plainTextEdit")
+        self.plainTextEdit.setReadOnly(True)
+
+        self.gridLayout_11.addWidget(self.plainTextEdit, 0, 0, 1, 1)
+
+        self.tabby.addTab(self.tab_8, "")
 
         self.gridLayout.addWidget(self.tabby, 1, 0, 1, 1)
 
@@ -631,6 +618,7 @@ class Ui_sd_dreamer_main(object):
         self.nextImageButton.setAutoRepeat(True)
         self.nextImageButton.setAutoRepeatDelay(400)
         self.nextImageButton.setAutoRepeatInterval(150)
+        self.nextImageButton.setFlat(False)
 
         self.gridLayout.addWidget(self.nextImageButton, 3, 1, 1, 1)
 
@@ -646,7 +634,7 @@ class Ui_sd_dreamer_main(object):
         self.generateButton.setFont(font)
         self.generateButton.setIcon(icon)
         self.generateButton.setIconSize(QSize(24, 24))
-        self.generateButton.setAutoDefault(True)
+        self.generateButton.setAutoDefault(False)
         self.generateButton.setFlat(False)
 
         self.gridLayout.addWidget(self.generateButton, 6, 0, 1, 1)
@@ -745,6 +733,7 @@ class Ui_sd_dreamer_main(object):
         self.previousImgButton.setAutoRepeat(True)
         self.previousImgButton.setAutoRepeatDelay(400)
         self.previousImgButton.setAutoRepeatInterval(150)
+        self.previousImgButton.setFlat(False)
 
         self.gridLayout.addWidget(self.previousImgButton, 3, 3, 1, 1)
 
@@ -761,7 +750,7 @@ class Ui_sd_dreamer_main(object):
         self.heightThing.setCurrentIndex(4)
         self.samplerToggle.setCurrentIndex(3)
         self.modelScale.setCurrentIndex(2)
-        self.dreamTab.setCurrentIndex(1)
+        self.dreamTab.setCurrentIndex(0)
         self.generateButton.setDefault(True)
         self.operationBox.setCurrentIndex(3)
 
@@ -804,12 +793,12 @@ class Ui_sd_dreamer_main(object):
         self.stepsVal.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Number of steps. Max recommended 150", None))
 #endif // QT_CONFIG(tooltip)
         self.scale_4.setText(QCoreApplication.translate("sd_dreamer_main", u"Batch size", None))
-        self.label_6.setText(QCoreApplication.translate("sd_dreamer_main", u"28", None))
+        self.label_6.setText(QCoreApplication.translate("sd_dreamer_main", u"30", None))
         self.precisionToggle.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"autocast", None))
         self.precisionToggle.setItemText(1, QCoreApplication.translate("sd_dreamer_main", u"full", None))
 
 #if QT_CONFIG(tooltip)
-        self.precisionToggle.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Precision", None))
+        self.precisionToggle.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"'Full' uses much more VRAM. autocast recommended", None))
 #endif // QT_CONFIG(tooltip)
         self.precisionToggle.setCurrentText(QCoreApplication.translate("sd_dreamer_main", u"autocast", None))
 #if QT_CONFIG(tooltip)
@@ -841,7 +830,7 @@ class Ui_sd_dreamer_main(object):
         self.label_25.setText(QCoreApplication.translate("sd_dreamer_main", u"8", None))
         self.label_2.setText(QCoreApplication.translate("sd_dreamer_main", u"Height", None))
 #if QT_CONFIG(tooltip)
-        self.batchVal.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Number of batches", None))
+        self.batchVal.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Number of batches. Higher = more VRAM", None))
 #endif // QT_CONFIG(tooltip)
         self.label_20.setText(QCoreApplication.translate("sd_dreamer_main", u"Sampler", None))
         self.Steps.setText(QCoreApplication.translate("sd_dreamer_main", u"Steps", None))
@@ -864,7 +853,10 @@ class Ui_sd_dreamer_main(object):
         self.samplerToggle.setItemText(7, QCoreApplication.translate("sd_dreamer_main", u"k_heun", None))
 
 #if QT_CONFIG(tooltip)
-        self.samplerToggle.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Sampler", None))
+        self.samplerToggle.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Sampler. Different samplers produce different images and have different speeds", None))
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(tooltip)
+        self.optimCheckbox.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Uses less VRAM but slower. Requires fresh launch", None))
 #endif // QT_CONFIG(tooltip)
         self.optimCheckbox.setText(QCoreApplication.translate("sd_dreamer_main", u"Low VRAM mode (requires relaunch)", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_3), QCoreApplication.translate("sd_dreamer_main", u"Options", None))
@@ -881,24 +873,27 @@ class Ui_sd_dreamer_main(object):
         self.inpaintSteps.setText(QCoreApplication.translate("sd_dreamer_main", u"30", None))
         self.inpaint_img_select.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_4), QCoreApplication.translate("sd_dreamer_main", u"Inpainting", None))
+        self.groupBox_5.setTitle(QCoreApplication.translate("sd_dreamer_main", u"LatentSR", None))
+#if QT_CONFIG(tooltip)
+        self.latentSRSteps.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Higher = slower, sharper details", None))
+#endif // QT_CONFIG(tooltip)
+        self.label_7.setText(QCoreApplication.translate("sd_dreamer_main", u"Steps", None))
+        self.label_11.setText(QCoreApplication.translate("sd_dreamer_main", u"1-200", None))
         self.groupBox.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Real-ESRGAN", None))
 #if QT_CONFIG(tooltip)
         self.rnvModelSelect.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select Real-ESGRAN NCNN model", None))
 #endif // QT_CONFIG(tooltip)
         self.label_32.setText(QCoreApplication.translate("sd_dreamer_main", u"Model select", None))
-        self.label_16.setText(QCoreApplication.translate("sd_dreamer_main", u"Scale: x", None))
+        self.label_16.setText(QCoreApplication.translate("sd_dreamer_main", u"Scale", None))
         self.modelScale.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"1", None))
         self.modelScale.setItemText(1, QCoreApplication.translate("sd_dreamer_main", u"2", None))
         self.modelScale.setItemText(2, QCoreApplication.translate("sd_dreamer_main", u"4", None))
         self.modelScale.setItemText(3, QCoreApplication.translate("sd_dreamer_main", u"8", None))
 
+#if QT_CONFIG(tooltip)
+        self.modelScale.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select the right scale for the selected model", None))
+#endif // QT_CONFIG(tooltip)
         self.modelScale.setCurrentText(QCoreApplication.translate("sd_dreamer_main", u"4", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Anon's upsampler", None))
-        self.label_28.setText(QCoreApplication.translate("sd_dreamer_main", u"Strength", None))
-        self.label_31.setText(QCoreApplication.translate("sd_dreamer_main", u"0.1 - 0.99", None))
-        self.groupBox_5.setTitle(QCoreApplication.translate("sd_dreamer_main", u"LatentSR", None))
-        self.label_7.setText(QCoreApplication.translate("sd_dreamer_main", u"Steps", None))
-        self.label_11.setText(QCoreApplication.translate("sd_dreamer_main", u"1-200", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_5), QCoreApplication.translate("sd_dreamer_main", u"Upscaling", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Paths", None))
         self.rnvBinPathSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
@@ -921,15 +916,25 @@ class Ui_sd_dreamer_main(object):
         self.rnvModelPathSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.label_18.setText(QCoreApplication.translate("sd_dreamer_main", u"Python path (don't change):", None))
 #if QT_CONFIG(tooltip)
-        self.rnvBinPath.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Path to the binary", None))
+        self.rnvBinPath.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Path to the Real-ESRGAN executable", None))
 #endif // QT_CONFIG(tooltip)
         self.rnvBinPath.setText(QCoreApplication.translate("sd_dreamer_main", u"/usr/bin/realesrgan-ncnn-vulkan", None))
         self.rnvBinPath.setPlaceholderText(QCoreApplication.translate("sd_dreamer_main", u"Path to the base directory of stable diffusion", None))
         self.label_10.setText(QCoreApplication.translate("sd_dreamer_main", u"Output folder:", None))
+#if QT_CONFIG(tooltip)
+        self.custCheckpointLine.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select a model/checkpoint (.ckpt file)", None))
+#endif // QT_CONFIG(tooltip)
         self.label_13.setText(QCoreApplication.translate("sd_dreamer_main", u"Model/custom stable diffusion model:", None))
         self.pyBinSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.tabby.setTabText(self.tabby.indexOf(self.tab_6), QCoreApplication.translate("sd_dreamer_main", u"Settings", None))
+        self.plainTextEdit.setPlainText(QCoreApplication.translate("sd_dreamer_main", u"Protip: you can cycle through images with left and right arrow keys and scroll up and down with up/down keys. Holding down button/key repeat cycles through images\n"
+"\n"
+"'Enter' key activates 'Dream' button", None))
+        self.tabby.setTabText(self.tabby.indexOf(self.tab_8), QCoreApplication.translate("sd_dreamer_main", u"Help", None))
         self.imageView.setText("")
+#if QT_CONFIG(tooltip)
+        self.dreamTab.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select the mode to operate as", None))
+#endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         self.gridCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Don't produce a grid", None))
 #endif // QT_CONFIG(tooltip)
@@ -939,6 +944,9 @@ class Ui_sd_dreamer_main(object):
 #endif // QT_CONFIG(tooltip)
         self.seedCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Random seed", None))
         self.dreamTab.setTabText(self.dreamTab.indexOf(self.tab), QCoreApplication.translate("sd_dreamer_main", u"txt2img", None))
+#if QT_CONFIG(tooltip)
+        self.img2imgStrength.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Strength of denoising. Lower the value, closer to original image", None))
+#endif // QT_CONFIG(tooltip)
         self.imgIndex.setText(QCoreApplication.translate("sd_dreamer_main", u"0", None))
         self.label_27.setText(QCoreApplication.translate("sd_dreamer_main", u"Strength", None))
 #if QT_CONFIG(tooltip)
@@ -949,14 +957,29 @@ class Ui_sd_dreamer_main(object):
 #endif // QT_CONFIG(statustip)
         self.img2imgFile.setPlaceholderText(QCoreApplication.translate("sd_dreamer_main", u"Input image for img2img", None))
         self.label_26.setText(QCoreApplication.translate("sd_dreamer_main", u"0.1 - 0.99", None))
+#if QT_CONFIG(tooltip)
+        self.artButton.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Paint an image", None))
+#endif // QT_CONFIG(tooltip)
         self.artButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Paint an image", None))
         self.img2imgDisplayed.setText(QCoreApplication.translate("sd_dreamer_main", u"Use image displayed in viewer", None))
+#if QT_CONFIG(tooltip)
+        self.imgFileSelect.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select file", None))
+#endif // QT_CONFIG(tooltip)
         self.imgFileSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.dreamTab.setTabText(self.dreamTab.indexOf(self.tab_2), QCoreApplication.translate("sd_dreamer_main", u"img2img", None))
+#if QT_CONFIG(tooltip)
+        self.txt2imgHDImg.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Initialise from an image", None))
+#endif // QT_CONFIG(tooltip)
         self.txt2imgHDImg.setText(QCoreApplication.translate("sd_dreamer_main", u"Use an input image (as set in img2img)", None))
+#if QT_CONFIG(tooltip)
+        self.txt2imgHD_scale.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"CFG scale for generation", None))
+#endif // QT_CONFIG(tooltip)
         self.label_3.setText(QCoreApplication.translate("sd_dreamer_main", u"Detail steps", None))
         self.label_5.setText(QCoreApplication.translate("sd_dreamer_main", u"Detail scale", None))
         self.label_4.setText(QCoreApplication.translate("sd_dreamer_main", u"Requires Real-ESRGAN. Not work with Low VRAM mode", None))
+#if QT_CONFIG(tooltip)
+        self.txt2imgHD_steps.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Detailing steps. More = longer generation", None))
+#endif // QT_CONFIG(tooltip)
         self.dreamTab.setTabText(self.dreamTab.indexOf(self.tab_7), QCoreApplication.translate("sd_dreamer_main", u" txt2imgHD", None))
         self.nextImageButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Previous", None))
 #if QT_CONFIG(shortcut)
@@ -966,6 +989,9 @@ class Ui_sd_dreamer_main(object):
         self.generateButton.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Generate images", None))
 #endif // QT_CONFIG(tooltip)
         self.generateButton.setText(QCoreApplication.translate("sd_dreamer_main", u"Dream", None))
+#if QT_CONFIG(shortcut)
+        self.generateButton.setShortcut(QCoreApplication.translate("sd_dreamer_main", u"Return", None))
+#endif // QT_CONFIG(shortcut)
 #if QT_CONFIG(tooltip)
         self.processOutput.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Stable diffusion output", None))
 #endif // QT_CONFIG(tooltip)

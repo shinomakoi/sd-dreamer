@@ -639,11 +639,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             # if self.turboCheckbox.isChecked():
             #     turbo=True
 
-            outpath = str(Path(self.outputFolderLine.text()))
-            outpath = str(outpath[:140])
-
-            for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (' ', "_"), (',', ""), ('.', ""), ('\n', ""), (' ', '_')):
-                outpath = outpath.replace(*r).strip()
+            outpath = sd_output_folder
 
             if self.dreamTab.currentIndex() == 0:
                 txt2img_args = prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, turbo

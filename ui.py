@@ -3,14 +3,14 @@
 ################################################################################
 ## Form generated from reading UI file 'main_frame.ui'
 ##
-## Created by: Qt User Interface Compiler version 5.15.2
+## Created by: Qt User Interface Compiler version 5.15.5
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide2.QtCore import *  # type: ignore
+from PySide2.QtGui import *  # type: ignore
+from PySide2.QtWidgets import *  # type: ignore
 
 
 class Ui_sd_dreamer_main(object):
@@ -31,7 +31,7 @@ class Ui_sd_dreamer_main(object):
         self.scrollArea.setAlignment(Qt.AlignCenter)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 845, 658))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 842, 652))
         self.gridLayout_15 = QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_15.setObjectName(u"gridLayout_15")
         self.imageView = QLabel(self.scrollAreaWidgetContents)
@@ -749,7 +749,7 @@ class Ui_sd_dreamer_main(object):
         self.batchVal.valueChanged.connect(self.label_22.setNum)
 
         self.promptVal.setCurrentIndex(-1)
-        self.tabby.setCurrentIndex(3)
+        self.tabby.setCurrentIndex(0)
         self.widthThing.setCurrentIndex(4)
         self.heightThing.setCurrentIndex(4)
         self.samplerToggle.setCurrentIndex(3)

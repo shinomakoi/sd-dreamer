@@ -76,7 +76,7 @@ class paintWindow(QMainWindow):
         noise_toggle = mainMenu.addMenu("Noise/color")
 
         # creating save action
-        saveAction = QAction("Dream", self)
+        saveAction = QAction("Save", self)
         # adding short cut for save action
         saveAction.setShortcut("Ctrl + S")
         # adding save to the file menu
@@ -87,7 +87,7 @@ class paintWindow(QMainWindow):
         # creating clear action
         clearAction = QAction("Clear", self)
         # adding short cut to the clear action
-        clearAction.setShortcut("Ctrl + C")
+        clearAction.setShortcut("Ctrl + Z")
         # adding clear to the file menu
         fileMenu.addAction(clearAction)
         # adding action to the clear
@@ -269,7 +269,7 @@ class paintWindow(QMainWindow):
         img_paint_s = (str(Path('outputs')/'sd_dreamer'/'art.png'))
         self.image.save(img_paint_s)
         print('saved to : ', img_paint_s)
-        self.setWindowTitle("Saved - press Dream to generate")
+        self.setWindowTitle("Saved - press 'Dream' to generate")
 
     # method for clearing every thing on canvas
 

@@ -451,7 +451,8 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
 
             torch.cuda.empty_cache()
             gc.collect()
-
+        for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""), ('\n', ""), (' ', '_')):
+            prompt = prompt.replace(*r).strip()
         final_output.save(os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
         seed+= 1
         base_count += 1

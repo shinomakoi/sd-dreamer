@@ -233,6 +233,8 @@ def txt2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
                         x_sample = 255.0 * \
                             rearrange(
                                 x_sample[0].cpu().numpy(), "c h w -> h w c")
+                        for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""), ('\n', ""), (' ', '_')):
+                            prompt = prompt.replace(*r).strip()
                         Image.fromarray(x_sample.astype(np.uint8)).save(
                             os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
                         seeds += str(seed) + ","

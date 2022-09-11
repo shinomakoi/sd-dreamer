@@ -131,11 +131,14 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
                             (x_samples + 1.0) / 2.0, min=0.0, max=1.0)
                         x_samples = accelerator.gather(x_samples)
 
+
                         if accelerator.is_main_process:
                             for x_sample in x_samples:
                                 x_sample = 255. * \
                                     rearrange(x_sample.cpu().numpy(),
                                               'c h w -> h w c')
+                                for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""), ('\n', ""), (' ', '_')):
+                                    prompt = prompt.replace(*r).strip()
                                 Image.fromarray(x_sample.astype(np.uint8)).save(
                                     os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
                                 seed+= 1

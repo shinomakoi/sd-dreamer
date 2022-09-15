@@ -726,6 +726,13 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         def thread_result(dream_images_to_load):
             print('thread result function')
 
+            if self.seedCheck.isChecked():
+                self.seedVal.setText(str(random.randint(0, 1632714927)))
+
+            self.promptVal.addItem(self.promptVal.currentText())
+            f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")
+            f.write('\n'+self.promptVal.currentText())
+            f.close()
 
             mode_load_images = Load_Images_Class()
             load_img_things = mode_load_images.load_images(
@@ -844,13 +851,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                     self.threadpool.start(worker)
                 launch_txt2imghd()
 
-            self.promptVal.addItem(self.promptVal.currentText())
-            f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")
-            f.write('\n'+self.promptVal.currentText())
-            f.close()
-
-            if self.seedCheck.isChecked():
-                self.seedVal.setText(str(random.randint(0, 1632714927)))
 
         self.generateButton.clicked.connect(dreamer_new)
 

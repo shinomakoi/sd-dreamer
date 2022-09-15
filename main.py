@@ -17,8 +17,6 @@
 # txt2imgHD using img2img even when unchecked? when paint?
 # add drag and drop for images
 # add img2img to op center
-# filter out folders and other files from imageview
-
 # new inpainting
 # ksamplers to txt2imgHD
 # paint work with optimized
@@ -29,6 +27,9 @@
 # prevent multi paint windows open
 # progress bar
 # add tiling, prompt weights, new stable img2img
+# fix unicode prompt error on win with chinese characters etc
+# add config yaml path option
+#grids in separate folder
 
 import configparser
 import glob
@@ -102,7 +103,8 @@ class Load_Images_Class:
         images_path=str(Path(images_path)/'*.png')
         global image_list
         image_list = []
-        image_list = glob.glob(images_path)
+        image_list = glob.glob(images_path,recursive=True)
+        # glob.glob('**/*.txt', recursive=True)
 
         image_list.sort(reverse=True)
         image_count = len(image_list)
@@ -479,7 +481,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.imgFilename.setText('Filename: '+image_to_display)
                 pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
                 self.imageView.setPixmap(pixmap)
-                # print('next to',image_to_display)
+                print('next to',image_to_display)
                 self.imgIndex.setText(str(image_index))
 
             if button == 'previous' and int(image_index) > 0:
@@ -488,7 +490,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.imgFilename.setText('Filename: '+image_to_display)
                 pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
                 self.imageView.setPixmap(pixmap)
-                # print('next to',image_to_display)
+                print('next to',image_to_display)
                 self.imgIndex.setText(str(image_index))
 
         self.nextImageButton.clicked.connect(lambda: cycle_images('next'))
@@ -542,13 +544,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 if x.endswith(".bin"):
                     self.rnvModelSelect.addItem(x.strip('.bin'))
         except:
-            print('Real-ESGRAN models not found')
+            print('Real-ESRGAN models not found')
 
 # saving the paths to the ini file
         def refresh_images():
-            loady = Load_Images_Class()
-            loady.load_images(self.operationFolder.text(), True, 'custom')
-            self.nextImageButton.click()
+            if len(self.operationFolder.text()) > 0:
+                loady = Load_Images_Class()
+                loady.load_images(self.operationFolder.text(), True, 'custom')
+                self.nextImageButton.click()
 
         self.imageLoadButton.clicked.connect(refresh_images)
 
@@ -892,10 +895,11 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             ), '-s', self.modelScale.currentText(), '-i', str(op_input_path), '-o', str(esrgan_out_path)]
 
             if self.operationOne.isChecked():
-                esrgan_args[-1] = str(Path(esrgan_out_path)/(single_image))
+                file_o=os.path.split(op_input_path)[-1]
+                print(file_o)
+                one_op_path=Path(esrgan_out_path)/(file_o)
+                esrgan_args[-1] = str(Path(one_op_path))
                 print('ESGRAN args: ', esrgan_args)
-                print('broken for now, quitting')
-                return
 
             self.generator_process.start(self.rnvBinPath.text(), esrgan_args)
             return

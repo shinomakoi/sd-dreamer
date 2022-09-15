@@ -14,8 +14,24 @@ from torch import autocast
 from torchvision.utils import make_grid
 from tqdm import tqdm, trange
 
-from scripts.launcher import (CFGDenoiser, create_random_tensors,
-                                         model)
+from scripts.launcher import CFGDenoiser, model, torch
+
+
+def torch_gc():
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+    print('Finished. Torch cache cleaned')
+
+
+def create_random_tensors(shape, seeds, device):
+    xs = []
+    for seed in seeds:
+        torch.manual_seed(seed)
+        xs.append(torch.randn(shape, device=device))
+    x = torch.stack(xs, 0)
+    return x
+
 
 parser = argparse.ArgumentParser()
 
@@ -95,13 +111,13 @@ def txt2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
                 for x_sample in x_samples_ddim:
                     x_sample = 255. * \
                         rearrange(x_sample.cpu().numpy(), 'c h w -> h w c')
-                    for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""), 
-                                ('\n', ""), (' ', '_'),('/', '_'),('\\', '_'),(':', '_')):
+                    for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""),
+                              ('\n', ""), (' ', '_'), ('/', '_'), ('\\', '_'), (':', '_')):
                         prompt = prompt.replace(*r).strip()
                     Image.fromarray(x_sample.astype(np.uint8)).save(
                         os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
                     seeds += str(seed) + ","
-                    seed+= 1
+                    seed += 1
                     base_count += 1
 
                 all_samples.append(x_samples_ddim)
@@ -180,8 +196,8 @@ def txt2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
                                 x_sample = 255. * \
                                     rearrange(x_sample.cpu().numpy(),
                                               'c h w -> h w c')
-                                for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""), 
-                                ('\n', ""), (' ', '_'),('/', '_'),('\\', '_'),(':', '_')):
+                                for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""),
+                                          ('\n', ""), (' ', '_'), ('/', '_'), ('\\', '_'), (':', '_')):
                                     prompt = prompt.replace(*r).strip()
                                 Image.fromarray(x_sample.astype(np.uint8)).save(
                                     os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
@@ -205,8 +221,10 @@ def txt2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
 
         print(f"Your samples are ready and waiting for you here: \n{outpath} \n"
               f" \nEnjoy.")
-
+import threading
 
 def txt2img(*txt2img_args):
-
-    txt2img_predict(*txt2img_args)
+    t1 = threading.Thread(target=txt2img_predict, args=(txt2img_args))
+    t1.start()
+    t1.join()
+    torch_gc()

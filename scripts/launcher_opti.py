@@ -17,9 +17,9 @@ settings_file = (settings_path)
 config.read(settings_path)
 chkpt_ini=config.get('Settings', 'ckpt_path')
 
-
 configy_path=(os.path.dirname(os.path.realpath(__file__)))
-config = Path(configy_path)/'v1-inference.yaml'
+config = str(Path(configy_path).parent.parent/'optimizedSD_sdd'/'v1-inference.yaml')
+print('opti config path=',config)
 config = OmegaConf.load(f"{config}")
 # config = OmegaConf.load(f"{opt.config}")
 # model = load_model_from_config(config, f"{chkpt_ini}")
@@ -99,8 +99,8 @@ def torch_gc():
         print('Torch cache cleaned')
 torch_gc()
 
-from scripts.optimized_txt2img_k_sdd import txt2img_opti
-from scripts.optimized_img2img_k_sdd import img2img_opti
+from optimizedSD_sdd.optimized_txt2img_k_sdd import txt2img_opti
+from optimizedSD_sdd.optimized_img2img_k_sdd import img2img_opti
 
 def txt2img_opti_main(*txt2img_args):
     txt2img_opti(*txt2img_args)

@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from einops import rearrange, repeat
+from einops import rearrange
 from ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
 from PIL import Image
@@ -21,45 +21,24 @@ from torchvision.utils import make_grid
 from tqdm import tqdm, trange
 from transformers import logging
 from pathlib import Path
-from ldm.models.diffusion.ddim import DDIMSampler
+from optimizedSD_sdd.optimUtils import logger, split_weighted_subprompts
 
-from scripts.optimUtils import logger, split_weighted_subprompts
+def torch_gc():
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+    print('Finished. Torch cache cleaned')
 
 logging.set_verbosity_error()
 
+def txt2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, turbo):
 
-def load_img(path, h0, w0):
+    # configy_path=(os.path.dirname(os.path.realpath(__file__)))
 
-    image = Image.open(path).convert("RGB")
-    w, h = image.size
-
-    print(f"loaded input image of size ({w}, {h}) from {path}")
-    if h0 is not None and w0 is not None:
-        h, w = h0, w0
-
-    # resize to integer multiple of 32
-    w, h = map(lambda x: x - x % 64, (w, h))
-
-    print(f"New image size ({w}, {h})")
-    image = image.resize((w, h), resample=Image.LANCZOS)
-    image = np.array(image).astype(np.float32) / 255.0
-    image = image[None].transpose(0, 3, 1, 2)
-    image = torch.from_numpy(image)
-    return 2.0 * image - 1.0
-
-
-def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, init_img, strength, turbo):
-    configy_path=(os.path.dirname(os.path.realpath(__file__)))
-
-    config = Path(configy_path)/'v1-inference.yaml'
+    # config = '/home/pigeondave/gits/stable-diffusion-ret2/sd_dreamer/scripts/v1-inference.yaml'
+    # ckpt = "/mnt/ext4_data0/trinart2_step60000.ckpt"
 
     parser = argparse.ArgumentParser()
-
-    parser.add_argument(
-        "--skip_grid",
-        action="store_true",
-        help="do not save a grid, only individual samples. Helpful when evaluating lots of samples",
-    )
 
     parser.add_argument(
         "--ddim_eta",
@@ -67,7 +46,19 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
         default=0.0,
         help="ddim eta (eta=0.0 corresponds to deterministic sampling",
     )
+    parser.add_argument(
+        "--C",
+        type=int,
+        default=4,
+        help="latent channels",
+    )
 
+    parser.add_argument(
+        "--f",
+        type=int,
+        default=8,
+        help="downsampling factor",
+    )
     parser.add_argument(
         "--device",
         type=str,
@@ -85,22 +76,22 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
         action="store_true",
         help="Reduces inference time on the expense of 1GB VRAM",
     )
+    parser.add_argument(
+        "--format",
+        type=str,
+        help="output image format",
+        choices=["jpg", "png"],
+        default="png",
+    )
 
     parser.add_argument(
         "--plms",
         action='store_true',
         help="Enables PLMS sampler.",
     )
-    parser.add_argument(
-        "--sampler",
-        type=str,
-        help="Choose the sampler used",
-        choices=["lms", "euler", "euler_a", "dpm", "dpm_a", "heun"],
-        default="lms"
-    )
 
     opt = parser.parse_args()
-
+    
     if set_sampler != 'plms' and set_sampler!= 'ddim':
 
         ksamplers = {'k_lms': K.sampling.sample_lms,
@@ -122,53 +113,35 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
     # seed_everything(seed)
 
     # Logging
-    logger(vars(opt), log_csv="logs/img2img_logs.csv")
+    logger(vars(opt), log_csv="logs/txt2img_logs.csv")
+
     from scripts.launcher_opti import model, modelCS, modelFS
 
-
-    assert os.path.isfile(init_img)
-    init_image = load_img(init_img, height, width).to(opt.device)
-
+    if turbo:
+        print('turbo on')
+    else:
+        print('turbo off')
 
     # As the model no longer self-seeds on initialization, we must do this should we
     # reject the built-in sampling method.
-    if set_sampler != 'plms' or 'ddim':
+    if set_sampler != 'plms' and set_sampler!= 'ddim':
         model.make_schedule(ddim_num_steps=steps,
                             ddim_eta=opt.ddim_eta, verbose=False)
-    from scripts.launcher_opti import CFGDenoiser
-
 
     model_wrap = K.external.CompVisDenoiser(model)
     sigma_min, sigma_max = model_wrap.sigmas[0].item(
     ), model_wrap.sigmas[-1].item()
 
+    model.half()
+    modelCS.half()
 
-    if opt.device != 'cpu' and precision == "autocast":
-        model.half()
-        modelCS.half()
-        modelFS.half()
-        init_image = init_image.half()
+    start_code = None
 
     batch_size = batch
     n_rows = rows if rows > 0 else batch_size
+    prompt = prompt
     assert prompt is not None
     data = [batch_size * [prompt]]
-
-    modelFS.to(opt.device)
-
-    init_image = repeat(init_image, "1 ... -> b ...", b=batch_size)
-    init_latent = modelFS.get_first_stage_encoding(
-        modelFS.encode_first_stage(init_image))  # move to latent space
-
-    if opt.device != "cpu":
-        mem = torch.cuda.memory_allocated() / 1e6
-        modelFS.to("cpu")
-        while torch.cuda.memory_allocated() / 1e6 >= mem:
-            time.sleep(1)
-
-    assert 0.0 <= strength <= 1.0, "can only work with strength in [0.0, 1.0]"
-    t_enc = int(strength * steps)
-    print(f"target t_enc is {t_enc} steps")
 
     if precision == "autocast" and opt.device != "cpu":
         precision_scope = autocast
@@ -182,7 +155,7 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
         for n in trange(iterations, desc="Sampling"):
             for prompts in tqdm(data, desc="data"):
 
-                sample_path = os.path.join(outpath, "img2img_samples")
+                sample_path = os.path.join(outpath, "txt2img_samples")
                 os.makedirs(sample_path, exist_ok=True)
                 base_count = len(os.listdir(sample_path))
                 grid_count = len(os.listdir(outpath)) - 1
@@ -210,39 +183,48 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
                     else:
                         c = modelCS.get_learned_conditioning(prompts)
 
+                    shape = [opt.C, height // opt.f, width // opt.f]
+
                     if opt.device != "cpu":
                         mem = torch.cuda.memory_allocated() / 1e6
                         modelCS.to("cpu")
                         while torch.cuda.memory_allocated() / 1e6 >= mem:
                             time.sleep(1)
 
-                    samples_ddim = None
+                    # samples_ddim = None
+                    # sampler_str = "k_lms"
 
                     if set_sampler != 'plms' and set_sampler!= 'ddim':
+                        # We adapt from the original DDIM setup to k_lms here.
                         sigmas = model_wrap.get_sigmas(steps)
-                        # changes manual seeding procedure
-                        torch.manual_seed(seed)
-                        # sigmas = K.sampling.get_sigmas_karras(steps, sigma_min, sigma_max, device=device)
-                        noise = torch.randn_like(
-                            init_latent) * sigmas[steps - t_enc - 1]  # for GPU draw
-                        xi = init_latent + noise
-                        sigma_sched = sigmas[steps - t_enc - 1:]
-                        # x = torch.randn([batch, *shape]).to(device) * sigmas[0] # for CPU draw
+                        from scripts.launcher_opti import CFGDenoiser
                         model_wrap_cfg = CFGDenoiser(model_wrap)
+
+                        torch.manual_seed(seed)
+
+                        x = torch.randn([batch, *shape],
+                                        device=opt.device) * sigmas[0]
                         extra_args = {'cond': c,
                                       'uncond': uc, 'cond_scale': scale}
+
                         samples_ddim = sampler(
-                            model_wrap_cfg, xi, sigma_sched, extra_args=extra_args, disable=False)
-
+                            model_wrap_cfg, x, sigmas, extra_args=extra_args, disable=False)
                     else:
-                        sampler = DDIMSampler(model)
-
-                        z_enc = model.stochastic_encode(init_latent, torch.tensor(
-                            [t_enc]*batch_size).to(opt.device), seed, opt.ddim_eta, steps)
-                        samples_ddim = model.decode(z_enc, c, t_enc, unconditional_guidance_scale=scale,
-                                                    unconditional_conditioning=uc,)
+                        sampler_str = "plms"
+                        samples_ddim = model.sample(S=steps,
+                                                    conditioning=c,
+                                                    batch_size=batch,
+                                                    seed=seed,
+                                                    shape=shape,
+                                                    verbose=False,
+                                                    unconditional_guidance_scale=scale,
+                                                    unconditional_conditioning=uc,
+                                                    eta=opt.ddim_eta,
+                                                    x_T=start_code)
 
                     modelFS.to(opt.device)
+
+                    print(samples_ddim.shape)
                     print("saving images")
                     for i in range(batch_size):
 
@@ -257,7 +239,7 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
                                 ('\n', ""), (' ', '_'),('/', '_'),('\\', '_'),(':', '_')):
                             prompt = prompt.replace(*r).strip()
                         Image.fromarray(x_sample.astype(np.uint8)).save(
-                                os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
+                            os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
                         seeds += str(seed) + ","
                         seed += 1
                         base_count += 1
@@ -267,7 +249,6 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
                         modelFS.to("cpu")
                         while torch.cuda.memory_allocated() / 1e6 >= mem:
                             time.sleep(1)
-
                     del samples_ddim
                     print("memory_final = ", torch.cuda.memory_allocated() / 1e6)
 
@@ -283,9 +264,7 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
             + seeds[:-1]
         ).format(time_taken)
     )
-import threading
 
-def img2img_opti(*img2img_args):
-    t1 = threading.Thread(target=img2img_opti_predict, args=(img2img_args))
-    t1.start()
-    t1.join()
+def txt2img_opti(*txt2img_args):
+    txt2img_opti_predict(*txt2img_args)
+    torch_gc()

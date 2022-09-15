@@ -12,8 +12,8 @@ from PySide2.QtGui import QPixmap
 from PySide2.QtWidgets import *
 from PySide2.QtWidgets import QFileDialog
 
-SPRAY_PARTICLES = 60
-SPRAY_DIAMETER = 12
+SPRAY_PARTICLES = 40
+SPRAY_DIAMETER = 9
 
 class paintWindow(QMainWindow):
     def __init__(self, sd_folder_path, art_source, paint_w, paint_h):
@@ -232,8 +232,8 @@ class paintWindow(QMainWindow):
             # update
             self.update()
         else:
-            colors = [QColor(255, 0, 0, 20), QColor(
-                0, 255, 0, 20), QColor(0, 0, 255, 20)]
+            colors = [QColor(255, 0, 0, 10), QColor(
+                0, 255, 0, 10), QColor(0, 0, 255, 10)]
 
             painter = QPainter(self.image)
             pen = QPen()

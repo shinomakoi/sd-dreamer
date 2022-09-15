@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import threading
 import time
 from contextlib import nullcontext
 
@@ -19,6 +20,12 @@ from tqdm import tqdm, trange
 
 from scripts.launcher import CFGDenoiser, model
 
+def torch_gc():
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+    print('Finished. Torch cache cleaned')
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
@@ -33,6 +40,7 @@ parser.add_argument(
     default=8,
     help="downsampling factor, most often 8 or 16",
 )
+
 
 def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, init_img, strength, turbo):
 
@@ -53,7 +61,6 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
         print('ddim and plms currently not available')
 
     sampler = ksamplers[set_sampler]
-    
 
     print('arguments: ', prompt, steps, iterations, batch, seed, precision,
           rows, outpath, scale, width, height, set_sampler, init_img, strength)
@@ -69,7 +76,8 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
         w, h = image.size
         print(f"loaded input image of size ({w}, {h}) from {path}")
         w, h = map(lambda x: x - x % 64, (w, h))  # lmao, it's 64 not 32
-        image = image.resize((w, h), resample=PIL.Image.LANCZOS)
+        image = image.resize(
+            (width, height), resample=PIL.Image.Resampling.LANCZOS)
         image = np.array(image).astype(np.float32) / 255.0
         image = image[None].transpose(0, 3, 1, 2)
         image = torch.from_numpy(image).half()
@@ -131,18 +139,17 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
                             (x_samples + 1.0) / 2.0, min=0.0, max=1.0)
                         x_samples = accelerator.gather(x_samples)
 
-
                         if accelerator.is_main_process:
                             for x_sample in x_samples:
                                 x_sample = 255. * \
                                     rearrange(x_sample.cpu().numpy(),
                                               'c h w -> h w c')
-                                for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""), 
-                                ('\n', ""), (' ', '_'),('/', '_'),('\\', '_'),(':', '_')):
+                                for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""),
+                                          ('\n', ""), (' ', '_'), ('/', '_'), ('\\', '_'), (':', '_')):
                                     prompt = prompt.replace(*r).strip()
                                 Image.fromarray(x_sample.astype(np.uint8)).save(
                                     os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
-                                seed+= 1
+                                seed += 1
                                 base_count += 1
 
                         if accelerator.is_main_process:
@@ -167,5 +174,7 @@ def img2img_predict(prompt, steps, iterations, batch, seed, precision, rows, out
 
 
 def img2img(*img2imgargs):
-
-    img2img_predict(*img2imgargs)
+    t1 = threading.Thread(target=img2img_predict, args=(img2imgargs))
+    t1.start()
+    t1.join()
+    torch_gc()

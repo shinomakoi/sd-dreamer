@@ -26,9 +26,6 @@ from scripts.optimUtils import logger, split_weighted_subprompts
 
 logging.set_verbosity_error()
 
-print("otp txt2imghd")
-
-
 def txt2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, turbo):
 
     configy_path=(os.path.dirname(os.path.realpath(__file__)))
@@ -263,7 +260,9 @@ def txt2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
         ).format(time_taken)
     )
 
+import threading
 
 def txt2img_opti(*txt2img_args):
-
-    txt2img_opti_predict(*txt2img_args)
+    t1 = threading.Thread(target=txt2img_opti_predict, args=(txt2img_args))
+    t1.start()
+    t1.join()

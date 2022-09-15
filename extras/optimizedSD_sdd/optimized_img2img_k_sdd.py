@@ -1,9 +1,11 @@
+import threading
 import argparse
 import os
 import re
 import time
 from contextlib import contextmanager, nullcontext
 from itertools import islice
+from pathlib import Path
 from random import randint
 
 import k_diffusion as K
@@ -12,6 +14,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from einops import rearrange, repeat
+from ldm.models.diffusion.ddim import DDIMSampler
 from ldm.util import instantiate_from_config
 from omegaconf import OmegaConf
 from PIL import Image
@@ -20,38 +23,43 @@ from torch import autocast
 from torchvision.utils import make_grid
 from tqdm import tqdm, trange
 from transformers import logging
-from pathlib import Path
-from ldm.models.diffusion.ddim import DDIMSampler
 
-from scripts.optimUtils import logger, split_weighted_subprompts
+from optimizedSD_sdd.optimUtils import logger, split_weighted_subprompts
+
+
+def torch_gc():
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        torch.cuda.ipc_collect()
+    print('Finished. Torch cache cleaned')
+
 
 logging.set_verbosity_error()
 
 
-def load_img(path, h0, w0):
-
-    image = Image.open(path).convert("RGB")
-    w, h = image.size
-
-    print(f"loaded input image of size ({w}, {h}) from {path}")
-    if h0 is not None and w0 is not None:
-        h, w = h0, w0
-
-    # resize to integer multiple of 32
-    w, h = map(lambda x: x - x % 64, (w, h))
-
-    print(f"New image size ({w}, {h})")
-    image = image.resize((w, h), resample=Image.LANCZOS)
-    image = np.array(image).astype(np.float32) / 255.0
-    image = image[None].transpose(0, 3, 1, 2)
-    image = torch.from_numpy(image)
-    return 2.0 * image - 1.0
-
-
 def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, init_img, strength, turbo):
-    configy_path=(os.path.dirname(os.path.realpath(__file__)))
+    # configy_path=(os.path.dirname(os.path.realpath(__file__)))
 
-    config = Path(configy_path)/'v1-inference.yaml'
+    def load_img(path, h0, w0):
+
+        image = Image.open(path).convert("RGB")
+        w, h = image.size
+
+        print(f"loaded input image of size ({w}, {h}) from {path}")
+        if h0 is not None and w0 is not None:
+            h, w = h0, w0
+
+        # resize to integer multiple of 32
+        w, h = map(lambda x: x - x % 64, (w, h))
+
+        print(f"New image size ({w}, {h})")
+        image = image.resize((width, height), resample=Image.Resampling.LANCZOS)
+        image = np.array(image).astype(np.float32) / 255.0
+        image = image[None].transpose(0, 3, 1, 2)
+        image = torch.from_numpy(image)
+        return 2.0 * image - 1.0
+
+    # config = Path(configy_path)/'v1-inference.yaml'
 
     parser = argparse.ArgumentParser()
 
@@ -101,14 +109,14 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
 
     opt = parser.parse_args()
 
-    if set_sampler != 'plms' and set_sampler!= 'ddim':
+    if set_sampler != 'plms' and set_sampler != 'ddim':
 
         ksamplers = {'k_lms': K.sampling.sample_lms,
-                    'k_euler': K.sampling.sample_euler,
-                    'k_euler_a': K.sampling.sample_euler_ancestral,
-                    'k_dpm_2': K.sampling.sample_dpm_2,
-                    'k_dpm_2_a': K.sampling.sample_dpm_2_ancestral,
-                    'k_heun': K.sampling.sample_heun}
+                     'k_euler': K.sampling.sample_euler,
+                     'k_euler_a': K.sampling.sample_euler_ancestral,
+                     'k_dpm_2': K.sampling.sample_dpm_2,
+                     'k_dpm_2_a': K.sampling.sample_dpm_2_ancestral,
+                     'k_heun': K.sampling.sample_heun}
 
         sampler = ksamplers[set_sampler]
 
@@ -125,10 +133,8 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
     logger(vars(opt), log_csv="logs/img2img_logs.csv")
     from scripts.launcher_opti import model, modelCS, modelFS
 
-
     assert os.path.isfile(init_img)
     init_image = load_img(init_img, height, width).to(opt.device)
-
 
     # As the model no longer self-seeds on initialization, we must do this should we
     # reject the built-in sampling method.
@@ -137,11 +143,9 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
                             ddim_eta=opt.ddim_eta, verbose=False)
     from scripts.launcher_opti import CFGDenoiser
 
-
     model_wrap = K.external.CompVisDenoiser(model)
     sigma_min, sigma_max = model_wrap.sigmas[0].item(
     ), model_wrap.sigmas[-1].item()
-
 
     if opt.device != 'cpu' and precision == "autocast":
         model.half()
@@ -218,7 +222,7 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
 
                     samples_ddim = None
 
-                    if set_sampler != 'plms' and set_sampler!= 'ddim':
+                    if set_sampler != 'plms' and set_sampler != 'ddim':
                         sigmas = model_wrap.get_sigmas(steps)
                         # changes manual seeding procedure
                         torch.manual_seed(seed)
@@ -253,11 +257,11 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
                         x_sample = 255.0 * \
                             rearrange(
                                 x_sample[0].cpu().numpy(), "c h w -> h w c")
-                        for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""), 
-                                ('\n', ""), (' ', '_'),('/', '_'),('\\', '_'),(':', '_')):
+                        for r in ((">", ""), ("<", ""), ("<", ""), ("|", ""), ("?", ""), ("*", ""), ('"', ""), (',', ""), ('.', ""),
+                                  ('\n', ""), (' ', '_'), ('/', '_'), ('\\', '_'), (':', '_')):
                             prompt = prompt.replace(*r).strip()
                         Image.fromarray(x_sample.astype(np.uint8)).save(
-                                os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
+                            os.path.join(sample_path, f"{base_count:05}_{str(seed)}_{prompt[:120]}.png"))
                         seeds += str(seed) + ","
                         seed += 1
                         base_count += 1
@@ -283,9 +287,11 @@ def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
             + seeds[:-1]
         ).format(time_taken)
     )
-import threading
 
-def img2img_opti(*img2img_args):
-    t1 = threading.Thread(target=img2img_opti_predict, args=(img2img_args))
+
+def img2img_opti(*img2imgargs):
+
+    t1 = threading.Thread(target=img2img_opti_predict, args=(img2imgargs))
     t1.start()
     t1.join()
+    torch_gc()

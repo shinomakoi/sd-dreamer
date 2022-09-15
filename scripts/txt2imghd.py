@@ -174,7 +174,7 @@ def grid_slice(source, overlap, og_size, maximize=False):
 class Options:
     C: int
     f: int
-    strength: float
+    gobig_strength: float
     from_file: bool
     config: str
     ckpt: str
@@ -203,7 +203,7 @@ def realesrgan2x(executable: str, input: str, output: str):
     final_output.save(output)
 
 
-def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, detail_steps, detail_scale, realesrgan, strength, img=None):
+def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, detail_steps, detail_scale, realesrgan, gobig_strength, img=None):
 
     parser = argparse.ArgumentParser()
 
@@ -224,7 +224,7 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
         type=str,
         nargs="?",
         help="dir to write results to",
-        default="outputs/txt2imghd_samples"
+        default="outputs/gobig_samples"
     )
 
     parser.add_argument(
@@ -292,7 +292,7 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
     os.makedirs(outpath, exist_ok=True)
     outpath = outpath
 
-    sample_path = os.path.join(outpath, 'txt2imghd_samples')
+    sample_path = os.path.join(outpath, 'gobig_samples')
     os.makedirs(sample_path, exist_ok=True)
 
     #wm_encoder = WatermarkEncoder()
@@ -390,8 +390,8 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
                 sampler.make_schedule(
                     ddim_num_steps=detail_steps, ddim_eta=0, verbose=False)
 
-                assert 0. <= strength <= 1., 'can only work with strength in [0.0, 1.0]'
-                t_enc = int(strength * detail_steps)
+                assert 0. <= gobig_strength <= 1., 'can only work with gobig_strength in [0.0, 1.0]'
+                t_enc = int(gobig_strength * detail_steps)
 
                 with torch.inference_mode():
                     with precision_scope("cuda"):
@@ -458,6 +458,9 @@ def text2img2(prompt, steps, iterations, seed, outpath, scale, width, height, de
         seed+= 1
         base_count += 1
 
-def txt2imghd(*txt2imghd_args):
+import threading
 
-    text2img2(*txt2imghd_args)
+def txt2imghd(*txt2imghd_args):
+    t1 = threading.Thread(target=text2img2, args=(txt2imghd_args))
+    t1.start()
+    t1.join()

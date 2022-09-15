@@ -28,30 +28,30 @@ from scripts.optimUtils import logger, split_weighted_subprompts
 logging.set_verbosity_error()
 
 
-def load_img(path, h0, w0):
-
-    image = Image.open(path).convert("RGB")
-    w, h = image.size
-
-    print(f"loaded input image of size ({w}, {h}) from {path}")
-    if h0 is not None and w0 is not None:
-        h, w = h0, w0
-
-    # resize to integer multiple of 32
-    w, h = map(lambda x: x - x % 64, (w, h))
-
-    print(f"New image size ({w}, {h})")
-    image = image.resize((w, h), resample=Image.LANCZOS)
-    image = np.array(image).astype(np.float32) / 255.0
-    image = image[None].transpose(0, 3, 1, 2)
-    image = torch.from_numpy(image)
-    return 2.0 * image - 1.0
 
 
 def img2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, init_img, strength, turbo):
-    configy_path=(os.path.dirname(os.path.realpath(__file__)))
+    # configy_path=(os.path.dirname(os.path.realpath(__file__)))
 
-    config = Path(configy_path)/'v1-inference.yaml'
+    # config = Path(configy_path)/'v1-inference.yaml'
+    def load_img(path, h0, w0):
+
+        image = Image.open(path).convert("RGB")
+        w, h = image.size
+
+        print(f"loaded input image of size ({w}, {h}) from {path}")
+        if h0 is not None and w0 is not None:
+            h, w = h0, w0
+
+        # resize to integer multiple of 32
+        w, h = map(lambda x: x - x % 64, (w, h))
+
+        print(f"New image size ({w}, {h})")
+        image = image.resize((width, height), resample=Image.LANCZOS)
+        image = np.array(image).astype(np.float32) / 255.0
+        image = image[None].transpose(0, 3, 1, 2)
+        image = torch.from_numpy(image)
+        return 2.0 * image - 1.0
 
     parser = argparse.ArgumentParser()
 

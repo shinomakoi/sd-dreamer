@@ -263,6 +263,6 @@ def txt2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
 import threading
 
 def txt2img_opti(*txt2img_args):
-    t1 = threading.Thread(target=txt2img_opti_predict, args=(txt2img_args))
-    t1.start()
-    t1.join()
+    t2 = threading.Thread(target=txt2img_opti_predict, args=(txt2img_args))
+    t2.start()
+    t2.join()

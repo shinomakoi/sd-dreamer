@@ -21,19 +21,14 @@ from torchvision.utils import make_grid
 from tqdm import tqdm, trange
 from transformers import logging
 from pathlib import Path
-from optimizedSD_sdd.optimUtils import logger, split_weighted_subprompts
 
-def torch_gc():
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-        torch.cuda.ipc_collect()
-    print('Finished. Torch cache cleaned')
+from scripts.optimUtils import logger, split_weighted_subprompts
 
 logging.set_verbosity_error()
 
 def txt2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, turbo):
 
-    # configy_path=(os.path.dirname(os.path.realpath(__file__)))
+    configy_path=(os.path.dirname(os.path.realpath(__file__)))
 
     # config = '/home/pigeondave/gits/stable-diffusion-ret2/sd_dreamer/scripts/v1-inference.yaml'
     # ckpt = "/mnt/ext4_data0/trinart2_step60000.ckpt"
@@ -265,6 +260,9 @@ def txt2img_opti_predict(prompt, steps, iterations, batch, seed, precision, rows
         ).format(time_taken)
     )
 
+import threading
+
 def txt2img_opti(*txt2img_args):
-    txt2img_opti_predict(*txt2img_args)
-    torch_gc()
+    t2 = threading.Thread(target=txt2img_opti_predict, args=(txt2img_args))
+    t2.start()
+    t2.join()

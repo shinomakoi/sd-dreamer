@@ -1,5 +1,5 @@
 # sd-dreamer
-Qt based Linux/Windows GUI for Stable Diffusion
+Qt based Linux/Windows GUI for Stable Diffusion. Requires NVIDIA GPU
 
 Features txt2img, img2img, inpainting, paint app for img2img, upscaling with Real-ESRGAN, LatentSR, txt2imgHD and and k-diffusion samplers.
 

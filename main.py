@@ -716,7 +716,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 art_source = str(art_source)
                 art(art_source, 0, 0)
 
-            if self.operationBox.currentText() == 0:
+            if self.operationBox.currentIndex() == 0:
                 esrgan_upscale_op()
 
             if self.operationBox.currentIndex() == 1:

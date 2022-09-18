@@ -1,1 +1,0 @@
-attention.py and model.py offer VRAM optimisations. If needed, put attention.py in ldm\modules and model.py in ldm\modules\diffusionmodules (of your stable diffusion base install folder). Backup the existing files just in case

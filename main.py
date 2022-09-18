@@ -4,7 +4,6 @@
 ########## to do ##########
 # inpaint fix clear
 # fint inpainter save, only saves mask?
-# add codeformer
 # expand img2img
 # prompt tags
 # clean up code
@@ -14,32 +13,27 @@
 # prevent changing size after paint saved
 # inpaint feedback, errors etc
 # save more settings
-# txt2imgHD using img2img even when unchecked? when paint?
 # add drag and drop for images
 # add img2img to op center
-# new inpainting
-# ksamplers to txt2imgHD
-# paint work with optimized
-# improve txt2imgHD
 # fix art paint using view image from img2img
 # make art paint refresh load images
 # fix painting make 2 images instead of 1
-# prevent multi paint windows open
 # progress bar
-# add tiling, prompt weights, new stable img2img
 # fix unicode prompt error on win with chinese characters etc
 # add config yaml path option
-#grids in separate folder
 
 import configparser
 import glob
 import os
 import random
+import shutil
 import sys
 from pathlib import Path
-import shutil
+
+import PIL
 import png
-from PIL import Image
+from ldm.generate import Generate
+from PIL import Image, ImageFilter, ImageOps
 from PySide2 import QtWidgets
 from PySide2.QtCore import *
 from PySide2.QtCore import QUrl  # , QPropertyAnimation
@@ -51,6 +45,9 @@ from PySide2.QtWidgets import QFileDialog
 
 from painter import paintWindow
 from ui import Ui_sd_dreamer_main
+
+global loaded_model
+loaded_model = False
 
 # print('working dir=',os.getcwd())
 home_dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -73,17 +70,10 @@ txt2img_k = Path(home_dir_path)/'scripts'/'txt2img_k_sdd.py'
 img2img_default = Path(home_dir_path)/'scripts'/'img2img_sdd.py'
 img2img_k = Path(home_dir_path)/'scripts'/'img2img_k_sdd.py'
 
-txt2img_hd = Path(home_dir_path)/'scripts'/'txt2imghd.py'
-anon_upscale = Path(home_dir_path)/'scripts'/'upsample.py'
 latent_sr_path = Path(home_dir_path)/'scripts'/'predict_sr.py'
 sd_output_folder = Path(sd_folder_path)/'outputs'/'sd_dreamer'
 esrgan_out_path = Path(sd_output_folder)/'upscales'/'real_esrgan_out'
-# shutil.copytree(source_dir, destination_dir)
 
-try:
-    shutil.copytree(Path(home_dir_path)/'extras'/'optimizedSD_sdd', Path(sd_folder_path)/'optimizedSD_sdd')
-except FileExistsError:
-    print('optim folder exists')
 
 class Load_Images_Class:
     def __init__(self):
@@ -100,11 +90,10 @@ class Load_Images_Class:
             print('not custom folder load')
             images_path = str(Path(img_path)/img_mode)
 
-        images_path=str(Path(images_path)/'*.png')
+        images_path = str(Path(images_path)/'*.png')
         global image_list
         image_list = []
-        image_list = glob.glob(images_path,recursive=True)
-        # glob.glob('**/*.txt', recursive=True)
+        image_list = glob.glob(images_path, recursive=True)
 
         image_list.sort(reverse=True)
         image_count = len(image_list)
@@ -144,7 +133,7 @@ class inpainter_window(QMainWindow):
         self.image = QImage(self.size(), QImage.Format_RGB32)
 
         # making image color to black
-        self.image.fill(Qt.black)
+        self.image.fill(Qt.white)
 
         # variables
         # drawing flag
@@ -152,7 +141,7 @@ class inpainter_window(QMainWindow):
         # default brush size
         self.brushSize = 24
         # default color
-        self.brushColor = Qt.white
+        self.brushColor = Qt.black
 
         # QPoint object to tract the point
         self.lastPoint = QPoint()
@@ -166,19 +155,19 @@ class inpainter_window(QMainWindow):
         # adding brush size to main menu
         b_size = mainMenu.addMenu("Brush Size")
 
-        inpaintAction = QAction("Inpaint", self)
-        saveAction = QAction("Save mask", self)
+        inpaintAction = QAction("Save", self)
+        # saveAction = QAction("Save", self)
 
-        # adding short cut for save action
-        saveAction.setShortcut("Ctrl + S")
+        # # adding short cut for save action
+        # saveAction.setShortcut("Ctrl + S")
         # adding save to the file menu
         fileMenu.addAction(inpaintAction)
 
-        fileMenu.addAction(saveAction)
+        # fileMenu.addAction(saveAction)
 
         # adding action to the save
         inpaintAction.triggered.connect(self.inpy)
-        saveAction.triggered.connect(self.save)
+        # saveAction.triggered.connect(self.save)
 
         # creating clear action
         clearAction = QAction("Clear", self)
@@ -191,20 +180,13 @@ class inpainter_window(QMainWindow):
 
         # creating options for brush sizes
         # creating action for selecting pixel of 4px
-        pix_4 = QAction("4px", self)
+        pix_6 = QAction("6px", self)
         # adding this action to the brush size
-        b_size.addAction(pix_4)
+        b_size.addAction(pix_6)
         # adding method to this
-        pix_4.triggered.connect(self.Pixel_4)
+        pix_6.triggered.connect(self.Pixel_6)
 
         # similarly repeating above steps for different sizes
-        pix_7 = QAction("7px", self)
-        b_size.addAction(pix_7)
-        pix_7.triggered.connect(self.Pixel_7)
-
-        pix_9 = QAction("9px", self)
-        b_size.addAction(pix_9)
-        pix_9.triggered.connect(self.Pixel_9)
 
         pix_12 = QAction("12px", self)
         b_size.addAction(pix_12)
@@ -217,6 +199,10 @@ class inpainter_window(QMainWindow):
         pix_32 = QAction("32px", self)
         b_size.addAction(pix_32)
         pix_32.triggered.connect(self.Pixel_32)
+
+        pix_48 = QAction("48px", self)
+        b_size.addAction(pix_48)
+        pix_48.triggered.connect(self.Pixel_48)
 
         # similarly repeating above steps for different color
         white = QAction("White", self)
@@ -232,10 +218,10 @@ class inpainter_window(QMainWindow):
         else:
             im_rgb = Image.open(inpaint_source)
             im_rgb.save(Path(str(inpainting_dir))/'masking'/'image.png')
-            im_rgb.save(Path(str(inpainting_dir))/'masking'/'out'/'image.png')
+            # im_rgb.save(Path(str(inpainting_dir))/'masking'/'out'/'image.png')
 
             im_rgba = im_rgb.copy()
-            im_rgba.putalpha(200)
+            im_rgba.putalpha(215)
             im_rgba.save(Path(str(inpainting_dir))/'inpaint_view.png')
 
         label = QLabel(self)
@@ -295,76 +281,30 @@ class inpainter_window(QMainWindow):
     def inpy(self):
         img_mask_s = (str(Path(inpainting_dir)/'masking'/'image_mask.png'))
         self.image.save(img_mask_s)
-        self.inpaint_process()
+        # self.inpaint_process()
+        print(sd_dreamer_main().promptVal.currentText())
 
-    def inpaint_process(self):
-        inpaint_py = Path(home_dir_path)/'scripts'/'inpaint.py'
-        masky = Path(str(inpainting_dir))/'masking'/'out'
-        masky = str(masky / "_")[:-1]
-
-        print('inpaint script=', inpaint_py)
-        print('inpaint dir=', inpainting_dir)
-
-        print('Working directory: ', os.getcwd())
-        self.inpainter_process = QProcess()  # Keep a reference to the QProcess
-        self.inpainter_process.stateChanged.connect(self.handle_state)
-        self.inpainter_process.finished.connect(
-            self.process_finished)  # Clean up once done
-        inpaint_args = [str(inpaint_py), '--indir', str(Path(inpainting_dir)/'masking'),
-                        '--outdir', masky, '--steps', sd_dreamer_main(self).inpaintSteps.text()]
-        print('Inpaint args - ', sd_dreamer_main(self).pyBinPath.text(), inpaint_args)
-        self.inpainter_process.start(py_bin_path_ini, inpaint_args)
-        self.setWindowTitle("Inpainting...")
-
-    def handle_state(self, state):
-        states = {
-            QProcess.NotRunning: 'Idle',
-            QProcess.Starting: 'Initialising...',
-            QProcess.Running: 'Inpainting...',
-        }
-        state_name = states[state]
-        print(state_name)
-
-    def process_finished(self):
-        self.setWindowTitle("Inpainter")
-        im_rgb = Image.open(Path(str(inpainting_dir)) /
-                            'masking'/'out'/'image.png')
-        im_rgb.save(Path(str(inpainting_dir))/'masking'/'image.png')
-        im_rgba = im_rgb.copy()
-        im_rgba.putalpha(200)
-        im_rgba.save(Path(str(inpainting_dir))/'inpaint_view.png')
-        self.clear(True)
-        self.inpainter_process = None
-
-    def stop_process(self):
-        if self.generator_process != None:
-            self.generator_process.terminate()
+        self.setWindowTitle("Saved. Press 'Dream (inpaint)' to inpaint")
 
     # method for saving canvas
-    def save(self):
-        filePath, _ = QFileDialog.getSaveFileName(
-            self, "Save Image", "", "PNG(*.png);;All Files(*.*) ")
-        if filePath == "":
-            return
-        self.image.save(filePath)
+    # def save(self):
+    #     filePath, _ = QFileDialog.getSaveFileName(
+    #         self, "Save Image", "", "PNG(*.png);;All Files(*.*) ")
+    #     if filePath == "":
+    #         return
+    #     self.image.save(filePath)
 
     # method for clearing everything on canvas
     def clear(self, inpainted=True):
         # make the whole canvas white
-        self.image.fill(Qt.black)
+        self.image.fill(Qt.white)
         self.load_img(inpainted)
         # update
         self.update()
 
     # methods for changing pixel sizes
-    def Pixel_4(self):
-        self.brushSize = 4
-
-    def Pixel_7(self):
-        self.brushSize = 7
-
-    def Pixel_9(self):
-        self.brushSize = 9
+    def Pixel_6(self):
+        self.brushSize = 6
 
     def Pixel_12(self):
         self.brushSize = 12
@@ -375,10 +315,13 @@ class inpainter_window(QMainWindow):
     def Pixel_32(self):
         self.brushSize = 32
 
+    def Pixel_48(self):
+        self.brushSize = 48
+
     # methods for changing brush color
 
     def whiteColor(self):
-        self.brushColor = Qt.white
+        self.brushColor = Qt.white()
 
 
 # load settings from settings.ini
@@ -410,47 +353,85 @@ class Worker(QRunnable):
     def run(self):
 
         print("Thread start")
-        (mode, *mode_args) = self.args
+        (mode, mode_args, g) = self.args
         print('mode is', mode)
-        print('args is:', mode_args)
+        # print('args is:', mode_args)
 
-        if mode == 'txt2img_opti' or mode == 'txt2img':
+        if mode == 'txt2img':
             load_mode = 'txt2img_samples'
             txt2img_args = mode_args
+
+            results = g.txt2img(
+                prompt=txt2img_args["prompt"],
+                steps=txt2img_args["steps"],
+                iterations=txt2img_args["iterations"],
+                seed=txt2img_args["seed"],
+                width=txt2img_args["width"],
+                height=txt2img_args["height"],
+                cfg_scale=txt2img_args["scale"],
+                sampler_name=txt2img_args["sampler"],
+                outdir=txt2img_args["outdir"],
+                gfpgan_strength=txt2img_args["gfpgan_strength"],
+                grid=txt2img_args["grid"],
+                seamless=txt2img_args["seamless"],
+                variation_amount=txt2img_args["variation_amount"],
+                upscale=txt2img_args["upscale"],
+            )
+
             print('txt2img args:', txt2img_args)
-            if mode == 'txt2img_opti':
-                print('txt2imgopti')
-                from optimizedSD_sdd.optimized_txt2img_k_sdd import txt2img_opti
-                txt2img_opti(*txt2img_args)
-            else:
-                from scripts.txt2img_k_sdd import txt2img
-                txt2img(*txt2img_args)
 
-        if mode == 'txt2imghd':
-            load_mode = 'gobig_samples'
-            txt2imghd_args = mode_args
-            print('txt2imghd args:', txt2imghd_args)
-            from scripts.txt2imghd import txt2imghd
-            txt2imghd(*txt2imghd_args)
-
-        if mode == 'img2img_opti' or mode == 'img2img':
-            (mode, *mode_args) = self.args
+        if mode == 'img2img':
             load_mode = 'img2img_samples'
             img2img_args = mode_args
+
             print('img2img args:', img2img_args)
 
-            if mode == 'img2img_opti':
-                print('img2imgopti')
-                from optimizedSD_sdd.optimized_img2img_k_sdd import img2img_opti
-                img2img_opti(*img2img_args)
-            else:
-                from scripts.img2img_k_sdd import img2img
-                img2img(*img2img_args)
+            results = g.img2img(
+                prompt=img2img_args["prompt"],
+                steps=img2img_args["steps"],
+                iterations=img2img_args["iterations"],
+                seed=img2img_args["seed"],
+                width=img2img_args["width"],
+                height=img2img_args["height"],
+                cfg_scale=img2img_args["scale"],
+                sampler_name=img2img_args["sampler"],
+                outdir=img2img_args["outdir"],
+                strength=img2img_args["strength"],
+                init_img=img2img_args["init_img"],
+                gfpgan_strength=img2img_args["gfpgan_strength"],
+                grid=img2img_args["grid"],
+                seamless=img2img_args["seamless"],
+                upscale=img2img_args["upscale"]
+            )
+
+        if mode == 'inpaint':
+            load_mode = 'inpaint_samples'
+            inpaint_args = mode_args
+
+            print('inpaint args:', inpaint_args)
+
+            results = g.img2img(
+                prompt=inpaint_args["prompt"],
+                steps=inpaint_args["steps"],
+                iterations=inpaint_args["iterations"],
+                seed=inpaint_args["seed"],
+                width=inpaint_args["width"],
+                height=inpaint_args["height"],
+                cfg_scale=inpaint_args["scale"],
+                sampler_name=inpaint_args["sampler"],
+                outdir=inpaint_args["outdir"],
+                # gfpgan_strength=inpaint_args["gfpgan_strength"],
+                # grid=inpaint_args["grid"],
+                # seamless=inpaint_args["seamless"],
+                init_img=inpaint_args["init_img"],
+                init_mask=inpaint_args["init_mask"],
+            )
 
         print("Thread complete")
 
         self.signals.finished.emit()
         self.signals.result.emit(load_mode)
+        # print('results content', results)
 
 
 class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
@@ -481,7 +462,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.imgFilename.setText('Filename: '+image_to_display)
                 pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
                 self.imageView.setPixmap(pixmap)
-                print('next to',image_to_display)
+                # print('next to',image_to_display)
                 self.imgIndex.setText(str(image_index))
 
             if button == 'previous' and int(image_index) > 0:
@@ -490,7 +471,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.imgFilename.setText('Filename: '+image_to_display)
                 pixmap = QPixmap(str(Path(images_path)/(image_to_display)))
                 self.imageView.setPixmap(pixmap)
-                print('next to',image_to_display)
+                # print('next to',image_to_display)
                 self.imgIndex.setText(str(image_index))
 
         self.nextImageButton.clicked.connect(lambda: cycle_images('next'))
@@ -545,6 +526,16 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                     self.rnvModelSelect.addItem(x.strip('.bin'))
         except:
             print('Real-ESRGAN models not found')
+
+        def dream_rename():
+            if self.mainTab.currentIndex() == 0:
+                self.generateButton.setText('Dream (txt2img)')
+            elif self.mainTab.currentIndex() == 1:
+                self.generateButton.setText('Dream (img2img)')
+            elif self.mainTab.currentIndex() == 2:
+                self.generateButton.setText('Dream (inpaint)')
+
+        self.mainTab.currentChanged.connect(dream_rename)
 
 # saving the paths to the ini file
         def refresh_images():
@@ -651,13 +642,20 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.inpaint_img_select.clicked.connect(select_inpaint_image)
 
         def inpaint():
-            self.w = inpainter_window()
-            self.w.show()
+            global inpaint_source
+            if self.inpaintingDisplayedCheck.isChecked():
+                inpaint_source = self.imgFilename.text().replace('Filename: ', '')
+            else:
+                inpaint_source = self.inpaint_img.text()
+
+            if len(inpaint_source) > 0:
+                self.w = inpainter_window()
+                self.w.show()
         self.inpaintButton.pressed.connect(inpaint)
 
         def art(art_source, width, height):
             self.img2imgFile.setText(str(Path(sd_output_folder)/'art.png'))
-            self.dreamTab.setCurrentIndex(1)
+            self.mainTab.setCurrentIndex(1)
             self.img2imgDisplayed.setChecked(False)
             self.art_win = paintWindow(
                 sd_folder_path, art_source, int(width), int(height))
@@ -685,23 +683,32 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 print("ESRGAN op")
                 op_launcher('esrgan_upscale_op', )
 
-            def anon_upscale_op():
-                print("Anon op")
-                # op_launcher('anon_upscale_op')
-
             def latent_sr():
                 print("LatentSR op")
                 op_launcher('latent_sr_op')
 
-            def inpaint_op():
-                global inpaint_source
-                inpaint_source = Path(
-                    images_path)/self.imgFilename.text().replace('Filename: ', '')
-                inpaint_source = str(inpaint_source)
-                print(inpaint_source)
-                inpaint()
-                print("Inpaint op")
-                # op_launcher('inpaint_op')
+            # def inpaint_op():
+            #     global inpaint_source
+            #     inpaint_source = Path(
+            #         images_path)/self.imgFilename.text().replace('Filename: ', '')
+            #     inpaint_source = str(inpaint_source)
+            #     print(inpaint_source)
+            #     inpaint()
+            #     print("Inpaint op")
+            #     # op_launcher('inpaint_op')
+
+            def art_op():
+                art_source = self.imgFilename.text().replace('Filename: ', '')
+                art_source = str(art_source)
+                art(art_source, 0, 0)
+
+            def read_metadata_op():
+                print('get metadata')
+                filename = self.imgFilename.text().replace('Filename: ', '')
+                im = Image.open(filename)
+                im.load()  # Needed only for .png EXIF data (see citation above)
+                self.processOutput.appendPlainText(
+                    'Metadata: '+im.info['Dream'])
 
             def art_op():
                 art_source = Path(
@@ -709,20 +716,20 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 art_source = str(art_source)
                 art(art_source, 0, 0)
 
-            if self.operationBox.currentIndex() == 0:
+            if self.operationBox.currentText() == 0:
                 esrgan_upscale_op()
-
-            # if self.operationBox.currentIndex() == 1:
-            #     anon_upscale_op()
 
             if self.operationBox.currentIndex() == 1:
                 latent_sr()
 
+            # if self.operationBox.currentIndex() == 2:
+            #     inpaint_op()
+
             if self.operationBox.currentIndex() == 2:
-                inpaint_op()
+                art_op()
 
             if self.operationBox.currentIndex() == 3:
-                art_op()
+                read_metadata_op()
 
         self.operationsGoButton.pressed.connect(operations_hub)
 
@@ -754,57 +761,103 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         def dreamer_new():
 
+            if self.mainTab.currentIndex() > 2:
+                return
+
+            global loaded_model
+            global g
+            model_ckpt = self.custCheckpointLine.text()
+
+            if loaded_model == False:
+                if self.precisionToggle.isChecked() and self.embeddingCheck.isChecked() == False:
+                    g = Generate(weights=model_ckpt, full_precision=True)
+                if self.embeddingCheck.isChecked():
+                    g = Generate(weights=model_ckpt, full_precision=True,
+                                 embedding_path=self.embeddingInputFile.text())
+                else:
+                    g = Generate(weights=model_ckpt)
+
+                self.errorMessages.setText(f"SD Dreamer: Loading model...")
+                loaded_model = True
+
             prompt = str(self.promptVal.currentText())
             steps = int(self.stepsVal.value())
             iterations = int(self.itsVal.value())
             batch = int(self.batchVal.value())
             seed = int(self.seedVal.text())
-            precision = str(self.precisionToggle.currentText())
-            rows = 3
-            outpath = sd_output_folder
+            outpath = Path(sd_output_folder)/'txt2img_samples'
             width = int(self.widthThing.currentText())
             height = int(self.heightThing.currentText())
             scale = float(self.scaleVal.value())
             set_sampler = str(self.samplerToggle.currentText())
             init_img = self.img2imgFile.text()
             strength = float(self.img2imgStrength.value())
-            detail_steps = int(self.txt2imgHD_steps.text())
-            detail_scale = int(self.txt2imgHD_scale.text())
-            realesrgan = esrgan_bin_ini
-            img = init_img
-            turbo = None
-            gobig_strength=float(self.gobigStrength.value())
 
-            # if self.turboCheckbox.isChecked():
-            #     turbo=True
+            if self.mainTab.currentIndex() == 2:
+                outpath = Path(sd_output_folder)/'inpaint_samples'
 
-            outpath = sd_output_folder
+            if self.gfpganCheck.isChecked():
+                gfpgan_strength = float(self.gfpganStrength.value())
+            else:
+                gfpgan_strength = False
 
-            if self.dreamTab.currentIndex() == 0:
-                txt2img_args = prompt, steps, iterations, batch, seed, precision, rows, outpath, scale, width, height, set_sampler, turbo
+            if self.gridCheck.isChecked():
+                grid = False
+            else:
+                grid = True
+
+            if self.seamlessCheck.isChecked():
+                seamless = True
+            else:
+                seamless = False
+
+            if self.variantAmountCheck.isChecked():
+                variation_amount = float(self.variantAmountValue.value())
+            else:
+                variation_amount = False
+
+            if self.builtUpscaleCheck.isChecked():
+                upscale = [int(self.builtUpscaleScale.currentText()), float(
+                    self.builtUpscaleStrength.value())]
+            else:
+                upscale = None
+
+            dream_base_args = {
+                'prompt': '"'+prompt+'"',
+                'steps': steps,
+                'iterations': iterations,
+                'seed': seed,
+                'width': width,
+                'height': height,
+                'scale': scale,
+                'sampler': set_sampler,
+                'outdir': outpath,
+                'weights': self.custCheckpointLine.text(),
+                'gfpgan_strength': gfpgan_strength,
+                'grid': grid,
+                'seamless': seamless,
+                'variation_amount': variation_amount,
+                'upscale': upscale,
+            }
+
+            if self.mainTab.currentIndex() == 0:
+                txt2img_args = dream_base_args
+                # print(dream_base_args)
 
                 msgy = (
                     f'Prompt: "{prompt}" Steps: {steps}, Seed: {seed}, Scale: {scale}, Sampler: {set_sampler}')
                 self.processOutput.appendPlainText(msgy)
 
                 def txt2img_go():
-                    # self.errorMessages.setText(f"SD Dreamer: Loading model...")
-
-                    if self.optimCheckbox.isChecked():
-                        worker = Worker('txt2img_opti', *txt2img_args)
-                        self.errorMessages.setText(
-                            f"SD Dreamer: Dreaming (txt2img - Low VRAM)...")
-                    else:
-                        worker = Worker('txt2img', *txt2img_args)
-
-                        self.errorMessages.setText(
-                            f"SD Dreamer: Dreaming (txt2img)...")
+                    worker = Worker('txt2img', txt2img_args, g)
+                    self.errorMessages.setText(
+                        f"SD Dreamer: Dreaming (txt2img)...")
                     worker.signals.result.connect(thread_result)
-
                     self.threadpool.start(worker)
                 txt2img_go()
 
-            if self.dreamTab.currentIndex() == 1:
+            if self.mainTab.currentIndex() == 1:
+
                 # check if an image is loaded in the viewer before img2img
                 if self.img2imgDisplayed.isChecked() and self.imgFilename.text() == 'Filename: ':
                     print('No image in viewer')
@@ -815,11 +868,23 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                     except AssertionError or NameError:
                         print("INVALID INIT IMAGE")
 
-                    print(init_img)
+                    print('initimg:', init_img)
                     init_img = Path(
-                        images_path)/self.imgFilename.text().replace('Filename: ', '')
-                img2img_args = (prompt, steps, iterations, batch, seed, precision, rows,
-                                outpath, scale, width, height, set_sampler, str(init_img), strength, turbo)
+                        self.imgFilename.text().replace('Filename: ', ''))
+
+                if self.img2imgUpscaleCheck.isChecked():
+                    image = Image.open(init_img).convert("RGB")
+                    image = image.resize(
+                        (width, height), resample=PIL.Image.Resampling.LANCZOS)
+                    image.save(Path(outpath.parent)/'upscaled.png')
+                    init_img = Path(outpath.parent)/'upscaled.png'
+
+                outpath = Path(sd_output_folder)/'img2img_samples'
+                img2img_args = dream_base_args
+                img2img_args["outdir"] = outpath
+                img2img_args["strength"] = strength
+                img2img_args["init_img"] = str(init_img)
+
                 print('img2imgargs', img2img_args)
 
                 msgy = (
@@ -827,33 +892,48 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.processOutput.appendPlainText(msgy)
 
                 def launch_img2img():
-                    if self.optimCheckbox.isChecked():
-                        self.errorMessages.setText(
-                            f"SD Dreamer: Dreaming (img2img - Low VRAM)...")
-                        worker = Worker('img2img_opti', *img2img_args)
 
-                    else:
-                        self.errorMessages.setText(
-                            f"SD Dreamer: Dreaming (img2img)...")
-                        worker = Worker('img2img', *img2img_args)
+                    self.errorMessages.setText(
+                        f"SD Dreamer: Dreaming (img2img)...")
+                    worker = Worker('img2img', img2img_args, g)
                     worker.signals.result.connect(thread_result)
                     self.threadpool.start(worker)
                 launch_img2img()
 
-            if self.dreamTab.currentIndex() == 2:
-                txt2imghd_args = prompt, steps, iterations, seed, outpath, scale, width, height, detail_steps, detail_scale, realesrgan, gobig_strength
-                # print('txt2imghd_args', txt2imghd_args)
-                if self.txt2imgHDImg.isChecked():
-                    print('txt2imgHD using txt2imgHDImg', init_img)
-                    txt2imghd_args = prompt, steps, iterations, seed, outpath, scale, width, height, detail_steps, detail_scale, realesrgan, gobig_strength, img
+            if self.mainTab.currentIndex() == 2:
 
-                def launch_txt2imghd():
-                    self.errorMessages.setText(f"SD Dreamer: Dreaming (GOBIG)...")
-                    worker = Worker('txt2imghd', *txt2imghd_args)
+                outpath = Path(sd_output_folder)/'inpaint_samples'
+                inpaint_args = dream_base_args
+                init_img = Path(inpainting_dir)/'masking'/'image.png'
+                init_mask = Path(inpainting_dir)/'masking' / \
+                    'out'/'init_mask.png'
+                inpaint_args["init_img"] = str(init_img)
+                inpaint_args["init_mask"] = init_mask
+
+                def gen_masks():
+                    im_a = Image.open(Path(inpainting_dir) /
+                                      'masking'/'image_mask.png').convert('RGB')
+                    if self.invertMaskCheck.isChecked():
+                        im_invert = ImageOps.invert(im_a)
+                        im_a_blur = im_invert.filter(
+                            ImageFilter.GaussianBlur(4))
+                    else:
+                        im_a_blur = im_a.filter(ImageFilter.GaussianBlur(4))
+
+                    im_a = im_a_blur.convert('L')
+                    im_rgb = Image.open(init_img)
+                    im_rgba = im_rgb.copy()
+                    im_rgba.putalpha(im_a)
+                    im_rgba.save(init_mask)
+                gen_masks()
+
+                def launch_inpaint():
+                    self.errorMessages.setText(
+                        f"SD Dreamer: Dreaming (inpaint)...")
+                    worker = Worker('inpaint', inpaint_args, g)
                     worker.signals.result.connect(thread_result)
                     self.threadpool.start(worker)
-                launch_txt2imghd()
-
+                launch_inpaint()
 
         self.generateButton.clicked.connect(dreamer_new)
 
@@ -867,10 +947,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             'Operation images input path:', images_path
 
         self.processOutput.appendPlainText("Starting process")
-        # Keep a reference to the QProcess (e.g. on self) while it's running.
         self.generator_process = QProcess()
         self.generator_process.stateChanged.connect(self.handle_state)
-        # Clean up once complete.
         self.generator_process.finished.connect(
             lambda: self.process_finished(process_type))
         self.generator_process.readyReadStandardOutput.connect(
@@ -882,7 +960,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             single_image = self.imgFilename.text().replace('Filename: ', '')
             op_input_path = Path(images_path)/(single_image)
         if self.operationalAll.isChecked():
-            op_input_path = Path(images_path.replace('*.png',''))
+            op_input_path = Path(images_path.replace('*.png', ''))
 
         if process_type == 'esrgan_upscale_op':
             esrgan_out_path = Path(
@@ -895,9 +973,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             ), '-s', self.modelScale.currentText(), '-i', str(op_input_path), '-o', str(esrgan_out_path)]
 
             if self.operationOne.isChecked():
-                file_o=os.path.split(op_input_path)[-1]
+                file_o = os.path.split(op_input_path)[-1]
                 print(file_o)
-                one_op_path=Path(esrgan_out_path)/(file_o)
+                one_op_path = Path(esrgan_out_path)/(file_o)
                 esrgan_args[-1] = str(Path(one_op_path))
                 print('ESGRAN args: ', esrgan_args)
 
@@ -967,6 +1045,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             self.processOutput.appendPlainText("Procesing has been ended.")
             # self.cancelButton.setEnabled(False)
             self.generateButton.setEnabled(True)
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

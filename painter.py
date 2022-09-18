@@ -15,7 +15,7 @@ from PySide2.QtWidgets import QFileDialog
 SPRAY_PARTICLES = 40
 SPRAY_DIAMETER = 9
 
-class paintWindow(QMainWindow):
+class paintWindow(QMainWindow,):
     def __init__(self, sd_folder_path, art_source, paint_w, paint_h):
         super().__init__()
 
@@ -102,21 +102,9 @@ class paintWindow(QMainWindow):
         noiseOffAction.triggered.connect(lambda: self.noiseOff())
 
         # creating options for brush sizes
-        # creating action for selecting pixel of 4px
-        pix_4 = QAction("4px", self)
-        # adding this action to the brush size
-        b_size.addAction(pix_4)
-        # adding method to this
-        pix_4.triggered.connect(self.Pixel_4)
-
-        # similarly repeating above steps for different sizes
-        pix_7 = QAction("7px", self)
-        b_size.addAction(pix_7)
-        pix_7.triggered.connect(self.Pixel_7)
-
-        pix_9 = QAction("9px", self)
-        b_size.addAction(pix_9)
-        pix_9.triggered.connect(self.Pixel_9)
+        pix_6 = QAction("6px", self)
+        b_size.addAction(pix_6)
+        pix_6.triggered.connect(self.Pixel_6)
 
         pix_12 = QAction("12px", self)
         b_size.addAction(pix_12)
@@ -129,6 +117,10 @@ class paintWindow(QMainWindow):
         pix_32 = QAction("32px", self)
         b_size.addAction(pix_32)
         pix_32.triggered.connect(self.Pixel_32)
+        
+        pix_48 = QAction("48px", self)
+        b_size.addAction(pix_48)
+        pix_48.triggered.connect(self.Pixel_48)
 
         # creating options for brush color
         # creating action for black color
@@ -269,7 +261,7 @@ class paintWindow(QMainWindow):
         img_paint_s = (str(Path('outputs')/'sd_dreamer'/'art.png'))
         self.image.save(img_paint_s)
         print('saved to : ', img_paint_s)
-        self.setWindowTitle("Saved - press 'Dream' to generate")
+        self.setWindowTitle("Saved - click 'Dream (img2img)' to generate")
 
     # method for clearing every thing on canvas
 
@@ -295,14 +287,8 @@ class paintWindow(QMainWindow):
         self.update()
 
     # methods for changing pixel sizes
-    def Pixel_4(self):
-        self.brushSize = 4
-
-    def Pixel_7(self):
-        self.brushSize = 7
-
-    def Pixel_9(self):
-        self.brushSize = 9
+    def Pixel_6(self):
+        self.brushSize = 6
 
     def Pixel_12(self):
         self.brushSize = 12
@@ -312,6 +298,9 @@ class paintWindow(QMainWindow):
 
     def Pixel_32(self):
         self.brushSize = 32
+
+    def Pixel_48(self):
+        self.brushSize = 48
 
     # methods for changing brush color
 

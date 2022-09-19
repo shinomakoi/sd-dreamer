@@ -16,7 +16,7 @@ Note: the current version is designed to work with the lstein repo only. The old
 - For external upscaling, you can download real-esrgan-vulkan-ncnn from https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0, extract the zip then set the paths to them in the settings tab of the app.
  
  - ESRGAN and LatentSR upscales are in 'outputs/sd_dreamer/upscales' folder
-
-![sdd7](https://user-images.githubusercontent.com/112139428/189506328-bb953a89-1151-4a4f-84a7-536e89b1eb1e.png)
+ 
+![sddd8](https://user-images.githubusercontent.com/112139428/191080074-5ea33a79-0949-4e46-afed-dbf8c5ea843c.png)
 
 Credit to stability.ai/CompVis et al for Stable Diffusion, lstein, jquesnelle, richservo and anons

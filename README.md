@@ -3,6 +3,8 @@ Qt based Linux/Windows GUI for Stable Diffusion (lstein version). Requires NVIDI
 
 Features txt2img, img2img, inpainting, paint app for img2img, upscaling, textual inversion embedding, LatentSR, k-diffusion samplers and more.
 
+Note: the current version is designed to work with the lstein repo only. The old version is in the 'old-generic' branch.
+
 - Have a working Stable Diffusion install from the lstein repo (https://github.com/lstein/stable-diffusion)
 - IMPORTANT: Place the SD Dreamer folder in the base of your Stable Diffusion folder (e.g. in stable-diffusion-lstein folder, where environment.yaml file is), so to launch, for example - 'python stable-diffusion-lstein\sd-dreamer-main\main.py'
 - Run 'conda activate <ldm/ldp>' or whatever your SD conda environment is (in Windows, from inside the Anaconda prompt)

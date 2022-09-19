@@ -641,6 +641,13 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 print('Inpaint source: ', type(inpaint_source))
         self.inpaint_img_select.clicked.connect(select_inpaint_image)
 
+        def select_embedding():
+            file_z = (QFileDialog.getOpenFileName(self, 'Open file',
+                      '', "Embedding files (*.bin *.pt)")[0])
+            if len(file_z) > 0:
+                self.embeddingInputFile.setText(file_z)
+        self.embeddingSelect.clicked.connect(select_embedding)
+
         def inpaint():
             global inpaint_source
             if self.inpaintingDisplayedCheck.isChecked():
@@ -911,14 +918,15 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 inpaint_args["init_mask"] = init_mask
 
                 def gen_masks():
+
                     im_a = Image.open(Path(inpainting_dir) /
                                       'masking'/'image_mask.png').convert('RGB')
                     if self.invertMaskCheck.isChecked():
                         im_invert = ImageOps.invert(im_a)
                         im_a_blur = im_invert.filter(
-                            ImageFilter.GaussianBlur(4))
+                            ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
                     else:
-                        im_a_blur = im_a.filter(ImageFilter.GaussianBlur(4))
+                        im_a_blur = im_a.filter(ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
 
                     im_a = im_a_blur.convert('L')
                     im_rgb = Image.open(init_img)

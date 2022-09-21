@@ -1,4 +1,8 @@
-Pillow==9.2.0
-pypng==0.20220715.0
-PySide2==5.15.2.1
-shiboken2==5.15.2.1
+opencv_python
+numpy
+Pillow
+pypng
+PySide2
+shiboken2
+rich
+typer

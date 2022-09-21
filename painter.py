@@ -15,7 +15,7 @@ from PySide2.QtWidgets import QFileDialog
 SPRAY_PARTICLES = 40
 SPRAY_DIAMETER = 9
 
-class paintWindow(QMainWindow,):
+class paintWindow(QMainWindow):
     def __init__(self, sd_folder_path, art_source, paint_w, paint_h):
         super().__init__()
 

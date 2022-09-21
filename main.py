@@ -11,7 +11,6 @@
 # vram, ram view
 # appicon fix
 # prevent changing size after paint saved
-# inpaint feedback, errors etc
 # save more settings
 # add drag and drop for images
 # add img2img to op center
@@ -21,14 +20,16 @@
 # progress bar
 # fix unicode prompt error on win with chinese characters etc
 # add config yaml path option
+# allow open ,inpaint, other formats than PNG
+# image viewer not loading with 1 image
 
 import configparser
 import glob
 import os
 import random
-import shutil
 import sys
 from pathlib import Path
+import shutil
 
 import PIL
 import png
@@ -63,12 +64,6 @@ inpainting_dir = Path(home_dir_path)/'inpainting'
 
 sd_folder_path = Path(home_dir_path)
 sd_folder_path = str(sd_folder_path.parent)
-
-txt2img_default = Path(home_dir_path)/'scripts'/'txt2img_sdd.py'
-txt2img_k = Path(home_dir_path)/'scripts'/'txt2img_k_sdd.py'
-
-img2img_default = Path(home_dir_path)/'scripts'/'img2img_sdd.py'
-img2img_k = Path(home_dir_path)/'scripts'/'img2img_k_sdd.py'
 
 latent_sr_path = Path(home_dir_path)/'scripts'/'predict_sr.py'
 sd_output_folder = Path(sd_folder_path)/'outputs'/'sd_dreamer'
@@ -155,17 +150,20 @@ class inpainter_window(QMainWindow):
         # adding brush size to main menu
         b_size = mainMenu.addMenu("Brush Size")
 
-        inpaintAction = QAction("Save", self)
-        # saveAction = QAction("Save", self)
+        b_color = mainMenu.addMenu("Brush")
 
-        # # adding short cut for save action
-        # saveAction.setShortcut("Ctrl + S")
-        # adding save to the file menu
+        black = QAction("Select", self)
+        b_color.addAction(black)
+        black.triggered.connect(self.blackColor)
+
+        white = QAction("Erase", self)
+        b_color.addAction(white)
+        white.triggered.connect(self.whiteColor)
+
+        inpaintAction = QAction("Save", self)
+
         fileMenu.addAction(inpaintAction)
 
-        # fileMenu.addAction(saveAction)
-
-        # adding action to the save
         inpaintAction.triggered.connect(self.inpy)
         # saveAction.triggered.connect(self.save)
 
@@ -178,15 +176,11 @@ class inpainter_window(QMainWindow):
         # adding action to the clear
         clearAction.triggered.connect(self.clear)
 
-        # creating options for brush sizes
-        # creating action for selecting pixel of 4px
         pix_6 = QAction("6px", self)
         # adding this action to the brush size
         b_size.addAction(pix_6)
         # adding method to this
         pix_6.triggered.connect(self.Pixel_6)
-
-        # similarly repeating above steps for different sizes
 
         pix_12 = QAction("12px", self)
         b_size.addAction(pix_12)
@@ -286,15 +280,6 @@ class inpainter_window(QMainWindow):
 
         self.setWindowTitle("Saved. Press 'Dream (inpaint)' to inpaint")
 
-    # method for saving canvas
-    # def save(self):
-    #     filePath, _ = QFileDialog.getSaveFileName(
-    #         self, "Save Image", "", "PNG(*.png);;All Files(*.*) ")
-    #     if filePath == "":
-    #         return
-    #     self.image.save(filePath)
-
-    # method for clearing everything on canvas
     def clear(self, inpainted=True):
         # make the whole canvas white
         self.image.fill(Qt.white)
@@ -302,7 +287,6 @@ class inpainter_window(QMainWindow):
         # update
         self.update()
 
-    # methods for changing pixel sizes
     def Pixel_6(self):
         self.brushSize = 6
 
@@ -318,15 +302,14 @@ class inpainter_window(QMainWindow):
     def Pixel_48(self):
         self.brushSize = 48
 
-    # methods for changing brush color
-
     def whiteColor(self):
-        self.brushColor = Qt.white()
+        self.brushColor = Qt.white
+
+    def blackColor(self):
+        self.brushColor = Qt.black
 
 
 # load settings from settings.ini
-esrgan_bin_ini = config.get('Settings', 'esrgan_bin')
-esrbin_models_ini = config.get('Settings', 'esrbin_models')
 py_bin_path_ini = config.get('Settings', 'py_bin_path')
 first_run_ini = config.get('Settings', 'first_run')
 chkpt_ini = config.get('Settings', 'ckpt_path')
@@ -425,6 +408,7 @@ class Worker(QRunnable):
                 # seamless=inpaint_args["seamless"],
                 init_img=inpaint_args["init_img"],
                 init_mask=inpaint_args["init_mask"],
+                upscale=inpaint_args["upscale"]
             )
 
         print("Thread complete")
@@ -501,8 +485,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if self.seedCheck.isChecked():
             self.seedVal.setText(str(random.randint(0, 1632714927)))
 
-        self.rnvBinPath.setText(esrgan_bin_ini)
-        self.rnvModelPath.setText(esrbin_models_ini)
+
         self.pyBinPath.setText(py_bin_path_ini)
         self.custCheckpointLine.setText(chkpt_ini)
 
@@ -521,11 +504,11 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             str(Path(sd_folder_path)/'outputs'/'sd_dreamer'))
 
         try:
-            for x in os.listdir(esrbin_models_ini):  # generate ESGRAN model list
-                if x.endswith(".bin"):
-                    self.rnvModelSelect.addItem(x.strip('.bin'))
+            for x in os.listdir(Path(home_dir_path)/'ESRGAN'/'models'):  # generate ESRGAN model list
+                if x.endswith(".pth"):
+                    self.rnvModelSelect.addItem(x)
         except:
-            print('Real-ESRGAN models not found')
+            print('ESRGAN models not found')
 
         def dream_rename():
             if self.mainTab.currentIndex() == 0:
@@ -558,33 +541,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         self.operationFolderSelect.clicked.connect(
             operationFolderSelect_select)
-
-        def rnvBinPathSelect_select():
-            rnvBin = (QFileDialog.getOpenFileName(
-                self, 'Open file', '', "All files (*.*)")[0])
-            if len(rnvBin) > 0:
-                self.rnvBinPath.setText(rnvBin)
-                config.set('Settings', 'esrgan_bin', rnvBin)
-            with open(settings_file, 'w') as configfile:
-                config.write(configfile)
-            config.set('Settings', 'esrgan_bin', rnvBin)
-
-        self.rnvBinPathSelect.clicked.connect(rnvBinPathSelect_select)
-
-        def rnvModelPathSelect_select():
-            rnvModels = (QFileDialog.getExistingDirectory(
-                self, ("Select model folder")))
-            if len(rnvModels) > 0:
-                self.rnvModelPath.setText(rnvModels)
-                config.set('Settings', 'esrbin_models', rnvModels)
-            with open(settings_file, 'w') as configfile:
-                config.write(configfile)
-
-            for x in os.listdir(rnvModels):
-                if x.endswith(".bin"):
-                    self.rnvModelSelect.addItem(x.strip('.bin'))
-
-        self.rnvModelPathSelect.clicked.connect(rnvModelPathSelect_select)
 
         def py_binSelect_select():
             py_bin_path = (QFileDialog.getOpenFileName(
@@ -710,7 +666,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 art(art_source, 0, 0)
 
             def read_metadata_op():
-                print('get metadata')
+                print('Get metadata')
                 filename = self.imgFilename.text().replace('Filename: ', '')
                 im = Image.open(filename)
                 im.load()  # Needed only for .png EXIF data (see citation above)
@@ -744,7 +700,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             print('thread result function')
 
             if self.seedCheck.isChecked():
-                self.seedVal.setText(str(random.randint(0, 1632714927)))
+                self.seedVal.setText(str(random.randint(1, 1632714927)))
 
             self.promptVal.addItem(self.promptVal.currentText())
             f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")
@@ -790,7 +746,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             prompt = str(self.promptVal.currentText())
             steps = int(self.stepsVal.value())
             iterations = int(self.itsVal.value())
-            # batch = int(self.batchVal.value())
             seed = int(self.seedVal.text())
             outpath = Path(sd_output_folder)/'txt2img_samples'
             width = int(self.widthThing.currentText())
@@ -839,7 +794,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 'scale': scale,
                 'sampler': set_sampler,
                 'outdir': outpath,
-                'weights': self.custCheckpointLine.text(),
                 'gfpgan_strength': gfpgan_strength,
                 'grid': grid,
                 'seamless': seamless,
@@ -926,7 +880,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                         im_a_blur = im_invert.filter(
                             ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
                     else:
-                        im_a_blur = im_a.filter(ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
+                        im_a_blur = im_a.filter(
+                            ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
 
                     im_a = im_a_blur.convert('L')
                     im_rgb = Image.open(init_img)
@@ -972,22 +927,24 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         if process_type == 'esrgan_upscale_op':
             esrgan_out_path = Path(
-                self.outputFolderLine.text())/'upscales'/'real_esrgan_out'
+                self.outputFolderLine.text())/'upscales'/'esrgan_out'
             os.makedirs(esrgan_out_path, exist_ok=True)
             print('Upscaling, folder in: ', op_input_path)
             print('Upscaling, folder out ', esrgan_out_path)
 
-            esrgan_args = ['-n', self.rnvModelSelect.currentText(
-            ), '-s', self.modelScale.currentText(), '-i', str(op_input_path), '-o', str(esrgan_out_path)]
+            esrgan_args = [str(Path(home_dir_path)/'ESRGAN'/'upscale.py'), str(Path(home_dir_path)/'ESRGAN'/'models'/self.rnvModelSelect.currentText(
+            )), '--input', str(op_input_path), '--output', str(esrgan_out_path)]
 
             if self.operationOne.isChecked():
-                file_o = os.path.split(op_input_path)[-1]
-                print(file_o)
-                one_op_path = Path(esrgan_out_path)/(file_o)
-                esrgan_args[-1] = str(Path(one_op_path))
-                print('ESGRAN args: ', esrgan_args)
+                one_op_path = Path(esrgan_out_path.parent)/('inputs')
+                single_image = Path(single_image).name
+                shutil.copyfile(op_input_path, Path(one_op_path/single_image))
+                esrgan_args[-3] = str(Path(one_op_path))
+                esrgan_args.append('--delete-input')
 
-            self.generator_process.start(self.rnvBinPath.text(), esrgan_args)
+            print('ESRGAN args: ', esrgan_args)
+                
+            self.generator_process.start(self.pyBinPath.text(), esrgan_args)
             return
 
         if process_type == 'latent_sr_op':
@@ -1005,8 +962,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             self.generator_process.start(self.pyBinPath.text(), latent_sr_args)
             return
-
-        print('This part is after upscale and shouldnt be seen when upscaling')
 
     def handle_stderr(self):
         data = self.generator_process.readAllStandardError()
@@ -1032,14 +987,13 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.errorMessages.setText(f"SD Dreamer: {state_name}")
 
     def process_finished(self, process_type):
-        # add the generated images to the image view
         if process_type == 'dream':
             print('proc fin, dream')
 
         self.processOutput.appendPlainText("Generation finished.")
         self.generator_process = None
         if self.seedCheck.isChecked():
-            self.seedVal.setText(str(random.randint(0, 1632714927)))
+            self.seedVal.setText(str(random.randint(1, 1632714927)))
         # self.cancelButton.setEnabled(False)
         self.generateButton.setEnabled(True)
 

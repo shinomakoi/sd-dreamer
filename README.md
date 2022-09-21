@@ -6,7 +6,7 @@ Features txt2img, img2img, inpainting, paint app for img2img, upscaling, textual
 Note: the current version is designed to work with the invoke-ai repo only. The old version is in the 'old-generic' branch.
 
 - Have a working Stable Diffusion install from the invoke-ai repo (https://github.com/invoke-ai/stable-diffusion)
-- IMPORTANT: Place the SD Dreamer folder in the base of your Stable Diffusion folder (e.g. in stable-diffusion-lstein folder, where environment.yaml file is), so to launch, for example - 'python stable-diffusion-invoke-ai\sd-dreamer-main\main.py'
+- IMPORTANT: Place the SD Dreamer folder in the base of your Stable Diffusion folder (e.g. in stable-diffusion-invoke-ai folder, where environment.yaml file is), so to launch, for example - 'python stable-diffusion-invoke-ai\sd-dreamer-main\main.py'
 - Run 'conda activate <ldm/ldp>' or whatever your SD conda environment is (in Windows, from inside the Anaconda prompt)
 - Run 'pip install -r requirements.txt' to install dependencies
 - Run 'python main.py' to start the app

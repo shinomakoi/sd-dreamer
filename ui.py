@@ -636,15 +636,29 @@ class Ui_sd_dreamer_main(object):
         self.groupBox.setObjectName(u"groupBox")
         self.gridLayout_9 = QGridLayout(self.groupBox)
         self.gridLayout_9.setObjectName(u"gridLayout_9")
+        self.rnvModelSelect = QComboBox(self.groupBox)
+        self.rnvModelSelect.setObjectName(u"rnvModelSelect")
+
+        self.gridLayout_9.addWidget(self.rnvModelSelect, 0, 1, 1, 2)
+
         self.label_32 = QLabel(self.groupBox)
         self.label_32.setObjectName(u"label_32")
 
         self.gridLayout_9.addWidget(self.label_32, 0, 0, 1, 1)
 
-        self.rnvModelSelect = QComboBox(self.groupBox)
-        self.rnvModelSelect.setObjectName(u"rnvModelSelect")
+        self.label_16 = QLabel(self.groupBox)
+        self.label_16.setObjectName(u"label_16")
 
-        self.gridLayout_9.addWidget(self.rnvModelSelect, 0, 1, 1, 2)
+        self.gridLayout_9.addWidget(self.label_16, 1, 0, 1, 1)
+
+        self.modelScale = QComboBox(self.groupBox)
+        self.modelScale.addItem("")
+        self.modelScale.addItem("")
+        self.modelScale.addItem("")
+        self.modelScale.addItem("")
+        self.modelScale.setObjectName(u"modelScale")
+
+        self.gridLayout_9.addWidget(self.modelScale, 1, 1, 1, 1)
 
 
         self.gridLayout_10.addWidget(self.groupBox, 0, 0, 1, 1)
@@ -743,6 +757,7 @@ class Ui_sd_dreamer_main(object):
         self.widthThing.setCurrentIndex(4)
         self.heightThing.setCurrentIndex(4)
         self.samplerToggle.setCurrentIndex(3)
+        self.modelScale.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(sd_dreamer_main)
@@ -959,10 +974,20 @@ class Ui_sd_dreamer_main(object):
         self.label_7.setText(QCoreApplication.translate("sd_dreamer_main", u"Steps", None))
         self.label_11.setText(QCoreApplication.translate("sd_dreamer_main", u"1-200", None))
         self.groupBox.setTitle(QCoreApplication.translate("sd_dreamer_main", u"ESRGAN", None))
-        self.label_32.setText(QCoreApplication.translate("sd_dreamer_main", u"Model select", None))
 #if QT_CONFIG(tooltip)
         self.rnvModelSelect.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select Real-ESGRAN NCNN model", None))
 #endif // QT_CONFIG(tooltip)
+        self.label_32.setText(QCoreApplication.translate("sd_dreamer_main", u"Model select", None))
+        self.label_16.setText(QCoreApplication.translate("sd_dreamer_main", u"Scale", None))
+        self.modelScale.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"1", None))
+        self.modelScale.setItemText(1, QCoreApplication.translate("sd_dreamer_main", u"2", None))
+        self.modelScale.setItemText(2, QCoreApplication.translate("sd_dreamer_main", u"4", None))
+        self.modelScale.setItemText(3, QCoreApplication.translate("sd_dreamer_main", u"8", None))
+
+#if QT_CONFIG(tooltip)
+        self.modelScale.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select the right scale for the selected model", None))
+#endif // QT_CONFIG(tooltip)
+        self.modelScale.setCurrentText(QCoreApplication.translate("sd_dreamer_main", u"4", None))
         self.mainTab.setTabText(self.mainTab.indexOf(self.tab_5), QCoreApplication.translate("sd_dreamer_main", u"Upscaling", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Paths", None))
 #if QT_CONFIG(tooltip)

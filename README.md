@@ -11,12 +11,12 @@ Note: the current version is designed to work with the invoke-ai repo only. The 
 - Run 'pip install -r requirements.txt' to install dependencies
 - Run 'python main.py' to start the app
 
-- LatentSR requires download of https://ommer-lab.com/files/latent-diffusion/sr_bsr.zip - put the model.ckpt file from sr_bsr.zip in the models/ldm/bsr_sr/ folder.
+- LatentSR requires download of https://ommer-lab.com/files/latent-diffusion/sr_bsr.zip - put the model.ckpt file from sr_bsr.zip in the models/ldm/bsr_sr/ folder. Probably bugged currently.
 
-- For external upscaling, you can download real-esrgan-vulkan-ncnn from https://github.com/xinntao/Real-ESRGAN/releases/tag/v0.2.5.0, extract the zip then set the paths to them in the settings tab of the app.
+- For external upscaling with ESRGAN, you can download models (.pth) and place them in the 'ESRGAN/models' folder. There's a large selection here: https://upscale.wiki/wiki/Model_Database
  
  - ESRGAN and LatentSR upscales are in 'outputs/sd_dreamer/upscales' folder
  
 ![sddd8](https://user-images.githubusercontent.com/112139428/191080074-5ea33a79-0949-4e46-afed-dbf8c5ea843c.png)
 
-Credit to stability.ai/CompVis et al for Stable Diffusion, lstein, jquesnelle, richservo and anons
+Credit to stability.ai/CompVis et al for Stable Diffusion, lstein, jquesnelle, richservo, joeyballentine and anons

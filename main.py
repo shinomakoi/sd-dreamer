@@ -790,7 +790,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             prompt = str(self.promptVal.currentText())
             steps = int(self.stepsVal.value())
             iterations = int(self.itsVal.value())
-            batch = int(self.batchVal.value())
+            # batch = int(self.batchVal.value())
             seed = int(self.seedVal.text())
             outpath = Path(sd_output_folder)/'txt2img_samples'
             width = int(self.widthThing.currentText())

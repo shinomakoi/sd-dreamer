@@ -739,7 +739,7 @@ class Ui_sd_dreamer_main(object):
         self.operationBox.setCurrentIndex(0)
         self.promptVal.setCurrentIndex(-1)
         self.generateButton.setDefault(False)
-        self.mainTab.setCurrentIndex(3)
+        self.mainTab.setCurrentIndex(0)
         self.widthThing.setCurrentIndex(4)
         self.heightThing.setCurrentIndex(4)
         self.samplerToggle.setCurrentIndex(3)

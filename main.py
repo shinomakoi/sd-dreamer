@@ -27,9 +27,9 @@ import configparser
 import glob
 import os
 import random
+import shutil
 import sys
 from pathlib import Path
-import shutil
 
 import PIL
 import png
@@ -485,7 +485,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         if self.seedCheck.isChecked():
             self.seedVal.setText(str(random.randint(0, 1632714927)))
 
-
         self.pyBinPath.setText(py_bin_path_ini)
         self.custCheckpointLine.setText(chkpt_ini)
 
@@ -504,7 +503,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             str(Path(sd_folder_path)/'outputs'/'sd_dreamer'))
 
         try:
-            for x in os.listdir(Path(home_dir_path)/'ESRGAN'/'models'):  # generate ESRGAN model list
+            # generate ESRGAN model list
+            for x in os.listdir(Path(home_dir_path)/'ESRGAN'/'models'):
                 if x.endswith(".pth"):
                     self.rnvModelSelect.addItem(x)
         except:
@@ -936,6 +936,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             )), '--input', str(op_input_path), '--output', str(esrgan_out_path)]
 
             if self.operationOne.isChecked():
+                os.makedirs(Path(esrgan_out_path.parent)/('inputs'), exist_ok=True)
                 one_op_path = Path(esrgan_out_path.parent)/('inputs')
                 single_image = Path(single_image).name
                 shutil.copyfile(op_input_path, Path(one_op_path/single_image))
@@ -943,7 +944,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 esrgan_args.append('--delete-input')
 
             print('ESRGAN args: ', esrgan_args)
-                
+
             self.generator_process.start(self.pyBinPath.text(), esrgan_args)
             return
 

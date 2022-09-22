@@ -1,26 +1,20 @@
-################### BETA 0.3 ###################
+################### BETA 0.5 ###################
 ################### Work in progress ###################
 
 ########## to do ##########
 # inpaint fix clear
-# fint inpainter save, only saves mask?
 # expand img2img
 # prompt tags
 # clean up code
 # moar comments
 # vram, ram view
-# appicon fix
-# prevent changing size after paint saved
 # save more settings
 # add drag and drop for images
 # add img2img to op center
-# fix art paint using view image from img2img
-# make art paint refresh load images
-# fix painting make 2 images instead of 1
 # progress bar
-# fix unicode prompt error on win with chinese characters etc
+# fix unicode prompt error on win with chinese characters, emojis etc
 # add config yaml path option
-# allow open ,inpaint, other formats than PNG
+# allow paint, inpaint for other formats than PNG
 # image viewer not loading with 1 image
 
 import configparser
@@ -32,7 +26,6 @@ import sys
 from pathlib import Path
 
 import PIL
-import png
 from ldm.generate import Generate
 from PIL import Image, ImageFilter, ImageOps
 from PySide2 import QtWidgets
@@ -44,15 +37,18 @@ from PySide2.QtGui import QPixmap
 from PySide2.QtWidgets import *
 from PySide2.QtWidgets import QFileDialog
 
+from inpainter import inpainter_window
 from painter import paintWindow
 from ui import Ui_sd_dreamer_main
 
 global loaded_model
 loaded_model = False
 
-# print('working dir=',os.getcwd())
 home_dir_path = os.path.dirname(os.path.realpath(__file__))
+sd_folder_path = Path(home_dir_path).parent
+
 print('SD Dreamer home directory: ', home_dir_path)
+print('SD install working directory:', sd_folder_path)
 
 # load settings.ini file
 config = configparser.ConfigParser()
@@ -61,13 +57,9 @@ settings_file = (Path(home_dir_path)/'settings.ini')
 config.read(Path(home_dir_path)/'settings.ini')
 
 inpainting_dir = Path(home_dir_path)/'inpainting'
-
-sd_folder_path = Path(home_dir_path)
-sd_folder_path = str(sd_folder_path.parent)
-
 latent_sr_path = Path(home_dir_path)/'scripts'/'predict_sr.py'
 sd_output_folder = Path(sd_folder_path)/'outputs'/'sd_dreamer'
-esrgan_out_path = Path(sd_output_folder)/'upscales'/'real_esrgan_out'
+esrgan_out_path = Path(sd_output_folder)/'upscales'/'esrgan_out'
 
 
 class Load_Images_Class:
@@ -103,212 +95,6 @@ class Load_Images_Class:
         return image_to_display, image_index, images_path
 
 
-class inpainter_window(QMainWindow):
-
-    def __init__(self):
-        super().__init__()
-        self.inpainter_process = None
-
-        print('Inpaint image: ', inpaint_source)
-
-        r = png.Reader(inpaint_source)
-        png_w = (r.read()[0])
-        png_h = (r.read()[1])
-        os.chdir(sd_folder_path)
-
-        # setting title
-        self.setWindowTitle("Inpainter")
-
-        self.setMaximumHeight(png_h)
-        self.setMaximumWidth(png_w)
-        self.setMinimumHeight(png_h)
-        self.setMinimumWidth(png_w)
-
-        # creating image object
-        self.image = QImage(self.size(), QImage.Format_RGB32)
-
-        # making image color to black
-        self.image.fill(Qt.white)
-
-        # variables
-        # drawing flag
-        self.drawing = False
-        # default brush size
-        self.brushSize = 24
-        # default color
-        self.brushColor = Qt.black
-
-        # QPoint object to tract the point
-        self.lastPoint = QPoint()
-
-        # creating menu bar
-        mainMenu = self.menuBar()
-
-        # creating file menu for save and clear action
-        fileMenu = mainMenu.addMenu("File")
-
-        # adding brush size to main menu
-        b_size = mainMenu.addMenu("Brush Size")
-
-        b_color = mainMenu.addMenu("Brush")
-
-        black = QAction("Select", self)
-        b_color.addAction(black)
-        black.triggered.connect(self.blackColor)
-
-        white = QAction("Erase", self)
-        b_color.addAction(white)
-        white.triggered.connect(self.whiteColor)
-
-        inpaintAction = QAction("Save", self)
-
-        fileMenu.addAction(inpaintAction)
-
-        inpaintAction.triggered.connect(self.inpy)
-        # saveAction.triggered.connect(self.save)
-
-        # creating clear action
-        clearAction = QAction("Clear", self)
-        # adding short cut to the clear action
-        clearAction.setShortcut("Ctrl + C")
-        # adding clear to the file menu
-        fileMenu.addAction(clearAction)
-        # adding action to the clear
-        clearAction.triggered.connect(self.clear)
-
-        pix_6 = QAction("6px", self)
-        # adding this action to the brush size
-        b_size.addAction(pix_6)
-        # adding method to this
-        pix_6.triggered.connect(self.Pixel_6)
-
-        pix_12 = QAction("12px", self)
-        b_size.addAction(pix_12)
-        pix_12.triggered.connect(self.Pixel_12)
-
-        pix_24 = QAction("24px", self)
-        b_size.addAction(pix_24)
-        pix_24.triggered.connect(self.Pixel_24)
-
-        pix_32 = QAction("32px", self)
-        b_size.addAction(pix_32)
-        pix_32.triggered.connect(self.Pixel_32)
-
-        pix_48 = QAction("48px", self)
-        b_size.addAction(pix_48)
-        pix_48.triggered.connect(self.Pixel_48)
-
-        # similarly repeating above steps for different color
-        white = QAction("White", self)
-        white.triggered.connect(self.whiteColor)
-
-        self.load_img(False)
-
-    def load_img(self, inpainted):
-
-        if inpainted == True:
-            im_rgb = Image.open(Path(str(inpainting_dir)) /
-                                'masking'/'out'/'image.png')
-        else:
-            im_rgb = Image.open(inpaint_source)
-            im_rgb.save(Path(str(inpainting_dir))/'masking'/'image.png')
-            # im_rgb.save(Path(str(inpainting_dir))/'masking'/'out'/'image.png')
-
-            im_rgba = im_rgb.copy()
-            im_rgba.putalpha(215)
-            im_rgba.save(Path(str(inpainting_dir))/'inpaint_view.png')
-
-        label = QLabel(self)
-        pixy = Path(inpainting_dir)/'inpaint_view.png'
-        pixmap = QPixmap(str(pixy))
-        label.setPixmap(pixmap)
-        self.setCentralWidget(label)
-        self.resize(pixmap.width(), pixmap.height())
-
-    # method for checking mouse cicks
-    def mousePressEvent(self, event):
-
-        # if left mouse button is pressed
-        if event.button() == Qt.LeftButton:
-            # make drawing flag true
-            self.drawing = True
-            # make last point to the point of cursor
-            self.lastPoint = event.pos()
-
-    # method for tracking mouse activity
-    def mouseMoveEvent(self, event):
-
-        # checking if left button is pressed and drawing flag is true
-        if (event.buttons() & Qt.LeftButton) & self.drawing:
-
-            # creating painter object
-            painter = QPainter(self.image)
-
-            # set the pen of the painter
-            painter.setPen(QPen(self.brushColor, self.brushSize,
-                                Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
-
-            # draw line from the last point of cursor to the current point
-            # this will draw only one step
-            painter.drawLine(self.lastPoint, event.pos())
-
-            # change the last point
-            self.lastPoint = event.pos()
-            # update
-            self.update()
-
-    # method for mouse left button release
-    def mouseReleaseEvent(self, event):
-
-        if event.button() == Qt.LeftButton:
-            # make drawing flag false
-            self.drawing = False
-
-    # paint event
-    def paintEvent(self, event):
-        # create a canvas
-        canvasPainter = QPainter(self)
-
-        # draw rectangle  on the canvas
-        canvasPainter.drawImage(self.rect(), self.image, self.image.rect())
-
-    def inpy(self):
-        img_mask_s = (str(Path(inpainting_dir)/'masking'/'image_mask.png'))
-        self.image.save(img_mask_s)
-        # self.inpaint_process()
-        print(sd_dreamer_main().promptVal.currentText())
-
-        self.setWindowTitle("Saved. Press 'Dream (inpaint)' to inpaint")
-
-    def clear(self, inpainted=True):
-        # make the whole canvas white
-        self.image.fill(Qt.white)
-        self.load_img(inpainted)
-        # update
-        self.update()
-
-    def Pixel_6(self):
-        self.brushSize = 6
-
-    def Pixel_12(self):
-        self.brushSize = 12
-
-    def Pixel_24(self):
-        self.brushSize = 24
-
-    def Pixel_32(self):
-        self.brushSize = 32
-
-    def Pixel_48(self):
-        self.brushSize = 48
-
-    def whiteColor(self):
-        self.brushColor = Qt.white
-
-    def blackColor(self):
-        self.brushColor = Qt.black
-
-
 # load settings from settings.ini
 py_bin_path_ini = config.get('Settings', 'py_bin_path')
 first_run_ini = config.get('Settings', 'first_run')
@@ -337,12 +123,12 @@ class Worker(QRunnable):
 
         print("Thread start")
         (mode, mode_args, g) = self.args
-        print('mode is', mode)
-        # print('args is:', mode_args)
+        print('Dream mode:', mode)
 
         if mode == 'txt2img':
             load_mode = 'txt2img_samples'
             txt2img_args = mode_args
+            print('txt2img args:', txt2img_args)
 
             results = g.txt2img(
                 prompt=txt2img_args["prompt"],
@@ -361,12 +147,9 @@ class Worker(QRunnable):
                 upscale=txt2img_args["upscale"],
             )
 
-            print('txt2img args:', txt2img_args)
-
         if mode == 'img2img':
             load_mode = 'img2img_samples'
             img2img_args = mode_args
-
             print('img2img args:', img2img_args)
 
             results = g.img2img(
@@ -390,7 +173,6 @@ class Worker(QRunnable):
         if mode == 'inpaint':
             load_mode = 'inpaint_samples'
             inpaint_args = mode_args
-
             print('inpaint args:', inpaint_args)
 
             results = g.img2img(
@@ -403,7 +185,7 @@ class Worker(QRunnable):
                 cfg_scale=inpaint_args["scale"],
                 sampler_name=inpaint_args["sampler"],
                 outdir=inpaint_args["outdir"],
-                # gfpgan_strength=inpaint_args["gfpgan_strength"],
+                gfpgan_strength=inpaint_args["gfpgan_strength"],
                 # grid=inpaint_args["grid"],
                 # seamless=inpaint_args["seamless"],
                 init_img=inpaint_args["init_img"],
@@ -428,16 +210,57 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.art_win = None
         self.threadpool = QThreadPool()
 
-        # image_list=[]
+        icon = QIcon()
+        icon.addFile(str(Path(home_dir_path)/"appicon.png"),
+                     QSize(), QIcon.Normal, QIcon.Off)
+        self.setWindowIcon(icon)
+
         pixmap = QPixmap(str(Path(home_dir_path)/('view_default.png')))
         self.imageView.setPixmap(pixmap)
+
+        self.pyBinPath.setText(py_bin_path_ini)
+        self.custCheckpointLine.setText(chkpt_ini)
+
+        self.outputFolderLine.setText(
+            str(Path(sd_folder_path)/'outputs'/'sd_dreamer'))
+
+        def first_run():
+            if first_run_ini == '0':
+
+                self.custCheckpointLine.setText(
+                    str(Path(sd_folder_path)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
+
+                config.set('Settings', 'first_run', '1')
+                config.set('Settings', 'ckpt_path', str(
+                    Path(sd_folder_path)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
+                with open(settings_file, 'w') as configfile:
+                    config.write(configfile)
+        first_run()
+
+        def check_install():
+            check_install = os.path.exists(
+                Path(sd_folder_path)/'environment.yaml')
+            if check_install == False:
+                self.errorMessages.setText(
+                    "WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
+                print(
+                    "WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
+                return
+
+            try:
+                os.chdir(sd_folder_path)
+            except:
+                print("SD FOLDER NOT FOUND")
+                self.errorMessages.setText("SD FOLDER NOT FOUND")
+                return
+        check_install()
 
         def cycle_images(button):
             try:
                 image_count = len(image_list)
             except:
-                print('image list is empty')
-                image_count = 0
+                print('Image list is empty')
+                return
             image_index = int(int(self.imgIndex.text()))
 
             if button == 'next' and int(image_index) < image_count-1:
@@ -462,53 +285,22 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.previousImgButton.clicked.connect(
             lambda: cycle_images('previous'))
 
-        check_install = os.path.exists(
-            Path(sd_folder_path) / 'environment.yaml')
-        if check_install == False:
-            self.errorMessages.setText(
-                "WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
-            print(
-                "WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
-
-        try:
-            os.chdir(sd_folder_path)
-        except:
-            print("SD FOLDER NOT FOUND")
-            self.errorMessages.setText("The SD folder not found")
-
-        print('SD install working directory: ', sd_folder_path)
-
-        # self.generateButton.pressed.connect(
-        #     lambda: self.start_process('dream'))
         self.cancelButton.pressed.connect(self.stop_process)
 
-        if self.seedCheck.isChecked():
-            self.seedVal.setText(str(random.randint(0, 1632714927)))
+        def gen_random_seed():
+            if self.seedCheck.isChecked():
+                self.seedVal.setText(str(random.randint(0, 1632714927)))
+        gen_random_seed()
 
-        self.pyBinPath.setText(py_bin_path_ini)
-        self.custCheckpointLine.setText(chkpt_ini)
-
-        if first_run_ini == '0':
-
-            self.custCheckpointLine.setText(
-                str(Path(sd_folder_path)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
-
-            config.set('Settings', 'first_run', '1')
-            config.set('Settings', 'ckpt_path', str(
-                Path(sd_folder_path)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
-            with open(settings_file, 'w') as configfile:
-                config.write(configfile)
-
-        self.outputFolderLine.setText(
-            str(Path(sd_folder_path)/'outputs'/'sd_dreamer'))
-
-        try:
-            # generate ESRGAN model list
-            for x in os.listdir(Path(home_dir_path)/'ESRGAN'/'models'):
-                if x.endswith(".pth"):
-                    self.rnvModelSelect.addItem(x)
-        except:
-            print('ESRGAN models not found')
+        def esrgan_models_func():
+            try:
+                # generate ESRGAN model list
+                for x in os.listdir(Path(home_dir_path)/'ESRGAN'/'models'):
+                    if x.endswith(".pth"):
+                        self.rnvModelSelect.addItem(x)
+            except:
+                print('ESRGAN models not found')
+        esrgan_models_func()
 
         def dream_rename():
             if self.mainTab.currentIndex() == 0:
@@ -563,16 +355,18 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.custCheckpointSelect.clicked.connect(custCheckpointSelect_select)
 
  # add prompts and remove duplicates
-        prompt_list = []
-        try:
-            for old_prompt in reversed(list(open(Path(home_dir_path)/"sdd_prompt_archive.txt"))):
-                prompt_list.append(old_prompt.strip())
-                prompt_list = list(dict.fromkeys(prompt_list))
-        except:
-            print("SD prompt archive not found")
+        def load_prompts():
+            prompt_list = []
+            try:
+                for old_prompt in reversed(list(open(Path(home_dir_path)/"sdd_prompt_archive.txt"))):
+                    prompt_list.append(old_prompt.strip())
+                    prompt_list = list(dict.fromkeys(prompt_list))
+            except:
+                print("SD prompt archive not found")
 
-        for old_prompt in prompt_list:
-            self.promptVal.addItem(old_prompt)
+            for old_prompt in prompt_list:
+                self.promptVal.addItem(old_prompt)
+        load_prompts()
 
         def select_img2imgimg():
             file_x = (QFileDialog.getOpenFileName(self, 'Open file',
@@ -591,7 +385,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         def select_inpaint_image():
             global inpaint_source
             inpaint_source = (QFileDialog.getOpenFileName(
-                self, 'Open file', '', "Images (*.png)")[0])
+                self, 'Open file', '', "Images (*.png *.jpg *.bmp *.webp)")[0])
             if len(inpaint_source) > 0:
                 self.inpaint_img.setText(inpaint_source)
                 print('Inpaint source: ', type(inpaint_source))
@@ -605,31 +399,31 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.embeddingSelect.clicked.connect(select_embedding)
 
         def inpaint():
-            global inpaint_source
+            print('Launching inpaint')
+
             if self.inpaintingDisplayedCheck.isChecked():
                 inpaint_source = self.imgFilename.text().replace('Filename: ', '')
             else:
                 inpaint_source = self.inpaint_img.text()
 
             if len(inpaint_source) > 0:
-                self.w = inpainter_window()
+                self.w = inpainter_window(inpaint_source)
                 self.w.show()
         self.inpaintButton.pressed.connect(inpaint)
 
         def art(art_source, width, height):
+            print('Launching art')
             self.img2imgFile.setText(str(Path(sd_output_folder)/'art.png'))
             self.mainTab.setCurrentIndex(1)
             self.img2imgDisplayed.setChecked(False)
             self.art_win = paintWindow(
                 sd_folder_path, art_source, int(width), int(height))
             self.art_win.show()
-            print('art finished')
         self.artButton.pressed.connect(lambda: art(
             False, self.widthThing.currentText(), self.heightThing.currentText()))
 
         def operations_hub():
-            print("Operations hub started")
-
+            print("Launched operations hub")
             try:
                 images_path
             except NameError:
@@ -639,7 +433,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             def op_launcher(op_type):
                 print("OP launcher")
-                self.start_process(op_type, op_enable=True)
+                self.start_process(op_type)
 
             def esrgan_upscale_op():
                 # images_path
@@ -669,7 +463,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 print('Get metadata')
                 filename = self.imgFilename.text().replace('Filename: ', '')
                 im = Image.open(filename)
-                im.load()  # Needed only for .png EXIF data (see citation above)
+                im.load()
                 self.processOutput.appendPlainText(
                     'Metadata: '+im.info['Dream'])
 
@@ -697,16 +491,16 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.operationsGoButton.pressed.connect(operations_hub)
 
         def thread_result(dream_images_to_load):
-            print('thread result function')
+            print('Thread result function')
 
             if self.seedCheck.isChecked():
                 self.seedVal.setText(str(random.randint(1, 1632714927)))
 
             self.promptVal.addItem(self.promptVal.currentText())
-            f = open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a")
-            f.write('\n'+self.promptVal.currentText())
-            f.close()
 
+            with open(Path(home_dir_path)/"sdd_prompt_archive.txt","a", encoding = 'utf-8') as f:
+                f.write('\n'+self.promptVal.currentText())
+                
             mode_load_images = Load_Images_Class()
             load_img_things = mode_load_images.load_images(
                 sd_output_folder, False, dream_images_to_load)
@@ -900,20 +694,15 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         self.generateButton.clicked.connect(dreamer_new)
 
-    def start_process(self, process_type, op_enable=False):
+    def start_process(self, process_type):
 
         self.cancelButton.setEnabled(True)
 
-        if self.customFolderCheck.isChecked() and op_enable is True:
-            global images_path
-            images_path = self.operationFolder.text()
-            'Operation images input path:', images_path
-
-        self.processOutput.appendPlainText("Starting process")
+        self.processOutput.appendPlainText("Starting external process")
         self.generator_process = QProcess()
         self.generator_process.stateChanged.connect(self.handle_state)
         self.generator_process.finished.connect(
-            lambda: self.process_finished(process_type))
+            lambda: self.process_finished)
         self.generator_process.readyReadStandardOutput.connect(
             self.handle_stdout)
         self.generator_process.readyReadStandardError.connect(
@@ -936,14 +725,15 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             )), '--input', str(op_input_path), '--output', str(esrgan_out_path)]
 
             if self.operationOne.isChecked():
-                os.makedirs(Path(esrgan_out_path.parent)/('inputs'), exist_ok=True)
+                os.makedirs(Path(esrgan_out_path.parent) /
+                            ('inputs'), exist_ok=True)
                 one_op_path = Path(esrgan_out_path.parent)/('inputs')
                 single_image = Path(single_image).name
                 shutil.copyfile(op_input_path, Path(one_op_path/single_image))
                 esrgan_args[-3] = str(Path(one_op_path))
                 esrgan_args.append('--delete-input')
 
-            print('ESRGAN args: ', esrgan_args)
+            print('ESRGAN args:', esrgan_args)
 
             self.generator_process.start(self.pyBinPath.text(), esrgan_args)
             return
@@ -981,17 +771,15 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         states = {
             QProcess.NotRunning: 'Idle',
             QProcess.Starting: 'Initialising...',
-            QProcess.Running: 'Dreaming...',
+            QProcess.Running: 'Running...',
         }
         state_name = states[state]
         self.processOutput.appendPlainText(f"SD Dreamer: {state_name}")
         self.errorMessages.setText(f"SD Dreamer: {state_name}")
 
-    def process_finished(self, process_type):
-        if process_type == 'dream':
-            print('proc fin, dream')
+    def process_finished(self):
 
-        self.processOutput.appendPlainText("Generation finished.")
+        self.processOutput.appendPlainText("Operation finished.")
         self.generator_process = None
         if self.seedCheck.isChecked():
             self.seedVal.setText(str(random.randint(1, 1632714927)))
@@ -999,7 +787,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.generateButton.setEnabled(True)
 
     def stop_process(self):
-        print('cancelled')
+        print('Terminated process')
         # self.cancelButton.setEnabled(False)
         self.generateButton.setEnabled(True)
 

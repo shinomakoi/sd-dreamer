@@ -2,8 +2,8 @@ import os
 import random
 from pathlib import Path
 from random import choice
+from PIL import Image
 
-import png
 from PySide2.QtCore import *
 from PySide2.QtCore import QUrl  # , QPropertyAnimation
 from PySide2.QtCore import QProcess
@@ -14,27 +14,31 @@ from PySide2.QtWidgets import QFileDialog
 
 SPRAY_PARTICLES = 40
 SPRAY_DIAMETER = 9
+home_dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class paintWindow(QMainWindow):
     def __init__(self, sd_folder_path, art_source, paint_w, paint_h):
         super().__init__()
 
+        icon = QIcon()
+        icon.addFile(str(Path(home_dir_path)/"appicon.png"), QSize(), QIcon.Normal, QIcon.Off)
+        self.setWindowIcon(icon)
+
         print('Art image: ', art_source)
         self.setWindowTitle("SD Art studio")
 
         if art_source != False:
-            r = png.Reader(art_source)
-            png_w = (r.read()[0])
-            png_h = (r.read()[1])
+            im = Image.open(art_source)
+            art_source_width, art_source_height = im.size
             os.chdir(sd_folder_path)
 
-            print(png_w, png_h)
+            print(art_source_width, art_source_height)
 
             # setting geometry to main window
-            self.setMaximumHeight(png_h)
-            self.setMaximumWidth(png_w)
-            self.setMinimumHeight(png_h)
-            self.setMinimumWidth(png_w)
+            self.setMaximumHeight(art_source_height)
+            self.setMaximumWidth(art_source_width)
+            self.setMinimumHeight(art_source_height)
+            self.setMinimumWidth(art_source_width)
 
             self.image = QImage(art_source)
         else:
@@ -54,7 +58,7 @@ class paintWindow(QMainWindow):
 
         self.drawing = False
         # default brush size
-        self.brushSize = 24
+        self.brushSize = 32
         # default color
         self.brushColor = QColor(0, 0, 0, 20)
 

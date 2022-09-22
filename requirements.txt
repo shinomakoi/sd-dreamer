@@ -1,7 +1,3 @@
-opencv_python
-numpy
-Pillow
-pypng
 PySide2
 shiboken2
 rich

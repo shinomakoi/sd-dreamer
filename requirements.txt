@@ -1,4 +1,5 @@
 PySide2
+Pillow
 shiboken2
 rich
 typer

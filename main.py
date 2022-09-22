@@ -2,9 +2,7 @@
 ################### Work in progress ###################
 
 ########## to do ##########
-# inpaint fix clear
 # expand img2img
-# prompt tags
 # clean up code
 # moar comments
 # vram, ram view
@@ -14,7 +12,6 @@
 # progress bar
 # fix unicode prompt error on win with chinese characters, emojis etc
 # add config yaml path option
-# allow paint, inpaint for other formats than PNG
 # image viewer not loading with 1 image
 
 import configparser
@@ -224,6 +221,50 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.outputFolderLine.setText(
             str(Path(sd_folder_path)/'outputs'/'sd_dreamer'))
 
+        def art_op():
+            art_source = self.imgFilename.text().replace('Filename: ', '')
+            art_source = str(art_source)
+            art(art_source, 0, 0)
+
+        def read_metadata_op():
+            filename = self.imgFilename.text().replace('Filename: ', '')
+            im = Image.open(filename)
+            im.load()
+            self.processOutput.appendPlainText(
+                'Metadata: '+im.info['Dream'])
+
+        def openMenu(position):
+
+            img_menu = QMenu()
+
+            esrganAction = img_menu.addAction("Upscale: ESRGAN")
+            ldsrAction = img_menu.addAction("Upscale: LDSR")
+            artAction = img_menu.addAction("Paint edit")
+            metadataAction = img_menu.addAction("Get metadata")
+            # inpaintAction = img_menu.addAction("Inpaint")
+            # img2imgAction = img_menu.addAction("Send to img2img")
+
+            action = img_menu.exec_(self.imageView.mapToGlobal(position))
+
+            check_image = Path(
+                self.imgFilename.text().replace('Filename: ', ''))
+            try:
+                assert os.path.isfile(check_image)
+            except AssertionError or NameError:
+                print("No image")
+                return
+
+            if action == esrganAction:
+                self.start_process('esrgan_upscale_op', True)
+            if action == ldsrAction:
+                self.start_process('latent_sr_op', True)
+            if action == artAction:
+                art_op()
+            if action == metadataAction:
+                read_metadata_op()
+
+        self.imageView.customContextMenuRequested.connect(openMenu)
+
         def first_run():
             if first_run_ini == '0':
 
@@ -368,6 +409,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.promptVal.addItem(old_prompt)
         load_prompts()
 
+        def load_prompt_tags():
+            prompt_tag_list = []
+            try:
+                for old_prompt_tag in reversed(list(open(Path(home_dir_path)/"prompt_tags.txt"))):
+                    prompt_tag_list.append(old_prompt_tag.strip())
+                    prompt_tag_list = list(dict.fromkeys(prompt_tag_list))
+            except:
+                print("SD prompt archive not found")
+
+            for old_prompt in prompt_tag_list:
+                self.promptTag.addItem(old_prompt)
+        load_prompt_tags()
+
         def select_img2imgimg():
             file_x = (QFileDialog.getOpenFileName(self, 'Open file',
                       '', "Images (*.png *.jpg *.bmp *.webp)")[0])
@@ -422,71 +476,47 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.artButton.pressed.connect(lambda: art(
             False, self.widthThing.currentText(), self.heightThing.currentText()))
 
+        def add_prompt_tag():
+
+            setattr(self.promptTag, "allItems", lambda: [
+                    self.promptTag.itemText(i) for i in range(self.promptTag.count())])
+
+            if len(self.promptTag.currentText()) > 0:
+                self.promptVal.setCurrentText(
+                    self.promptVal.currentText()+', '+self.promptTag.currentText())
+
+                if self.promptTag.currentText() not in self.promptTag.allItems():
+                    self.promptTag.addItem(self.promptTag.currentText())
+                    with open(Path(home_dir_path)/"prompt_tags.txt", "a", encoding='utf-8') as f:
+                        f.write('\n'+self.promptTag.currentText())
+
+        self.promptTagAdd.clicked.connect(add_prompt_tag)
+
         def operations_hub():
             print("Launched operations hub")
             try:
                 images_path
             except NameError:
                 print('Image folder is empty')
-                if self.customFolderCheck.isChecked() == False:
-                    return
+                return
 
             def op_launcher(op_type):
                 print("OP launcher")
                 self.start_process(op_type)
 
             def esrgan_upscale_op():
-                # images_path
                 print("ESRGAN op")
-                op_launcher('esrgan_upscale_op', )
+                op_launcher('esrgan_upscale_op')
 
             def latent_sr():
                 print("LatentSR op")
                 op_launcher('latent_sr_op')
-
-            # def inpaint_op():
-            #     global inpaint_source
-            #     inpaint_source = Path(
-            #         images_path)/self.imgFilename.text().replace('Filename: ', '')
-            #     inpaint_source = str(inpaint_source)
-            #     print(inpaint_source)
-            #     inpaint()
-            #     print("Inpaint op")
-            #     # op_launcher('inpaint_op')
-
-            def art_op():
-                art_source = self.imgFilename.text().replace('Filename: ', '')
-                art_source = str(art_source)
-                art(art_source, 0, 0)
-
-            def read_metadata_op():
-                print('Get metadata')
-                filename = self.imgFilename.text().replace('Filename: ', '')
-                im = Image.open(filename)
-                im.load()
-                self.processOutput.appendPlainText(
-                    'Metadata: '+im.info['Dream'])
-
-            def art_op():
-                art_source = Path(
-                    images_path)/self.imgFilename.text().replace('Filename: ', '')
-                art_source = str(art_source)
-                art(art_source, 0, 0)
 
             if self.operationBox.currentIndex() == 0:
                 esrgan_upscale_op()
 
             if self.operationBox.currentIndex() == 1:
                 latent_sr()
-
-            # if self.operationBox.currentIndex() == 2:
-            #     inpaint_op()
-
-            if self.operationBox.currentIndex() == 2:
-                art_op()
-
-            if self.operationBox.currentIndex() == 3:
-                read_metadata_op()
 
         self.operationsGoButton.pressed.connect(operations_hub)
 
@@ -498,9 +528,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             self.promptVal.addItem(self.promptVal.currentText())
 
-            with open(Path(home_dir_path)/"sdd_prompt_archive.txt","a", encoding = 'utf-8') as f:
+            with open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a", encoding='utf-8') as f:
                 f.write('\n'+self.promptVal.currentText())
-                
+
             mode_load_images = Load_Images_Class()
             load_img_things = mode_load_images.load_images(
                 sd_output_folder, False, dream_images_to_load)
@@ -694,7 +724,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         self.generateButton.clicked.connect(dreamer_new)
 
-    def start_process(self, process_type):
+    def start_process(self, process_type, context_menu_op=False):
 
         self.cancelButton.setEnabled(True)
 
@@ -708,10 +738,10 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.generator_process.readyReadStandardError.connect(
             self.handle_stderr)
 
-        if self.operationOne.isChecked():
+        if context_menu_op == True:
             single_image = self.imgFilename.text().replace('Filename: ', '')
             op_input_path = Path(images_path)/(single_image)
-        if self.operationalAll.isChecked():
+        else:
             op_input_path = Path(images_path.replace('*.png', ''))
 
         if process_type == 'esrgan_upscale_op':
@@ -724,7 +754,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             esrgan_args = [str(Path(home_dir_path)/'ESRGAN'/'upscale.py'), str(Path(home_dir_path)/'ESRGAN'/'models'/self.rnvModelSelect.currentText(
             )), '--input', str(op_input_path), '--output', str(esrgan_out_path)]
 
-            if self.operationOne.isChecked():
+            if context_menu_op == True:
                 os.makedirs(Path(esrgan_out_path.parent) /
                             ('inputs'), exist_ok=True)
                 one_op_path = Path(esrgan_out_path.parent)/('inputs')
@@ -747,7 +777,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             latent_sr_args = [str(latent_sr_path), '--img_path', str(op_input_path),
                               '--steps', self.latentSRSteps.text(), '--out_path', str(latent_sr_out)]
 
-            if self.operationOne.isChecked():
+            if context_menu_op == True:
                 latent_sr_args[1] = "--single"
             print('latent_sr_args:', latent_sr_args)
 

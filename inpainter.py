@@ -201,7 +201,7 @@ class inpainter_window(QMainWindow):
         self.brushSize = 48
 
     def whiteColor(self):
-        self.brushColor = Qt.white
+        self.brushColor = QColor(255, 255, 255, 100)
 
     def blackColor(self):
-        self.brushColor = Qt.black
+        self.brushColor = QColor(0, 0, 0, 100)

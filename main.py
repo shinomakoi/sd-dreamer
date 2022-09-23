@@ -8,7 +8,6 @@
 # vram, ram view
 # save more settings
 # add drag and drop for images
-# add img2img to op center
 # progress bar
 # fix unicode prompt error on win with chinese characters, emojis etc
 # add config yaml path option
@@ -241,8 +240,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             ldsrAction = img_menu.addAction("Upscale: LDSR")
             artAction = img_menu.addAction("Paint edit")
             metadataAction = img_menu.addAction("Get metadata")
-            # inpaintAction = img_menu.addAction("Inpaint")
-            # img2imgAction = img_menu.addAction("Send to img2img")
+            inpaintAction = img_menu.addAction("Inpaint")
+            img2imgAction = img_menu.addAction("img2img")
 
             action = img_menu.exec_(self.imageView.mapToGlobal(position))
 
@@ -262,6 +261,10 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 art_op()
             if action == metadataAction:
                 read_metadata_op()
+            if action == img2imgAction:
+                img2img_dream(True)
+            if action == inpaintAction:
+                inpaint(True)
 
         self.imageView.customContextMenuRequested.connect(openMenu)
 
@@ -400,7 +403,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             prompt_list = []
             try:
                 for old_prompt in reversed(list(open(Path(home_dir_path)/"sdd_prompt_archive.txt"))):
-                    prompt_list.append(old_prompt.strip())
+                    if len(old_prompt) > 0:
+                        prompt_list.append(old_prompt.strip())
                     prompt_list = list(dict.fromkeys(prompt_list))
             except:
                 print("SD prompt archive not found")
@@ -413,7 +417,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             prompt_tag_list = []
             try:
                 for old_prompt_tag in reversed(list(open(Path(home_dir_path)/"prompt_tags.txt"))):
-                    prompt_tag_list.append(old_prompt_tag.strip())
+                    if len(old_prompt_tag) > 0:
+                        prompt_tag_list.append(old_prompt_tag.strip())
                     prompt_tag_list = list(dict.fromkeys(prompt_tag_list))
             except:
                 print("SD prompt archive not found")
@@ -452,15 +457,16 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.embeddingInputFile.setText(file_z)
         self.embeddingSelect.clicked.connect(select_embedding)
 
-        def inpaint():
+        def inpaint(image_view=False):
             print('Launching inpaint')
 
-            if self.inpaintingDisplayedCheck.isChecked():
+            if image_view == True:
                 inpaint_source = self.imgFilename.text().replace('Filename: ', '')
             else:
                 inpaint_source = self.inpaint_img.text()
 
             if len(inpaint_source) > 0:
+                self.mainTab.setCurrentIndex(2)
                 self.w = inpainter_window(inpaint_source)
                 self.w.show()
         self.inpaintButton.pressed.connect(inpaint)
@@ -469,7 +475,6 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             print('Launching art')
             self.img2imgFile.setText(str(Path(sd_output_folder)/'art.png'))
             self.mainTab.setCurrentIndex(1)
-            self.img2imgDisplayed.setChecked(False)
             self.art_win = paintWindow(
                 sd_folder_path, art_source, int(width), int(height))
             self.art_win.show()
@@ -486,7 +491,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                     self.promptVal.currentText()+', '+self.promptTag.currentText())
 
                 if self.promptTag.currentText() not in self.promptTag.allItems():
-                    self.promptTag.addItem(self.promptTag.currentText())
+                    if len(self.promptTag.currentText()) > 0:
+                        self.promptTag.addItem(self.promptTag.currentText())
                     with open(Path(home_dir_path)/"prompt_tags.txt", "a", encoding='utf-8') as f:
                         f.write('\n'+self.promptTag.currentText())
 
@@ -624,105 +630,109 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 'variation_amount': variation_amount,
                 'upscale': upscale,
             }
+            return (dream_base_args, prompt, steps, seed, scale,
+                    set_sampler, width, height, strength, init_img)
 
+        def txt2img_dream():
+            (dream_base_args, prompt, steps, seed, scale,
+             set_sampler, *args) = dreamer_new()
+
+            txt2img_args = dream_base_args
+            print(dream_base_args)
+
+            msgy = (
+                f'Prompt: "{prompt}" Steps: {steps}, Seed: {seed}, Scale: {scale}, Sampler: {set_sampler}')
+            self.processOutput.appendPlainText(msgy)
+
+            def launch_txt2img():
+                worker = Worker('txt2img', txt2img_args, g)
+                self.errorMessages.setText(
+                    f"SD Dreamer: Dreaming (txt2img)...")
+                worker.signals.result.connect(thread_result)
+                self.threadpool.start(worker)
+            launch_txt2img()
+
+        def img2img_dream(image_view=False):
+            (dream_base_args, prompt, steps, seed, scale,
+             set_sampler, width, height, strength, init_img) = dreamer_new()
+
+            outpath = Path(sd_output_folder)/'img2img_samples'
+
+            if image_view == True:
+                init_img = self.imgFilename.text().replace('Filename: ', '')
+
+            if self.img2imgUpscaleCheck.isChecked():
+                image = Image.open(init_img).convert("RGB")
+                image = image.resize(
+                    (width, height), resample=PIL.Image.Resampling.LANCZOS)
+                image.save(Path(outpath.parent)/'upscaled.png')
+                init_img = Path(outpath.parent)/'upscaled.png'
+
+            img2img_args = dream_base_args
+            img2img_args["outdir"] = outpath
+            img2img_args["strength"] = strength
+            img2img_args["init_img"] = str(init_img)
+
+            print('img2imgargs', img2img_args)
+
+            msgy = (
+                f'Prompt: "{prompt}" Steps: {steps}, Seed: {seed}, Scale: {scale}, Sampler: {set_sampler}')
+            self.processOutput.appendPlainText(msgy)
+
+            def launch_img2img():
+                self.errorMessages.setText(
+                    f"SD Dreamer: Dreaming (img2img)...")
+                worker = Worker('img2img', img2img_args, g)
+                worker.signals.result.connect(thread_result)
+                self.threadpool.start(worker)
+            launch_img2img()
+
+        def inpaint_dream():
+            (dream_base_args, init_img, *args) = dreamer_new()
+
+            outpath = Path(sd_output_folder)/'inpaint_samples'
+            inpaint_args = dream_base_args
+            init_img = Path(inpainting_dir)/'masking'/'image.png'
+            init_mask = Path(inpainting_dir)/'masking' / \
+                'out'/'init_mask.png'
+            inpaint_args["init_img"] = str(init_img)
+            inpaint_args["init_mask"] = init_mask
+
+            def gen_masks():
+                im_a = Image.open(Path(inpainting_dir) /
+                                  'masking'/'image_mask.png').convert('RGB')
+                if self.invertMaskCheck.isChecked():
+                    im_invert = ImageOps.invert(im_a)
+                    im_a_blur = im_invert.filter(
+                        ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
+                else:
+                    im_a_blur = im_a.filter(
+                        ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
+
+                im_a = im_a_blur.convert('L')
+                im_rgb = Image.open(init_img)
+                im_rgba = im_rgb.copy()
+                im_rgba.putalpha(im_a)
+                im_rgba.save(init_mask)
+            gen_masks()
+
+            def launch_inpaint():
+                self.errorMessages.setText(
+                    f"SD Dreamer: Dreaming (inpaint)...")
+                worker = Worker('inpaint', inpaint_args, g)
+                worker.signals.result.connect(thread_result)
+                self.threadpool.start(worker)
+            launch_inpaint()
+
+        def dream_launcher():
             if self.mainTab.currentIndex() == 0:
-                txt2img_args = dream_base_args
-                # print(dream_base_args)
-
-                msgy = (
-                    f'Prompt: "{prompt}" Steps: {steps}, Seed: {seed}, Scale: {scale}, Sampler: {set_sampler}')
-                self.processOutput.appendPlainText(msgy)
-
-                def txt2img_go():
-                    worker = Worker('txt2img', txt2img_args, g)
-                    self.errorMessages.setText(
-                        f"SD Dreamer: Dreaming (txt2img)...")
-                    worker.signals.result.connect(thread_result)
-                    self.threadpool.start(worker)
-                txt2img_go()
-
+                txt2img_dream()
             if self.mainTab.currentIndex() == 1:
-
-                # check if an image is loaded in the viewer before img2img
-                if self.img2imgDisplayed.isChecked() and self.imgFilename.text() == 'Filename: ':
-                    print('No image in viewer')
-                    return
-                elif self.img2imgDisplayed.isChecked() and self.imgFilename.text() != 'Filename: ':
-                    try:
-                        assert os.path.isfile(init_img)
-                    except AssertionError or NameError:
-                        print("INVALID INIT IMAGE")
-
-                    print('initimg:', init_img)
-                    init_img = Path(
-                        self.imgFilename.text().replace('Filename: ', ''))
-
-                if self.img2imgUpscaleCheck.isChecked():
-                    image = Image.open(init_img).convert("RGB")
-                    image = image.resize(
-                        (width, height), resample=PIL.Image.Resampling.LANCZOS)
-                    image.save(Path(outpath.parent)/'upscaled.png')
-                    init_img = Path(outpath.parent)/'upscaled.png'
-
-                outpath = Path(sd_output_folder)/'img2img_samples'
-                img2img_args = dream_base_args
-                img2img_args["outdir"] = outpath
-                img2img_args["strength"] = strength
-                img2img_args["init_img"] = str(init_img)
-
-                print('img2imgargs', img2img_args)
-
-                msgy = (
-                    f'Prompt: "{prompt}" Steps: {steps}, Seed: {seed}, Scale: {scale}, Sampler: {set_sampler}')
-                self.processOutput.appendPlainText(msgy)
-
-                def launch_img2img():
-
-                    self.errorMessages.setText(
-                        f"SD Dreamer: Dreaming (img2img)...")
-                    worker = Worker('img2img', img2img_args, g)
-                    worker.signals.result.connect(thread_result)
-                    self.threadpool.start(worker)
-                launch_img2img()
-
+                img2img_dream()
             if self.mainTab.currentIndex() == 2:
+                inpaint_dream()
 
-                outpath = Path(sd_output_folder)/'inpaint_samples'
-                inpaint_args = dream_base_args
-                init_img = Path(inpainting_dir)/'masking'/'image.png'
-                init_mask = Path(inpainting_dir)/'masking' / \
-                    'out'/'init_mask.png'
-                inpaint_args["init_img"] = str(init_img)
-                inpaint_args["init_mask"] = init_mask
-
-                def gen_masks():
-
-                    im_a = Image.open(Path(inpainting_dir) /
-                                      'masking'/'image_mask.png').convert('RGB')
-                    if self.invertMaskCheck.isChecked():
-                        im_invert = ImageOps.invert(im_a)
-                        im_a_blur = im_invert.filter(
-                            ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
-                    else:
-                        im_a_blur = im_a.filter(
-                            ImageFilter.GaussianBlur(self.maskBlurVaue.value()))
-
-                    im_a = im_a_blur.convert('L')
-                    im_rgb = Image.open(init_img)
-                    im_rgba = im_rgb.copy()
-                    im_rgba.putalpha(im_a)
-                    im_rgba.save(init_mask)
-                gen_masks()
-
-                def launch_inpaint():
-                    self.errorMessages.setText(
-                        f"SD Dreamer: Dreaming (inpaint)...")
-                    worker = Worker('inpaint', inpaint_args, g)
-                    worker.signals.result.connect(thread_result)
-                    self.threadpool.start(worker)
-                launch_inpaint()
-
-        self.generateButton.clicked.connect(dreamer_new)
+        self.generateButton.clicked.connect(dream_launcher)
 
     def start_process(self, process_type, context_menu_op=False):
 

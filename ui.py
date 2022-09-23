@@ -276,7 +276,7 @@ class Ui_sd_dreamer_main(object):
 
         self.scaleVal = QSlider(self.tab_3)
         self.scaleVal.setObjectName(u"scaleVal")
-        self.scaleVal.setMinimum(-15)
+        self.scaleVal.setMinimum(1)
         self.scaleVal.setMaximum(30)
         self.scaleVal.setSingleStep(1)
         self.scaleVal.setValue(8)
@@ -436,11 +436,6 @@ class Ui_sd_dreamer_main(object):
         self.tab_9.setAutoFillBackground(True)
         self.gridLayout_14 = QGridLayout(self.tab_9)
         self.gridLayout_14.setObjectName(u"gridLayout_14")
-        self.imgIndex = QLabel(self.tab_9)
-        self.imgIndex.setObjectName(u"imgIndex")
-
-        self.gridLayout_14.addWidget(self.imgIndex, 0, 2, 1, 1, Qt.AlignRight)
-
         self.img2imgUpscaleCheck = QCheckBox(self.tab_9)
         self.img2imgUpscaleCheck.setObjectName(u"img2imgUpscaleCheck")
 
@@ -481,13 +476,13 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout_7.addWidget(self.imgFileSelect, 1, 2, 1, 1)
 
+        self.imgIndex = QLabel(self.groupBox_6)
+        self.imgIndex.setObjectName(u"imgIndex")
 
-        self.gridLayout_14.addWidget(self.groupBox_6, 2, 0, 1, 3)
+        self.gridLayout_7.addWidget(self.imgIndex, 0, 2, 1, 1)
 
-        self.img2imgDisplayed = QCheckBox(self.tab_9)
-        self.img2imgDisplayed.setObjectName(u"img2imgDisplayed")
 
-        self.gridLayout_14.addWidget(self.img2imgDisplayed, 0, 0, 1, 2)
+        self.gridLayout_14.addWidget(self.groupBox_6, 2, 0, 1, 2)
 
         self.mainTab.addTab(self.tab_9, "")
         self.tab_4 = QWidget()
@@ -495,6 +490,11 @@ class Ui_sd_dreamer_main(object):
         self.tab_4.setAutoFillBackground(True)
         self.gridLayout_4 = QGridLayout(self.tab_4)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.invertMaskCheck = QCheckBox(self.tab_4)
+        self.invertMaskCheck.setObjectName(u"invertMaskCheck")
+
+        self.gridLayout_4.addWidget(self.invertMaskCheck, 2, 0, 1, 1)
+
         self.groupBox_2 = QGroupBox(self.tab_4)
         self.groupBox_2.setObjectName(u"groupBox_2")
         self.gridLayout_6 = QGridLayout(self.groupBox_2)
@@ -529,17 +529,7 @@ class Ui_sd_dreamer_main(object):
         self.gridLayout_6.addWidget(self.inpaint_img, 1, 0, 1, 2)
 
 
-        self.gridLayout_4.addWidget(self.groupBox_2, 4, 0, 1, 2)
-
-        self.inpaintingDisplayedCheck = QCheckBox(self.tab_4)
-        self.inpaintingDisplayedCheck.setObjectName(u"inpaintingDisplayedCheck")
-
-        self.gridLayout_4.addWidget(self.inpaintingDisplayedCheck, 2, 0, 1, 1)
-
-        self.invertMaskCheck = QCheckBox(self.tab_4)
-        self.invertMaskCheck.setObjectName(u"invertMaskCheck")
-
-        self.gridLayout_4.addWidget(self.invertMaskCheck, 3, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.groupBox_2, 3, 0, 1, 2)
 
         self.mainTab.addTab(self.tab_4, "")
         self.tab_5 = QWidget()
@@ -929,7 +919,6 @@ class Ui_sd_dreamer_main(object):
 #endif // QT_CONFIG(tooltip)
         self.promptTagAdd.setText(QCoreApplication.translate("sd_dreamer_main", u"Add", None))
         self.mainTab.setTabText(self.mainTab.indexOf(self.tab_3), QCoreApplication.translate("sd_dreamer_main", u"Standard", None))
-        self.imgIndex.setText(QCoreApplication.translate("sd_dreamer_main", u"0", None))
 #if QT_CONFIG(tooltip)
         self.img2imgUpscaleCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Upscale image to the dimensions specified in standard tab", None))
 #endif // QT_CONFIG(tooltip)
@@ -954,11 +943,12 @@ class Ui_sd_dreamer_main(object):
         self.imgFileSelect.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select file", None))
 #endif // QT_CONFIG(tooltip)
         self.imgFileSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
-#if QT_CONFIG(tooltip)
-        self.img2imgDisplayed.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Use the image in the image viewer. Overrides input image select", None))
-#endif // QT_CONFIG(tooltip)
-        self.img2imgDisplayed.setText(QCoreApplication.translate("sd_dreamer_main", u"Use image displayed in viewer", None))
+        self.imgIndex.setText(QCoreApplication.translate("sd_dreamer_main", u"0", None))
         self.mainTab.setTabText(self.mainTab.indexOf(self.tab_9), QCoreApplication.translate("sd_dreamer_main", u"img2img", None))
+#if QT_CONFIG(tooltip)
+        self.invertMaskCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Inpaint the opposite area masked", None))
+#endif // QT_CONFIG(tooltip)
+        self.invertMaskCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Invert mask", None))
         self.groupBox_2.setTitle("")
         self.label_3.setText(QCoreApplication.translate("sd_dreamer_main", u"Mask blur", None))
 #if QT_CONFIG(tooltip)
@@ -971,14 +961,6 @@ class Ui_sd_dreamer_main(object):
 #endif // QT_CONFIG(tooltip)
         self.inpaint_img.setText("")
         self.inpaint_img.setPlaceholderText(QCoreApplication.translate("sd_dreamer_main", u"Image to inpaint", None))
-#if QT_CONFIG(tooltip)
-        self.inpaintingDisplayedCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Use the image in the image viewer. Overrides input select", None))
-#endif // QT_CONFIG(tooltip)
-        self.inpaintingDisplayedCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Use image displayed in viewer", None))
-#if QT_CONFIG(tooltip)
-        self.invertMaskCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Inpaint the opposite area masked", None))
-#endif // QT_CONFIG(tooltip)
-        self.invertMaskCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Invert mask", None))
         self.mainTab.setTabText(self.mainTab.indexOf(self.tab_4), QCoreApplication.translate("sd_dreamer_main", u"Inpainting", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("sd_dreamer_main", u"LatentSR", None))
 #if QT_CONFIG(tooltip)

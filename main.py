@@ -12,6 +12,13 @@
 # fix unicode prompt error on win with chinese characters, emojis etc
 # add config yaml path option
 # image viewer not loading with 1 image
+# batch img2img
+#img2img upscale with esrgan
+#use metadata to set fields
+#random artists
+#batch img2img processing
+#prompts from file
+#image thumbnails
 
 import configparser
 import glob
@@ -242,6 +249,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             metadataAction = img_menu.addAction("Get metadata")
             inpaintAction = img_menu.addAction("Inpaint")
             img2imgAction = img_menu.addAction("img2img")
+            favouriteAction = img_menu.addAction("Send to favourites")
 
             action = img_menu.exec_(self.imageView.mapToGlobal(position))
 
@@ -265,6 +273,13 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 img2img_dream(True)
             if action == inpaintAction:
                 inpaint(True)
+            if action == favouriteAction:
+                source = self.imgFilename.text().replace('Filename: ', '')
+                file_stripped = Path(source).name
+                target=Path(sd_output_folder)/'favourites'
+                os.makedirs(Path(sd_output_folder)/'favourites', exist_ok=True)
+                shutil.copyfile(source, Path(target/file_stripped))
+                self.errorMessages.setText(f'Sent image to {target}')
 
         self.imageView.customContextMenuRequested.connect(openMenu)
 

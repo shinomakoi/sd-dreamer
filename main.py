@@ -13,12 +13,12 @@
 # add config yaml path option
 # image viewer not loading with 1 image
 # batch img2img
-#img2img upscale with esrgan
-#use metadata to set fields
-#random artists
-#batch img2img processing
-#prompts from file
-#image thumbnails
+# img2img upscale with esrgan
+# use metadata to set fields
+# random artists
+# batch img2img processing
+# prompts from file
+# image thumbnails
 
 import configparser
 import glob
@@ -188,6 +188,7 @@ class Worker(QRunnable):
                 cfg_scale=inpaint_args["scale"],
                 sampler_name=inpaint_args["sampler"],
                 outdir=inpaint_args["outdir"],
+                strength=inpaint_args["strength"],
                 gfpgan_strength=inpaint_args["gfpgan_strength"],
                 # grid=inpaint_args["grid"],
                 # seamless=inpaint_args["seamless"],
@@ -262,9 +263,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 return
 
             if action == esrganAction:
-                self.start_process('esrgan_upscale_op', True)
+                esrgan_launch_process(True)
             if action == ldsrAction:
-                self.start_process('latent_sr_op', True)
+                ldsr_launch_process(True)
             if action == artAction:
                 art_op()
             if action == metadataAction:
@@ -276,7 +277,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             if action == favouriteAction:
                 source = self.imgFilename.text().replace('Filename: ', '')
                 file_stripped = Path(source).name
-                target=Path(sd_output_folder)/'favourites'
+                target = Path(sd_output_folder)/'favourites'
                 os.makedirs(Path(sd_output_folder)/'favourites', exist_ok=True)
                 shutil.copyfile(source, Path(target/file_stripped))
                 self.errorMessages.setText(f'Sent image to {target}')
@@ -527,11 +528,11 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             def esrgan_upscale_op():
                 print("ESRGAN op")
-                op_launcher('esrgan_upscale_op')
+                esrgan_launch_process()
 
             def latent_sr():
                 print("LatentSR op")
-                op_launcher('latent_sr_op')
+                ldsr_launch_process()
 
             if self.operationBox.currentIndex() == 0:
                 esrgan_upscale_op()
@@ -667,13 +668,13 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.threadpool.start(worker)
             launch_txt2img()
 
-        def img2img_dream(image_view=False):
+        def img2img_dream(context_menu_op=False):
             (dream_base_args, prompt, steps, seed, scale,
              set_sampler, width, height, strength, init_img) = dreamer_new()
 
             outpath = Path(sd_output_folder)/'img2img_samples'
 
-            if image_view == True:
+            if context_menu_op == True:
                 init_img = self.imgFilename.text().replace('Filename: ', '')
 
             if self.img2imgUpscaleCheck.isChecked():
@@ -688,7 +689,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             img2img_args["strength"] = strength
             img2img_args["init_img"] = str(init_img)
 
-            print('img2imgargs', img2img_args)
+            print('img2imgargs:', img2img_args)
 
             msgy = (
                 f'Prompt: "{prompt}" Steps: {steps}, Seed: {seed}, Scale: {scale}, Sampler: {set_sampler}')
@@ -703,7 +704,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             launch_img2img()
 
         def inpaint_dream():
-            (dream_base_args, init_img, *args) = dreamer_new()
+            (dream_base_args, init_img, strength, *args) = dreamer_new()
 
             outpath = Path(sd_output_folder)/'inpaint_samples'
             inpaint_args = dream_base_args
@@ -712,6 +713,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 'out'/'init_mask.png'
             inpaint_args["init_img"] = str(init_img)
             inpaint_args["init_mask"] = init_mask
+            inpaint_args["strength"] = strength
 
             def gen_masks():
                 im_a = Image.open(Path(inpainting_dir) /
@@ -749,27 +751,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         self.generateButton.clicked.connect(dream_launcher)
 
-    def start_process(self, process_type, context_menu_op=False):
+        def esrgan_launch_process(context_menu_op=False):
 
-        self.cancelButton.setEnabled(True)
+            if context_menu_op == True:
+                single_image = self.imgFilename.text().replace('Filename: ', '')
+                op_input_path = Path(images_path)/(single_image)
+            else:
+                op_input_path = Path(images_path.replace('*.png', ''))
 
-        self.processOutput.appendPlainText("Starting external process")
-        self.generator_process = QProcess()
-        self.generator_process.stateChanged.connect(self.handle_state)
-        self.generator_process.finished.connect(
-            lambda: self.process_finished)
-        self.generator_process.readyReadStandardOutput.connect(
-            self.handle_stdout)
-        self.generator_process.readyReadStandardError.connect(
-            self.handle_stderr)
-
-        if context_menu_op == True:
-            single_image = self.imgFilename.text().replace('Filename: ', '')
-            op_input_path = Path(images_path)/(single_image)
-        else:
-            op_input_path = Path(images_path.replace('*.png', ''))
-
-        if process_type == 'esrgan_upscale_op':
             esrgan_out_path = Path(
                 self.outputFolderLine.text())/'upscales'/'esrgan_out'
             os.makedirs(esrgan_out_path, exist_ok=True)
@@ -790,10 +779,16 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             print('ESRGAN args:', esrgan_args)
 
-            self.generator_process.start(self.pyBinPath.text(), esrgan_args)
-            return
+            self.start_process(esrgan_args)
 
-        if process_type == 'latent_sr_op':
+        def ldsr_launch_process(context_menu_op=False):
+
+            if context_menu_op == True:
+                single_image = self.imgFilename.text().replace('Filename: ', '')
+                op_input_path = Path(images_path)/(single_image)
+            else:
+                op_input_path = Path(images_path.replace('*.png', ''))
+
             print('Latent-SR: path to images:', op_input_path)
             latent_sr_out = Path(
                 self.outputFolderLine.text())/'upscales'/'latent_sr'
@@ -806,8 +801,23 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 latent_sr_args[1] = "--single"
             print('latent_sr_args:', latent_sr_args)
 
-            self.generator_process.start(self.pyBinPath.text(), latent_sr_args)
-            return
+            self.start_process(latent_sr_args)
+
+    def start_process(self, process_args):
+
+        self.cancelButton.setEnabled(True)
+
+        self.processOutput.appendPlainText("Starting external process")
+        self.generator_process = QProcess()
+        self.generator_process.stateChanged.connect(self.handle_state)
+        self.generator_process.finished.connect(
+            lambda: self.process_finished)
+        self.generator_process.readyReadStandardOutput.connect(
+            self.handle_stdout)
+        self.generator_process.readyReadStandardError.connect(
+            self.handle_stderr)
+
+        self.generator_process.start(self.pyBinPath.text(), process_args)
 
     def handle_stderr(self):
         data = self.generator_process.readAllStandardError()

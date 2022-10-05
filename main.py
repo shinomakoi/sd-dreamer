@@ -713,7 +713,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 'out'/'init_mask.png'
             inpaint_args["init_img"] = str(init_img)
             inpaint_args["init_mask"] = init_mask
-            inpaint_args["strength"] = strength
+            inpaint_args["strength"] = float(self.img2imgStrength.value())
 
             def gen_masks():
                 im_a = Image.open(Path(inpainting_dir) /

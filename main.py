@@ -248,17 +248,17 @@ class Worker(QRunnable):
         #     )
         #     print('outpaintcropresults:', results)
 
-        if mode == 'fix':
-            load_mode = 'txt2img_samples'
-            fix_args = mode_args
-            print('fix args:', fix_args)
+        # if mode == 'fix':
+        #     load_mode = 'txt2img_samples'
+        #     fix_args = mode_args
+        #     print('fix args:', fix_args)
 
-            results = g.apply_postprocessor(
-                image_path=fix_args["image_path"],
-                tool=fix_args["tool"],
-                codeformer_fidelity=fix_args["codeformer_fidelity"],
-            )
-            print('fixres', results)
+        #     results = g.apply_postprocessor(
+        #         image_path=fix_args["image_path"],
+        #         tool=fix_args["tool"],
+        #         codeformer_fidelity=fix_args["codeformer_fidelity"],
+        #     )
+        #     print('fixres', results)
 
         print("Thread complete")
 
@@ -864,23 +864,23 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.threadpool.start(worker)
             launch_inpaint()
 
-        def fix_dream(fix_type):
-            (dream_base_args, init_img, *args) = dreamer_new()
+        # def fix_dream(fix_type):
+        #     (dream_base_args, init_img, *args) = dreamer_new()
 
-            fix_args = {}
+        #     fix_args = {}
 
-            init_img = self.imgFilename.text().replace('Filename: ', '')
-            fix_args["image_path"] = str(init_img)
+        #     init_img = self.imgFilename.text().replace('Filename: ', '')
+        #     fix_args["image_path"] = str(init_img)
 
-            if fix_type == 'codeformer':
-                fix_args["tool"] = 'codeformer'
-                fix_args["codeformer_fidelity"] = 0.75
+        #     if fix_type == 'codeformer':
+        #         fix_args["tool"] = 'codeformer'
+        #         fix_args["codeformer_fidelity"] = 0.75
 
-            self.errorMessages.setText(
-                f"SD Dreamer: Dreaming (fix)...")
-            worker = Worker('fix', fix_args, g)
-            worker.signals.result.connect(thread_result)
-            self.threadpool.start(worker)
+        #     self.errorMessages.setText(
+        #         f"SD Dreamer: Dreaming (fix)...")
+        #     worker = Worker('fix', fix_args, g)
+        #     worker.signals.result.connect(thread_result)
+        #     self.threadpool.start(worker)
 
         # def outpaintcrop_dream():
         #     (dream_base_args, init_img, *args) = dreamer_new()

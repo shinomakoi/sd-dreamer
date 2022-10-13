@@ -9,7 +9,7 @@ Note: the current version is designed to work with the invoke-ai repo only. The 
 - IMPORTANT: Place the SD Dreamer folder in the base of your Stable Diffusion folder (e.g. in stable-diffusion-invoke-ai folder, where environment.yaml file is), so to launch, for example - 'python stable-diffusion-invoke-ai\sd-dreamer-main\main.py'
 - Run 'conda activate <invokeai/ldm>' or whatever your SD conda environment is (in Windows, from inside the Anaconda/Miniconda prompt)
 - Run 'pip install -r requirements.txt' to install dependencies
-- Run 'python main.py' to start the app
+- Run 'python main.py' to start the app (inside the SD Dreamer folder)
 
 - LatentSR requires download of https://ommer-lab.com/files/latent-diffusion/sr_bsr.zip - put the model.ckpt file from sr_bsr.zip in the models/ldm/bsr_sr/ folder. Probably bugged currently with the invoke-ai environment.
 

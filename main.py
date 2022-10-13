@@ -20,6 +20,11 @@
 # prompts from file
 # image thumbnails
 
+# add highres fix, perlin noise, threshold, outpainting, codeformer, change full
+# precision, free_gpu_mem, new precision options, !fix, !fetch, outcrop, prompt blending
+# session_peakmem
+
+from ldm.invoke.restoration import Restoration
 import configparser
 import glob
 import os
@@ -31,14 +36,14 @@ from pathlib import Path
 import PIL
 from ldm.generate import Generate
 from PIL import Image, ImageFilter, ImageOps
-from PySide2 import QtWidgets
-from PySide2.QtCore import *
-from PySide2.QtCore import QUrl  # , QPropertyAnimation
-from PySide2.QtCore import QProcess
-from PySide2.QtGui import *
-from PySide2.QtGui import QPixmap
-from PySide2.QtWidgets import *
-from PySide2.QtWidgets import QFileDialog
+from PySide6 import QtWidgets
+from PySide6.QtCore import *
+from PySide6.QtCore import QUrl  # , QPropertyAnimation
+from PySide6.QtCore import QProcess
+from PySide6.QtGui import *
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import *
+from PySide6.QtWidgets import QFileDialog
 
 from inpainter import inpainter_window
 from painter import paintWindow
@@ -63,6 +68,11 @@ inpainting_dir = Path(home_dir_path)/'inpainting'
 latent_sr_path = Path(home_dir_path)/'scripts'/'predict_sr.py'
 sd_output_folder = Path(sd_folder_path)/'outputs'/'sd_dreamer'
 esrgan_out_path = Path(sd_output_folder)/'upscales'/'esrgan_out'
+
+os.chdir('..')
+gfpgan, codeformer = None, None
+restoration = Restoration()
+gfpgan, codeformer = restoration.load_face_restore_models()
 
 
 class Load_Images_Class:
@@ -143,11 +153,20 @@ class Worker(QRunnable):
                 cfg_scale=txt2img_args["scale"],
                 sampler_name=txt2img_args["sampler"],
                 outdir=txt2img_args["outdir"],
+
+                facetool=txt2img_args["facetool"],
                 gfpgan_strength=txt2img_args["gfpgan_strength"],
+                codeformer_fidelity=txt2img_args["codeformer_fidelity"],
+
                 grid=txt2img_args["grid"],
                 seamless=txt2img_args["seamless"],
                 variation_amount=txt2img_args["variation_amount"],
                 upscale=txt2img_args["upscale"],
+
+                threshold=txt2img_args["threshold"],
+                perlin=txt2img_args["perlin_value"],
+                hires_fix=txt2img_args["hires_fix"],
+                free_gpu_mem=txt2img_args["free_gpu_mem"],
             )
 
         if mode == 'img2img':
@@ -167,10 +186,18 @@ class Worker(QRunnable):
                 outdir=img2img_args["outdir"],
                 strength=img2img_args["strength"],
                 init_img=img2img_args["init_img"],
+
+                facetool=img2img_args["facetool"],
                 gfpgan_strength=img2img_args["gfpgan_strength"],
+                codeformer_fidelity=img2img_args["codeformer_fidelity"],
+
                 grid=img2img_args["grid"],
                 seamless=img2img_args["seamless"],
-                upscale=img2img_args["upscale"]
+                upscale=img2img_args["upscale"],
+                threshold=img2img_args["threshold"],
+                perlin_value=img2img_args["perlin_value"],
+                embiggen=img2img_args["embiggen"],
+                free_gpu_mem=img2img_args["free_gpu_mem"],
             )
 
         if mode == 'inpaint':
@@ -189,13 +216,49 @@ class Worker(QRunnable):
                 sampler_name=inpaint_args["sampler"],
                 outdir=inpaint_args["outdir"],
                 strength=inpaint_args["strength"],
+
+                facetool=inpaint_args["facetool"],
                 gfpgan_strength=inpaint_args["gfpgan_strength"],
+                codeformer_fidelity=inpaint_args["codeformer_fidelity"],
+
                 # grid=inpaint_args["grid"],
                 # seamless=inpaint_args["seamless"],
                 init_img=inpaint_args["init_img"],
                 init_mask=inpaint_args["init_mask"],
-                upscale=inpaint_args["upscale"]
+                upscale=inpaint_args["upscale"],
+
+                threshold=inpaint_args["threshold"],
+                perlin=inpaint_args["perlin_value"],
+                free_gpu_mem=inpaint_args["free_gpu_mem"],
             )
+
+        # if mode == 'outpaintcrop':
+        #     load_mode = 'inpaint_samples'
+        #     outpaintcrop_args = mode_args
+        #     print('outpaintcrop args:', outpaintcrop_args)
+
+        #     results = g.apply_postprocessor(
+        #         tool='outcrop',
+        #         outcrop={'top': 64},
+        #         image_path='',
+        #         # top=outpaintcrop_args["top_crop"],
+        #         # bottom=outpaintcrop_args["bottom_crop"],
+        #         # left=outpaintcrop_args["left_crop"],
+        #         # right=outpaintcrop_args["right_crop"],
+        #     )
+        #     print('outpaintcropresults:', results)
+
+        if mode == 'fix':
+            load_mode = 'txt2img_samples'
+            fix_args = mode_args
+            print('fix args:', fix_args)
+
+            results = g.apply_postprocessor(
+                image_path=fix_args["image_path"],
+                tool=fix_args["tool"],
+                codeformer_fidelity=fix_args["codeformer_fidelity"],
+            )
+            print('fixres', results)
 
         print("Thread complete")
 
@@ -251,8 +314,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             inpaintAction = img_menu.addAction("Inpaint")
             img2imgAction = img_menu.addAction("img2img")
             favouriteAction = img_menu.addAction("Send to favourites")
+            # codeformerAction = img_menu.addAction("Codeformer")
 
-            action = img_menu.exec_(self.imageView.mapToGlobal(position))
+            action = img_menu.exec(self.imageView.mapToGlobal(position))
 
             check_image = Path(
                 self.imgFilename.text().replace('Filename: ', ''))
@@ -264,16 +328,22 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             if action == esrganAction:
                 esrgan_launch_process(True)
+
             if action == ldsrAction:
                 ldsr_launch_process(True)
+
             if action == artAction:
                 art_op()
+
             if action == metadataAction:
                 read_metadata_op()
+
             if action == img2imgAction:
                 img2img_dream(True)
+
             if action == inpaintAction:
                 inpaint(True)
+
             if action == favouriteAction:
                 source = self.imgFilename.text().replace('Filename: ', '')
                 file_stripped = Path(source).name
@@ -281,6 +351,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 os.makedirs(Path(sd_output_folder)/'favourites', exist_ok=True)
                 shutil.copyfile(source, Path(target/file_stripped))
                 self.errorMessages.setText(f'Sent image to {target}')
+
+            # if action == codeformerAction:
+            #     fix_dream('codeformer')
 
         self.imageView.customContextMenuRequested.connect(openMenu)
 
@@ -299,7 +372,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         def check_install():
             check_install = os.path.exists(
-                Path(sd_folder_path)/'environment.yaml')
+                Path(sd_folder_path)/'environment.yml')
             if check_install == False:
                 self.errorMessages.setText(
                     "WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
@@ -495,7 +568,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 sd_folder_path, art_source, int(width), int(height))
             self.art_win.show()
         self.artButton.pressed.connect(lambda: art(
-            False, self.widthThing.currentText(), self.heightThing.currentText()))
+            False, self.widthThing.value(), self.heightThing.value()))
 
         def add_prompt_tag():
 
@@ -579,40 +652,54 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             if loaded_model == False:
                 if self.precisionToggle.isChecked() and self.embeddingCheck.isChecked() == False:
-                    g = Generate(weights=model_ckpt, full_precision=True)
-                if self.embeddingCheck.isChecked():
-                    g = Generate(weights=model_ckpt, full_precision=True,
+                    g = Generate(weights=model_ckpt, gfpgan=gfpgan,
+                                 codeformer=codeformer, precision='float32')
+                elif self.embeddingCheck.isChecked():
+                    g = Generate(weights=model_ckpt, gfpgan=gfpgan,
+                                 codeformer=codeformer, precision='float32',
                                  embedding_path=self.embeddingInputFile.text())
                 else:
-                    g = Generate(weights=model_ckpt)
+                    g = Generate(weights=model_ckpt, gfpgan=gfpgan,
+                                 codeformer=codeformer, precision='auto')
 
                 self.errorMessages.setText(f"SD Dreamer: Loading model...")
                 loaded_model = True
 
-            prompt = str(self.promptVal.currentText())
+            pos_prompt = str(self.promptVal.currentText())
+            neg_prompt = str(self.negPromptVal.text())
+
+            if len(neg_prompt) > 0:
+                prompt = pos_prompt+', ['+neg_prompt+']'
+            else:
+                prompt = pos_prompt
+
             steps = int(self.stepsVal.value())
             iterations = int(self.itsVal.value())
             seed = int(self.seedVal.text())
             outpath = Path(sd_output_folder)/'txt2img_samples'
-            width = int(self.widthThing.currentText())
-            height = int(self.heightThing.currentText())
+            width = int(self.widthThing.value())
+            height = int(self.heightThing.value())
             scale = float(self.scaleVal.value())
             set_sampler = str(self.samplerToggle.currentText())
             init_img = self.img2imgFile.text()
             strength = float(self.img2imgStrength.value())
+            gfpgan_strength = float(self.gfpganStrength.value())
+            codeformer_fidelity = float(self.codeformerValue.value())
+            facetool = None
 
             if self.mainTab.currentIndex() == 2:
                 outpath = Path(sd_output_folder)/'inpaint_samples'
 
             if self.gfpganCheck.isChecked():
-                gfpgan_strength = float(self.gfpganStrength.value())
-            else:
-                gfpgan_strength = False
+                facetool = 'gfpgan'
+
+            if self.codeformerCheck.isChecked():
+                facetool = 'codeformer'
 
             if self.gridCheck.isChecked():
-                grid = False
-            else:
                 grid = True
+            else:
+                grid = False
 
             if self.seamlessCheck.isChecked():
                 seamless = True
@@ -629,7 +716,23 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                     self.builtUpscaleStrength.value())]
             else:
                 upscale = None
+## new 2.0
 
+            if self.thresholdCheck.isChecked():
+                threshold = int(self.thresholdValue.value())
+            else:
+                threshold = False
+
+            if self.perlinCheck.isChecked():
+                perlin_value = float(self.perlinValue.value())
+            else:
+                perlin_value = False
+
+            if self.memFreeCheck.isChecked():
+                free_gpu_mem = True
+            else:
+                free_gpu_mem = False
+##
             dream_base_args = {
                 'prompt': '"'+prompt+'"',
                 'steps': steps,
@@ -645,6 +748,12 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 'seamless': seamless,
                 'variation_amount': variation_amount,
                 'upscale': upscale,
+## new
+                'codeformer_fidelity': codeformer_fidelity,
+                'threshold': threshold,
+                'perlin_value': perlin_value,
+                'free_gpu_mem': free_gpu_mem,
+                'facetool': facetool,
             }
             return (dream_base_args, prompt, steps, seed, scale,
                     set_sampler, width, height, strength, init_img)
@@ -655,6 +764,12 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             txt2img_args = dream_base_args
             print(dream_base_args)
+
+            if self.hiresfixCheck.isChecked():
+                hires_fix = True
+            else:
+                hires_fix = False
+            txt2img_args["hires_fix"] = hires_fix
 
             msgy = (
                 f'Prompt: "{prompt}" Steps: {steps}, Seed: {seed}, Scale: {scale}, Sampler: {set_sampler}')
@@ -673,6 +788,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
              set_sampler, width, height, strength, init_img) = dreamer_new()
 
             outpath = Path(sd_output_folder)/'img2img_samples'
+            img2img_args = dream_base_args
 
             if context_menu_op == True:
                 init_img = self.imgFilename.text().replace('Filename: ', '')
@@ -684,7 +800,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 image.save(Path(outpath.parent)/'upscaled.png')
                 init_img = Path(outpath.parent)/'upscaled.png'
 
-            img2img_args = dream_base_args
+            if self.embiggenCheck.isChecked():
+                embiggen_scale = int(self.embiggenScale.value())
+                embiggen_strength = float(self.embiggenStrength.value())
+                embiggen_overlap = float(self.embiggenOverlap.value())
+                img2img_args["embiggen"] = embiggen_scale, embiggen_strength, embiggen_overlap
+            else:
+                img2img_args["embiggen"] = None
+
             img2img_args["outdir"] = outpath
             img2img_args["strength"] = strength
             img2img_args["init_img"] = str(init_img)
@@ -706,7 +829,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         def inpaint_dream():
             (dream_base_args, init_img, strength, *args) = dreamer_new()
 
-            outpath = Path(sd_output_folder)/'inpaint_samples'
+            # outpath = Path(sd_output_folder)/'inpaint_samples'
             inpaint_args = dream_base_args
             init_img = Path(inpainting_dir)/'masking'/'image.png'
             init_mask = Path(inpainting_dir)/'masking' / \
@@ -741,6 +864,47 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.threadpool.start(worker)
             launch_inpaint()
 
+        def fix_dream(fix_type):
+            (dream_base_args, init_img, *args) = dreamer_new()
+
+            fix_args = {}
+
+            init_img = self.imgFilename.text().replace('Filename: ', '')
+            fix_args["image_path"] = str(init_img)
+
+            if fix_type == 'codeformer':
+                fix_args["tool"] = 'codeformer'
+                fix_args["codeformer_fidelity"] = 0.75
+
+            self.errorMessages.setText(
+                f"SD Dreamer: Dreaming (fix)...")
+            worker = Worker('fix', fix_args, g)
+            worker.signals.result.connect(thread_result)
+            self.threadpool.start(worker)
+
+        # def outpaintcrop_dream():
+        #     (dream_base_args, init_img, *args) = dreamer_new()
+
+        #     outpaintcrop_args = dream_base_args
+
+        #     # outpaintcrop_args = {}
+
+        #     outpaintcrop_args["image_path"] = str(init_img)
+        #     outpaintcrop_args["top_crop"] = self.topCrop.value()
+        #     outpaintcrop_args["bottom_crop"] = self.bottomCrop.value()
+        #     outpaintcrop_args["left_crop"] = self.leftCrop.value()
+        #     outpaintcrop_args["right_crop"] = self.rightCrop.value()
+
+        #     print(outpaintcrop_args)
+
+        #     def launch_outpaintcrop():
+        #         worker = Worker('outpaintcrop', outpaintcrop_args, g)
+        #         self.errorMessages.setText(
+        #             f"SD Dreamer: Dreaming (outcrop/outpaint)...")
+        #         worker.signals.result.connect(thread_result)
+        #         self.threadpool.start(worker)
+        #     launch_outpaintcrop()
+
         def dream_launcher():
             if self.mainTab.currentIndex() == 0:
                 txt2img_dream()
@@ -748,6 +912,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 img2img_dream()
             if self.mainTab.currentIndex() == 2:
                 inpaint_dream()
+            # if self.mainTab.currentIndex() == 3:
+            #     outpaintcrop_dream()
 
         self.generateButton.clicked.connect(dream_launcher)
 
@@ -867,4 +1033,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = sd_dreamer_main()
     window.show()
-    app.exec_()
+    app.exec()

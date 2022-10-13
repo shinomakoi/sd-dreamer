@@ -4,16 +4,16 @@ from pathlib import Path
 from random import choice
 from PIL import Image
 
-from PySide2.QtCore import *
-from PySide2.QtCore import QUrl  # , QPropertyAnimation
-from PySide2.QtCore import QProcess
-from PySide2.QtGui import *
-from PySide2.QtGui import QPixmap
-from PySide2.QtWidgets import *
-from PySide2.QtWidgets import QFileDialog
+from PySide6.QtCore import *
+from PySide6.QtCore import QUrl  # , QPropertyAnimation
+from PySide6.QtCore import QProcess
+from PySide6.QtGui import *
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import *
+from PySide6.QtWidgets import QFileDialog
 
-SPRAY_PARTICLES = 40
-SPRAY_DIAMETER = 9
+SPRAY_PARTICLES = 45
+SPRAY_DIAMETER = 15
 home_dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class paintWindow(QMainWindow):
@@ -126,6 +126,14 @@ class paintWindow(QMainWindow):
         b_size.addAction(pix_48)
         pix_48.triggered.connect(self.Pixel_48)
 
+        pix_72= QAction("72px", self)
+        b_size.addAction(pix_72)
+        pix_72.triggered.connect(self.Pixel_72)
+    
+        pix_96 = QAction("96px", self)
+        b_size.addAction(pix_96)
+        pix_96.triggered.connect(self.Pixel_96)
+
         # creating options for brush color
         # creating action for black color
         black = QAction("Black", self)
@@ -198,7 +206,7 @@ class paintWindow(QMainWindow):
             # make drawing flag true
             self.drawing = True
             # make last point to the point of cursor
-            self.lastPoint = event.pos()
+            self.lastPoint = event.scenePosition()
 
     # method for tracking mouse activity
 
@@ -221,10 +229,10 @@ class paintWindow(QMainWindow):
 
             # draw line from the last point of cursor to the current point
             # this will draw only one step
-            painter.drawLine(self.lastPoint, event.pos())
+            painter.drawLine(self.lastPoint, event.scenePosition())
 
             # change the last point
-            self.lastPoint = event.pos()
+            self.lastPoint = event.scenePosition()
             # update
             self.update()
         else:
@@ -232,9 +240,10 @@ class paintWindow(QMainWindow):
                 0, 255, 0, 10), QColor(0, 0, 255, 10)]
 
             painter = QPainter(self.image)
+
+            painter.setPen(QPen(self.brushSize))
             pen = QPen()
             pen.setWidth(2)
-            painter.setPen(QPen(self.brushSize))
             for n in range(SPRAY_PARTICLES):
                 pen.setColor((choice(colors)))
                 xo = random.gauss(0, SPRAY_DIAMETER)
@@ -306,6 +315,11 @@ class paintWindow(QMainWindow):
     def Pixel_48(self):
         self.brushSize = 48
 
+    def Pixel_72(self):
+        self.brushSize = 72
+
+    def Pixel_96(self):
+        self.brushSize = 96
     # methods for changing brush color
 
     def whiteColor(self):

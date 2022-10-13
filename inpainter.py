@@ -2,12 +2,12 @@ import os
 from pathlib import Path
 
 from PIL import Image
-from PySide2.QtCore import *
-from PySide2.QtCore import QUrl  # , QPropertyAnimation
-from PySide2.QtGui import *
-from PySide2.QtGui import QPixmap
-from PySide2.QtWidgets import *
-from PySide2.QtWidgets import QFileDialog
+from PySide6.QtCore import *
+from PySide6.QtCore import QUrl  # , QPropertyAnimation
+from PySide6.QtGui import *
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import *
+from PySide6.QtWidgets import QFileDialog
 
 home_dir_path = os.path.dirname(os.path.realpath(__file__))
 sd_folder_path = Path(home_dir_path).parent
@@ -112,6 +112,14 @@ class inpainter_window(QMainWindow):
         b_size.addAction(pix_48)
         pix_48.triggered.connect(self.Pixel_48)
 
+        pix_72= QAction("72px", self)
+        b_size.addAction(pix_72)
+        pix_72.triggered.connect(self.Pixel_72)
+    
+        pix_96 = QAction("96px", self)
+        b_size.addAction(pix_96)
+        pix_96.triggered.connect(self.Pixel_96)
+
         # similarly repeating above steps for different color
         white = QAction("White", self)
         white.triggered.connect(self.whiteColor)
@@ -140,7 +148,7 @@ class inpainter_window(QMainWindow):
         # if left mouse button is pressed
         if event.button() == Qt.LeftButton:
             self.drawing = True
-            self.lastPoint = event.pos()
+            self.lastPoint = event.scenePosition()
 
     # method for tracking mouse activity
     def mouseMoveEvent(self, event):
@@ -154,10 +162,10 @@ class inpainter_window(QMainWindow):
             painter.setPen(QPen(self.brushColor, self.brushSize,
                                 Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin))
 
-            painter.drawLine(self.lastPoint, event.pos())
+            painter.drawLine(self.lastPoint, event.scenePosition())
 
             # change the last point
-            self.lastPoint = event.pos()
+            self.lastPoint = event.scenePosition()
             # update
             self.update()
 
@@ -199,6 +207,12 @@ class inpainter_window(QMainWindow):
 
     def Pixel_48(self):
         self.brushSize = 48
+
+    def Pixel_72(self):
+        self.brushSize = 72
+
+    def Pixel_96(self):
+        self.brushSize = 96
 
     def whiteColor(self):
         self.brushColor = QColor(255, 255, 255, 100)

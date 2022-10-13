@@ -1,5 +1,5 @@
-PySide2
-Pillow
+PySide6
 shiboken2
 rich
 typer
+Pillow

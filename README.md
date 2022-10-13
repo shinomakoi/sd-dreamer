@@ -1,12 +1,12 @@
 # sd-dreamer
-Qt based Linux/Windows GUI for Stable Diffusion (invoke-ai version). Requires NVIDIA GPU
+Qt based Linux/Windows GUI for Stable Diffusion (Invoke-AI repo)
 
 Features txt2img, img2img, inpainting, paint app for img2img, upscaling, textual inversion embedding, k-diffusion samplers and more.
 
-Note: the current version is designed to work with the invoke-ai repo only. The old version is in the 'old-generic' branch.
+Note: the current version is designed to work with the Invoke-AI repo only. The old version is in the 'old-generic' branch.
 
-- Have a working Stable Diffusion install from the invoke-ai repo (https://github.com/invoke-ai/stable-diffusion)
-- IMPORTANT: Place the SD Dreamer folder in the base of your Stable Diffusion folder (e.g. in stable-diffusion-invoke-ai folder, where environment.yaml file is), so to launch, for example - 'python stable-diffusion-invoke-ai\sd-dreamer-main\main.py'
+- Have a working Stable Diffusion install from the Invoke-Ai repo (https://github.com/invoke-ai/stable-diffusion)
+- IMPORTANT: Place the SD Dreamer folder in the base of your Invoke-AI folder (e.g. in 'InvokeAI' folder), so to launch, for example - 'python InvokeAI\sd-dreamer-main\main.py'
 - Run 'conda activate <invokeai/ldm>' or whatever your SD conda environment is (in Windows, from inside the Anaconda/Miniconda prompt)
 - Run 'pip install -r requirements.txt' to install dependencies
 - Run 'python main.py' to start the app (inside the SD Dreamer folder)

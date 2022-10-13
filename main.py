@@ -71,7 +71,6 @@ esrgan_out_path = Path(sd_output_folder)/'upscales'/'esrgan_out'
 
 
 def load_restore_models():
-    gfpgan, codeformer, esrgan = None, None, None
     restoration = Restoration()
     try:
         gfpgan, codeformer = restoration.load_face_restore_models()
@@ -656,7 +655,11 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             global g
             model_ckpt = self.custCheckpointLine.text()
 
-            gfpgan, codeformer, esrgan = load_restore_models()
+            gfpgan, codeformer, esrgan = None, None, None
+
+
+            if self.restoreModelsCheck.isChecked():
+                gfpgan, codeformer, esrgan = load_restore_models()
 
             if loaded_model == False:
                 if self.precisionToggle.isChecked() and self.embeddingCheck.isChecked() == False:

@@ -7,7 +7,7 @@ Note: the current version is designed to work with the invoke-ai repo only. The 
 
 - Have a working Stable Diffusion install from the invoke-ai repo (https://github.com/invoke-ai/stable-diffusion)
 - IMPORTANT: Place the SD Dreamer folder in the base of your Stable Diffusion folder (e.g. in stable-diffusion-invoke-ai folder, where environment.yaml file is), so to launch, for example - 'python stable-diffusion-invoke-ai\sd-dreamer-main\main.py'
-- Run 'conda activate <ldm/ldp>' or whatever your SD conda environment is (in Windows, from inside the Anaconda prompt)
+- Run 'conda activate <invokeai/ldm>' or whatever your SD conda environment is (in Windows, from inside the Anaconda/Miniconda prompt)
 - Run 'pip install -r requirements.txt' to install dependencies
 - Run 'python main.py' to start the app
 
@@ -19,4 +19,4 @@ Note: the current version is designed to work with the invoke-ai repo only. The 
  
  ![sdd9](https://user-images.githubusercontent.com/112139428/191869406-b37a0c84-991d-46ac-8c8c-93b5575e975b.png)
 
-Credit to stability.ai/CompVis et al for Stable Diffusion, lstein, jquesnelle, richservo, joeyballentine and anons
+Credit to stability.ai/CompVis et al for Stable Diffusion, Invoke-ai, jquesnelle, richservo, joeyballentine and anons

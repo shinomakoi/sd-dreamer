@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1257</width>
-    <height>1002</height>
+    <width>1351</width>
+    <height>1068</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -25,85 +25,196 @@
   <property name="windowTitle">
    <string>SD Dreamer</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true"/>
-  </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="1" alignment="Qt::AlignLeft">
-    <widget class="QPushButton" name="previousImgButton">
-     <property name="toolTip">
-      <string>Previous image</string>
-     </property>
-     <property name="text">
-      <string>&lt; Previous</string>
-     </property>
-     <property name="shortcut">
-      <string>Left</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="5">
-    <widget class="QComboBox" name="promptVal">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+   <item row="0" column="4">
+    <widget class="QPushButton" name="generateButton">
+     <property name="enabled">
+      <bool>true</bool>
      </property>
      <property name="maximumSize">
       <size>
-       <width>16777215</width>
+       <width>265</width>
        <height>16777215</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
       </size>
      </property>
      <property name="font">
       <font>
        <pointsize>11</pointsize>
-       <weight>50</weight>
-       <italic>true</italic>
-       <bold>false</bold>
+       <weight>75</weight>
+       <bold>true</bold>
+       <underline>false</underline>
       </font>
      </property>
      <property name="toolTip">
-      <string>The prompt to generate images with. No quotations</string>
+      <string>Generate images</string>
      </property>
-     <property name="whatsThis">
-      <string/>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(147, 217, 255);</string>
      </property>
-     <property name="autoFillBackground">
+     <property name="text">
+      <string>Dream (txt2img)</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>appicon.png</normaloff>appicon.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="shortcut">
+      <string>Return</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
       <bool>true</bool>
      </property>
-     <property name="editable">
-      <bool>true</bool>
+     <property name="default">
+      <bool>false</bool>
      </property>
-     <property name="currentIndex">
-      <number>-1</number>
-     </property>
-     <property name="maxVisibleItems">
-      <number>35</number>
-     </property>
-     <property name="maxCount">
-      <number>100</number>
-     </property>
-     <property name="insertPolicy">
-      <enum>QComboBox::InsertAtTop</enum>
-     </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-     </property>
-     <property name="frame">
-      <bool>true</bool>
+     <property name="flat">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="3" column="3" alignment="Qt::AlignHCenter">
+   <item row="6" column="1" colspan="5">
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_12">
+      <item row="0" column="0" colspan="7">
+       <widget class="QLineEdit" name="imgFilename">
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Image filename</string>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Filename:</string>
+        </property>
+        <property name="frame">
+         <bool>false</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QComboBox" name="operationBox">
+        <property name="toolTip">
+         <string>Operations to perform</string>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Upscale folder: ESRGAN</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Upscale folder: LDSR</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_9">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Operation:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QPushButton" name="imageLoadButton">
+        <property name="toolTip">
+         <string>Refresh the viewer with images from custom folder</string>
+        </property>
+        <property name="text">
+         <string>Refresh</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QToolButton" name="operationFolderSelect">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="operationFolder">
+        <property name="toolTip">
+         <string>Load a custom folder of images</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="placeholderText">
+         <string>Load custom images folder</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3" colspan="2">
+       <widget class="QPushButton" name="operationsGoButton">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Go</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="errorMessages">
+     <property name="text">
+      <string>Ready</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="2" alignment="Qt::AlignHCenter">
     <widget class="QLabel" name="label_12">
      <property name="text">
       <string>Right click image for actions</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1" rowspan="2" colspan="6">
+   <item row="3" column="1" rowspan="2" colspan="5">
     <widget class="QScrollArea" name="scrollArea">
      <property name="acceptDrops">
       <bool>true</bool>
@@ -122,8 +233,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>714</width>
-        <height>652</height>
+        <width>825</width>
+        <height>672</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -174,15 +285,6 @@
               </color>
              </brush>
             </colorrole>
-            <colorrole role="PlaceholderText">
-             <brush brushstyle="NoBrush">
-              <color alpha="128">
-               <red>251</red>
-               <green>253</green>
-               <blue>255</blue>
-              </color>
-             </brush>
-            </colorrole>
            </active>
            <inactive>
             <colorrole role="Button">
@@ -221,15 +323,6 @@
               </color>
              </brush>
             </colorrole>
-            <colorrole role="PlaceholderText">
-             <brush brushstyle="NoBrush">
-              <color alpha="128">
-               <red>251</red>
-               <green>253</green>
-               <blue>255</blue>
-              </color>
-             </brush>
-            </colorrole>
            </inactive>
            <disabled>
             <colorrole role="Button">
@@ -265,15 +358,6 @@
                <red>21</red>
                <green>22</green>
                <blue>23</blue>
-              </color>
-             </brush>
-            </colorrole>
-            <colorrole role="PlaceholderText">
-             <brush brushstyle="NoBrush">
-              <color alpha="128">
-               <red>251</red>
-               <green>253</green>
-               <blue>255</blue>
               </color>
              </brush>
             </colorrole>
@@ -319,200 +403,53 @@
      </widget>
     </widget>
    </item>
-   <item row="2" column="0" rowspan="3">
-    <widget class="QGroupBox" name="groupBox_3">
+   <item row="0" column="0" colspan="4">
+    <widget class="QComboBox" name="promptVal">
      <property name="maximumSize">
       <size>
-       <width>500</width>
+       <width>991</width>
        <height>16777215</height>
       </size>
      </property>
-     <property name="title">
-      <string/>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <italic>true</italic>
+       <bold>false</bold>
+      </font>
      </property>
-     <layout class="QGridLayout" name="gridLayout_5">
-      <item row="6" column="0" colspan="2">
-       <widget class="QCheckBox" name="gfpganCheck">
-        <property name="toolTip">
-         <string>Enable GFPGAN face restoration. Higher value, stronger effect</string>
-        </property>
-        <property name="text">
-         <string>GFPGAN strength</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="variantAmountCheck">
-        <property name="toolTip">
-         <string>Generates variations of a seed. Used with iterations</string>
-        </property>
-        <property name="text">
-         <string>Variant amount</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QDoubleSpinBox" name="builtUpscaleStrength">
-        <property name="toolTip">
-         <string>Strength of upscale effect</string>
-        </property>
-        <property name="minimum">
-         <double>0.010000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>0.990000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.020000000000000</double>
-        </property>
-        <property name="value">
-         <double>0.600000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="builtUpscaleScale">
-        <item>
-         <property name="text">
-          <string>2</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>4</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="2">
-       <widget class="QCheckBox" name="gridCheck">
-        <property name="toolTip">
-         <string>Don't make a grid</string>
-        </property>
-        <property name="text">
-         <string>No grid</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="0" colspan="2">
-       <widget class="QCheckBox" name="seamlessCheck">
-        <property name="toolTip">
-         <string>Generates seamless tiling tetures</string>
-        </property>
-        <property name="text">
-         <string>Seamless textures</string>
-        </property>
-       </widget>
-      </item>
-      <item row="6" column="3">
-       <widget class="QDoubleSpinBox" name="gfpganStrength">
-        <property name="toolTip">
-         <string>Strength of face restoration</string>
-        </property>
-        <property name="minimum">
-         <double>0.100000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>0.990000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.020000000000000</double>
-        </property>
-        <property name="value">
-         <double>0.600000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="0" colspan="4">
-       <widget class="QLineEdit" name="embeddingInputFile">
-        <property name="toolTip">
-         <string>Select textual inversion embedding file (.bin or .pt)</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="placeholderText">
-         <string>Path to embedding file</string>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0" colspan="4">
-       <widget class="QCheckBox" name="precisionToggle">
-        <property name="toolTip">
-         <string>Full precision mode. Slower, more VRAM</string>
-        </property>
-        <property name="text">
-         <string>Full precision (select before loading model)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" rowspan="2" colspan="2">
-       <widget class="QCheckBox" name="seedCheck">
-        <property name="toolTip">
-         <string>Enable random seeding</string>
-        </property>
-        <property name="text">
-         <string>Random seed</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="4">
-       <widget class="QToolButton" name="embeddingSelect">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="0" colspan="4">
-       <widget class="QCheckBox" name="embeddingCheck">
-        <property name="toolTip">
-         <string>Use an embedding made with textual inversion</string>
-        </property>
-        <property name="text">
-         <string>Embedding (select before loading model)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="3">
-       <widget class="QDoubleSpinBox" name="variantAmountValue">
-        <property name="minimum">
-         <double>0.010000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>0.990000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>0.020000000000000</double>
-        </property>
-        <property name="value">
-         <double>0.500000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Strength</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="builtUpscaleCheck">
-        <property name="toolTip">
-         <string>Upscale each image with Real-ESRGAN</string>
-        </property>
-        <property name="text">
-         <string>Upscale</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <property name="toolTip">
+      <string>The prompt to generate images with. No quotations</string>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
+     <property name="maxVisibleItems">
+      <number>35</number>
+     </property>
+     <property name="maxCount">
+      <number>100</number>
+     </property>
+     <property name="insertPolicy">
+      <enum>QComboBox::InsertAtTop</enum>
+     </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
-   <item row="0" column="6">
+   <item row="1" column="0" colspan="4">
+    <widget class="QLineEdit" name="negPromptVal">
+     <property name="placeholderText">
+      <string>Negative prompt</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="5">
     <widget class="QPushButton" name="cancelButton">
      <property name="enabled">
       <bool>true</bool>
@@ -528,7 +465,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="7">
+   <item row="7" column="0" colspan="6">
     <widget class="QPlainTextEdit" name="processOutput">
      <property name="enabled">
       <bool>true</bool>
@@ -577,7 +514,344 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="5" column="5" alignment="Qt::AlignRight">
+    <widget class="QPushButton" name="nextImageButton">
+     <property name="toolTip">
+      <string>Next image</string>
+     </property>
+     <property name="text">
+      <string>Next &gt;</string>
+     </property>
+     <property name="shortcut">
+      <string>Right</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" alignment="Qt::AlignLeft">
+    <widget class="QPushButton" name="previousImgButton">
+     <property name="toolTip">
+      <string>Previous image</string>
+     </property>
+     <property name="text">
+      <string>&lt; Previous</string>
+     </property>
+     <property name="shortcut">
+      <string>Left</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" rowspan="3">
+    <widget class="QToolBox" name="toolBox_3">
+     <property name="maximumSize">
+      <size>
+       <width>500</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="tabSpacing">
+      <number>6</number>
+     </property>
+     <widget class="QWidget" name="toolBox_3Page1">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>483</width>
+        <height>411</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Options</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="16" column="5">
+        <widget class="QToolButton" name="embeddingSelect">
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="4">
+        <widget class="QSpinBox" name="thresholdValue">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="variantAmountCheck">
+         <property name="toolTip">
+          <string>Generates variations of a seed. Used with iterations</string>
+         </property>
+         <property name="text">
+          <string>Variant amount</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QCheckBox" name="perlinCheck">
+         <property name="text">
+          <string>Perlin noise</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QCheckBox" name="thresholdCheck">
+         <property name="text">
+          <string>Threshold</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="QDoubleSpinBox" name="variantAmountValue">
+         <property name="minimum">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>0.990000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.020000000000000</double>
+         </property>
+         <property name="value">
+          <double>0.500000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0">
+        <widget class="QCheckBox" name="precisionToggle">
+         <property name="toolTip">
+          <string>Full precision mode. Slower, more VRAM</string>
+         </property>
+         <property name="text">
+          <string>Full precision (select before loading model)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" rowspan="2" colspan="2">
+        <widget class="QCheckBox" name="seedCheck">
+         <property name="toolTip">
+          <string>Enable random seeding</string>
+         </property>
+         <property name="text">
+          <string>Random seed</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="0">
+        <widget class="QCheckBox" name="embeddingCheck">
+         <property name="toolTip">
+          <string>Use an embedding made with textual inversion</string>
+         </property>
+         <property name="text">
+          <string>Embedding (select before loading model)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QCheckBox" name="builtUpscaleCheck">
+         <property name="toolTip">
+          <string>Upscale each image with Real-ESRGAN</string>
+         </property>
+         <property name="text">
+          <string>Upscale</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QDoubleSpinBox" name="builtUpscaleStrength">
+         <property name="toolTip">
+          <string>Strength of upscale effect</string>
+         </property>
+         <property name="minimum">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>0.990000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.020000000000000</double>
+         </property>
+         <property name="value">
+          <double>0.600000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QCheckBox" name="hiresfixCheck">
+         <property name="text">
+          <string>High-res fix</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="2">
+        <widget class="QCheckBox" name="seamlessCheck">
+         <property name="toolTip">
+          <string>Generates seamless tiling tetures</string>
+         </property>
+         <property name="text">
+          <string>Seamless textures</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Strength</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0">
+        <widget class="QCheckBox" name="memFreeCheck">
+         <property name="text">
+          <string>Free GPU mem</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="0" colspan="5">
+        <widget class="QLineEdit" name="embeddingInputFile">
+         <property name="toolTip">
+          <string>Select textual inversion embedding file (.bin or .pt)</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="placeholderText">
+          <string>Path to embedding file</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="4">
+        <widget class="QDoubleSpinBox" name="perlinValue">
+         <property name="minimum">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>1.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.020000000000000</double>
+         </property>
+         <property name="value">
+          <double>0.200000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="5">
+        <widget class="QGroupBox" name="faceRestoreBox">
+         <property name="title">
+          <string>Face restore</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="2" column="1">
+           <widget class="QDoubleSpinBox" name="codeformerValue">
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>0.990000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.020000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.750000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="gfpganStrength">
+            <property name="toolTip">
+             <string>Strength of face restoration</string>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>0.990000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.020000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.750000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="codeformerCheck">
+            <property name="text">
+             <string>CodeFormer, fidelity</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="gfpganCheck">
+            <property name="toolTip">
+             <string>Enable GFPGAN face restoration. Higher value, stronger effect</string>
+            </property>
+            <property name="text">
+             <string>GFPGAN, strength</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="radioButton">
+            <property name="text">
+             <string>None</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="5" column="0" colspan="2">
+        <widget class="QCheckBox" name="gridCheck">
+         <property name="toolTip">
+          <string>Don't make a grid</string>
+         </property>
+         <property name="text">
+          <string>Grid</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QComboBox" name="builtUpscaleScale">
+         <item>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>4</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <widget class="QTabWidget" name="mainTab">
      <property name="maximumSize">
       <size>
@@ -596,48 +870,127 @@
        <string>Standard</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_20">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Sampler</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>30</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <widget class="QSlider" name="scaleVal">
+       <item row="7" column="2">
+        <widget class="QComboBox" name="samplerToggle">
          <property name="toolTip">
-          <string>Prompt following strictness. Negative values give opposite of prompt</string>
+          <string>Sampler. Different samplers produce different images and have different speeds</string>
          </property>
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <item>
+          <property name="text">
+           <string>k_euler</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>k_euler_a</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>k_lms</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>k_dpm_2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>k_dpm_2_a</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>k_heun</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ddim</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>plms</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QSpinBox" name="widthThing">
          <property name="minimum">
-          <number>-15</number>
+          <number>256</number>
          </property>
          <property name="maximum">
-          <number>30</number>
+          <number>2048</number>
          </property>
          <property name="singleStep">
-          <number>1</number>
+          <number>64</number>
          </property>
          <property name="value">
-          <number>8</number>
+          <number>512</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QSlider" name="stepsVal">
+         <property name="toolTip">
+          <string>Number of steps. Max recommended 150</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>30</number>
          </property>
          <property name="sliderPosition">
-          <number>8</number>
+          <number>30</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickInterval">
+          <number>20</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="promptTagAdd">
+         <property name="toolTip">
+          <string>Add tag to prompt</string>
+         </property>
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QComboBox" name="promptTag">
+         <property name="toolTip">
+          <string>Sets a preset prompt or prompt part and adds to current prompt</string>
+         </property>
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="maxCount">
+          <number>100</number>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAtTop</enum>
          </property>
         </widget>
        </item>
@@ -669,8 +1022,8 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="scale">
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_20">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -678,108 +1031,7 @@
           </font>
          </property>
          <property name="text">
-          <string>CFG scale</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QSlider" name="stepsVal">
-         <property name="toolTip">
-          <string>Number of steps. Max recommended 150</string>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>200</number>
-         </property>
-         <property name="value">
-          <number>30</number>
-         </property>
-         <property name="sliderPosition">
-          <number>30</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="tickInterval">
-          <number>20</number>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2">
-        <widget class="QComboBox" name="samplerToggle">
-         <property name="toolTip">
-          <string>Sampler. Different samplers produce different images and have different speeds</string>
-         </property>
-         <property name="currentIndex">
-          <number>3</number>
-         </property>
-         <item>
-          <property name="text">
-           <string>ddim</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>plms</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>k_lms</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>k_euler</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>k_euler_a</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>k_dpm_2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>k_dpm_2_a</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>k_heun</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="Steps">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Steps</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="scale_3">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Iterations</string>
+          <string>Sampler</string>
          </property>
         </widget>
        </item>
@@ -796,187 +1048,8 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="3">
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>2</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="3">
-        <widget class="QLabel" name="label_25">
-         <property name="text">
-          <string>8</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QComboBox" name="widthThing">
-         <property name="toolTip">
-          <string>Width of output image</string>
-         </property>
-         <property name="editable">
-          <bool>true</bool>
-         </property>
-         <property name="currentText">
-          <string>512</string>
-         </property>
-         <property name="currentIndex">
-          <number>4</number>
-         </property>
-         <item>
-          <property name="text">
-           <string>256</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>320</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>384</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>448</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>512</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>576</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>640</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>704</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>768</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>832</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>896</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>960</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>1024</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QComboBox" name="heightThing">
-         <property name="toolTip">
-          <string>Height of output image</string>
-         </property>
-         <property name="editable">
-          <bool>true</bool>
-         </property>
-         <property name="currentText">
-          <string>512</string>
-         </property>
-         <property name="currentIndex">
-          <number>4</number>
-         </property>
-         <property name="insertPolicy">
-          <enum>QComboBox::InsertAtTop</enum>
-         </property>
-         <item>
-          <property name="text">
-           <string>256</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>320</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>384</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>448</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>512</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>576</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>640</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>704</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>768</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>832</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>896</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>960</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>1024</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label">
+       <item row="4" column="0">
+        <widget class="QLabel" name="Steps">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -984,7 +1057,27 @@
           </font>
          </property>
          <property name="text">
-          <string>Width</string>
+          <string>Steps</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>30</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="scale">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>CFG scale</string>
          </property>
         </widget>
        </item>
@@ -1011,22 +1104,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QComboBox" name="promptTag">
-         <property name="toolTip">
-          <string>Sets a preset prompt or prompt part and adds to current prompt</string>
-         </property>
-         <property name="editable">
-          <bool>true</bool>
-         </property>
-         <property name="maxCount">
-          <number>100</number>
-         </property>
-         <property name="insertPolicy">
-          <enum>QComboBox::InsertAtTop</enum>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_5">
          <property name="font">
@@ -1040,13 +1117,77 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="promptTagAdd">
-         <property name="toolTip">
-          <string>Add tag to prompt</string>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
          </property>
          <property name="text">
-          <string>Add</string>
+          <string>Width</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="scale_3">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Iterations</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="QLabel" name="label_25">
+         <property name="text">
+          <string>8</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QSlider" name="scaleVal">
+         <property name="toolTip">
+          <string>Prompt following strictness. Negative values give opposite of prompt</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>30</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>8</number>
+         </property>
+         <property name="sliderPosition">
+          <number>8</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QSpinBox" name="heightThing">
+         <property name="minimum">
+          <number>256</number>
+         </property>
+         <property name="maximum">
+          <number>2048</number>
+         </property>
+         <property name="singleStep">
+          <number>64</number>
+         </property>
+         <property name="value">
+          <number>512</number>
          </property>
         </widget>
        </item>
@@ -1060,13 +1201,6 @@
        <string>img2img</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_14">
-       <item row="0" column="2" alignment="Qt::AlignRight">
-        <widget class="QLabel" name="imgIndex">
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="0">
         <widget class="QCheckBox" name="img2imgUpscaleCheck">
          <property name="toolTip">
@@ -1077,30 +1211,23 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" colspan="3">
+       <item row="4" column="0" colspan="2">
+        <widget class="QPushButton" name="artButton">
+         <property name="toolTip">
+          <string>Paint an image</string>
+         </property>
+         <property name="text">
+          <string>Paint an image</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_6">
          <property name="title">
           <string/>
          </property>
          <layout class="QGridLayout" name="gridLayout_7">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_27">
-            <property name="text">
-             <string>Strength</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="3">
-           <widget class="QPushButton" name="artButton">
-            <property name="toolTip">
-             <string>Paint an image</string>
-            </property>
-            <property name="text">
-             <string>Paint an image</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="2">
+          <item row="2" column="0">
            <widget class="QLineEdit" name="img2imgFile">
             <property name="toolTip">
              <string>Path of source image for img2img</string>
@@ -1122,7 +1249,14 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_27">
+            <property name="text">
+             <string>Strength</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
            <widget class="QDoubleSpinBox" name="img2imgStrength">
             <property name="toolTip">
              <string>Strength of denoising. Lower the value, closer to original image</string>
@@ -1138,7 +1272,7 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
+          <item row="2" column="2">
            <widget class="QToolButton" name="imgFileSelect">
             <property name="toolTip">
              <string>Select file</string>
@@ -1151,13 +1285,92 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="0" colspan="2">
-        <widget class="QCheckBox" name="img2imgDisplayed">
-         <property name="toolTip">
-          <string>Use the image in the image viewer. Overrides input image select</string>
+       <item row="3" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Embiggen</string>
          </property>
+         <layout class="QGridLayout" name="gridLayout_15">
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>Scale</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSpinBox" name="embiggenScale">
+            <property name="minimum">
+             <number>2</number>
+            </property>
+            <property name="maximum">
+             <number>4</number>
+            </property>
+            <property name="singleStep">
+             <number>2</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="embiggenCheck">
+            <property name="text">
+             <string>Enable</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>Upscale strength</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QDoubleSpinBox" name="embiggenStrength">
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>0.990000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.020000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.750000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>Overlap</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QDoubleSpinBox" name="embiggenOverlap">
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>0.990000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.020000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.300000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="imgIndex">
          <property name="text">
-          <string>Use image displayed in viewer</string>
+          <string>0</string>
          </property>
         </widget>
        </item>
@@ -1171,7 +1384,17 @@
        <string>Inpainting</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="4" column="0" colspan="2">
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="invertMaskCheck">
+         <property name="toolTip">
+          <string>Inpaint the opposite area masked</string>
+         </property>
+         <property name="text">
+          <string>Invert mask</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
           <string/>
@@ -1181,6 +1404,20 @@
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>Mask blur</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QToolButton" name="inpaint_img_select">
+            <property name="text">
+             <string>...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="3">
+           <widget class="QPushButton" name="inpaintButton">
+            <property name="text">
+             <string>Inpaint editor</string>
             </property>
            </widget>
           </item>
@@ -1197,20 +1434,6 @@
             </property>
             <property name="value">
              <number>3</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QToolButton" name="inpaint_img_select">
-            <property name="text">
-             <string>...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="3">
-           <widget class="QPushButton" name="inpaintButton">
-            <property name="text">
-             <string>Inpaint editor</string>
             </property>
            </widget>
           </item>
@@ -1231,26 +1454,6 @@
            </widget>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="inpaintingDisplayedCheck">
-         <property name="toolTip">
-          <string>Use the image in the image viewer. Overrides input select</string>
-         </property>
-         <property name="text">
-          <string>Use image displayed in viewer</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="invertMaskCheck">
-         <property name="toolTip">
-          <string>Inpaint the opposite area masked</string>
-         </property>
-         <property name="text">
-          <string>Invert mask</string>
-         </property>
         </widget>
        </item>
       </layout>
@@ -1461,200 +1664,6 @@ Right click image in viewer to perform operations</string>
      </widget>
     </widget>
    </item>
-   <item row="3" column="6" alignment="Qt::AlignRight">
-    <widget class="QPushButton" name="nextImageButton">
-     <property name="toolTip">
-      <string>Next image</string>
-     </property>
-     <property name="text">
-      <string>Next &gt;</string>
-     </property>
-     <property name="shortcut">
-      <string>Right</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1" colspan="6">
-    <widget class="QGroupBox" name="groupBox_4">
-     <property name="title">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_12">
-      <item row="0" column="0" colspan="7">
-       <widget class="QLineEdit" name="imgFilename">
-        <property name="acceptDrops">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string>Image filename</string>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Filename:</string>
-        </property>
-        <property name="frame">
-         <bool>false</bool>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QComboBox" name="operationBox">
-        <property name="toolTip">
-         <string>Operations to perform</string>
-        </property>
-        <property name="currentIndex">
-         <number>0</number>
-        </property>
-        <item>
-         <property name="text">
-          <string>Upscale folder: ESRGAN</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Upscale folder: LDSR</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_9">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Operation:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QPushButton" name="imageLoadButton">
-        <property name="toolTip">
-         <string>Refresh the viewer with images from custom folder</string>
-        </property>
-        <property name="text">
-         <string>Refresh</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QToolButton" name="operationFolderSelect">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLineEdit" name="operationFolder">
-        <property name="toolTip">
-         <string>Load a custom folder of images</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="placeholderText">
-         <string>Load custom images folder</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3" colspan="2">
-       <widget class="QPushButton" name="operationsGoButton">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Go</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="5">
-    <widget class="QPushButton" name="generateButton">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>265</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-       <underline>false</underline>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Generate images</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(147, 217, 255);</string>
-     </property>
-     <property name="text">
-      <string>Dream (txt2img)</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>appicon.png</normaloff>appicon.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>24</width>
-       <height>24</height>
-      </size>
-     </property>
-     <property name="shortcut">
-      <string>Return</string>
-     </property>
-     <property name="checkable">
-      <bool>false</bool>
-     </property>
-     <property name="autoDefault">
-      <bool>true</bool>
-     </property>
-     <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="errorMessages">
-     <property name="text">
-      <string>Ready</string>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>
@@ -1666,12 +1675,12 @@ Right click image in viewer to perform operations</string>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>234</x>
-     <y>317</y>
+     <x>294</x>
+     <y>311</y>
     </hint>
     <hint type="destinationlabel">
      <x>495</x>
-     <y>326</y>
+     <y>312</y>
     </hint>
    </hints>
   </connection>
@@ -1682,12 +1691,12 @@ Right click image in viewer to perform operations</string>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>359</x>
-     <y>365</y>
+     <x>405</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
      <x>495</x>
-     <y>376</y>
+     <y>340</y>
     </hint>
    </hints>
   </connection>
@@ -1698,12 +1707,12 @@ Right click image in viewer to perform operations</string>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>220</x>
-     <y>413</y>
+     <x>280</x>
+     <y>367</y>
     </hint>
     <hint type="destinationlabel">
      <x>495</x>
-     <y>426</y>
+     <y>368</y>
     </hint>
    </hints>
   </connection>

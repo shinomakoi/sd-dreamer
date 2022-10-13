@@ -24,7 +24,6 @@
 # precision, free_gpu_mem, new precision options, !fix, !fetch, outcrop, prompt blending
 # session_peakmem
 
-from ldm.invoke.restoration import Restoration
 import configparser
 import glob
 import os
@@ -35,6 +34,7 @@ from pathlib import Path
 
 import PIL
 from ldm.generate import Generate
+from ldm.invoke.restoration import Restoration
 from PIL import Image, ImageFilter, ImageOps
 from PySide6 import QtWidgets
 from PySide6.QtCore import *
@@ -69,10 +69,16 @@ latent_sr_path = Path(home_dir_path)/'scripts'/'predict_sr.py'
 sd_output_folder = Path(sd_folder_path)/'outputs'/'sd_dreamer'
 esrgan_out_path = Path(sd_output_folder)/'upscales'/'esrgan_out'
 
-os.chdir('..')
-gfpgan, codeformer = None, None
-restoration = Restoration()
-gfpgan, codeformer = restoration.load_face_restore_models()
+
+def load_restore_models():
+    gfpgan, codeformer, esrgan = None, None, None
+    restoration = Restoration()
+    try:
+        gfpgan, codeformer = restoration.load_face_restore_models()
+        esrgan = restoration.load_esrgan()
+    except:
+        print('a model not found')
+    return gfpgan, codeformer, esrgan
 
 
 class Load_Images_Class:
@@ -650,17 +656,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             global g
             model_ckpt = self.custCheckpointLine.text()
 
+            gfpgan, codeformer, esrgan = load_restore_models()
+
             if loaded_model == False:
                 if self.precisionToggle.isChecked() and self.embeddingCheck.isChecked() == False:
                     g = Generate(weights=model_ckpt, gfpgan=gfpgan,
-                                 codeformer=codeformer, precision='float32')
+                                 codeformer=codeformer, esrgan=esrgan, precision='float32')
                 elif self.embeddingCheck.isChecked():
                     g = Generate(weights=model_ckpt, gfpgan=gfpgan,
-                                 codeformer=codeformer, precision='float32',
+                                 codeformer=codeformer, esrgan=esrgan, precision='float32',
                                  embedding_path=self.embeddingInputFile.text())
                 else:
                     g = Generate(weights=model_ckpt, gfpgan=gfpgan,
-                                 codeformer=codeformer, precision='auto')
+                                 codeformer=codeformer, esrgan=esrgan, precision='auto')
 
                 self.errorMessages.setText(f"SD Dreamer: Loading model...")
                 loaded_model = True
@@ -716,7 +724,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                     self.builtUpscaleStrength.value())]
             else:
                 upscale = None
-## new 2.0
+# new 2.0
 
             if self.thresholdCheck.isChecked():
                 threshold = int(self.thresholdValue.value())
@@ -748,7 +756,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 'seamless': seamless,
                 'variation_amount': variation_amount,
                 'upscale': upscale,
-## new
+                # new
                 'codeformer_fidelity': codeformer_fidelity,
                 'threshold': threshold,
                 'perlin_value': perlin_value,

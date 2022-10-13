@@ -26,10 +26,12 @@ class Ui_sd_dreamer_main(object):
     def setupUi(self, sd_dreamer_main):
         if not sd_dreamer_main.objectName():
             sd_dreamer_main.setObjectName(u"sd_dreamer_main")
-        sd_dreamer_main.resize(1351, 1068)
+        sd_dreamer_main.setWindowModality(Qt.NonModal)
+        sd_dreamer_main.resize(1416, 1073)
         sd_dreamer_main.setMaximumSize(QSize(16777215, 16777215))
         font = QFont()
         font.setBold(False)
+        font.setStyleStrategy(QFont.PreferAntialias)
         sd_dreamer_main.setFont(font)
         self.gridLayout = QGridLayout(sd_dreamer_main)
         self.gridLayout.setObjectName(u"gridLayout")
@@ -80,6 +82,7 @@ class Ui_sd_dreamer_main(object):
         self.label_9.setObjectName(u"label_9")
         font2 = QFont()
         font2.setBold(True)
+        font2.setStyleStrategy(QFont.PreferAntialias)
         self.label_9.setFont(font2)
 
         self.gridLayout_12.addWidget(self.label_9, 2, 1, 1, 1)
@@ -126,7 +129,7 @@ class Ui_sd_dreamer_main(object):
         self.scrollArea.setAlignment(Qt.AlignCenter)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 825, 672))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 873, 652))
         self.horizontalLayout = QHBoxLayout(self.scrollAreaWidgetContents)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.imageView = QLabel(self.scrollAreaWidgetContents)
@@ -141,16 +144,31 @@ class Ui_sd_dreamer_main(object):
         palette.setBrush(QPalette.Active, QPalette.Text, brush1)
         palette.setBrush(QPalette.Active, QPalette.Base, brush)
         palette.setBrush(QPalette.Active, QPalette.Window, brush)
+        brush2 = QBrush(QColor(251, 253, 255, 128))
+        brush2.setStyle(Qt.NoBrush)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette.Active, QPalette.PlaceholderText, brush2)
+#endif
         palette.setBrush(QPalette.Inactive, QPalette.Button, brush)
         palette.setBrush(QPalette.Inactive, QPalette.Text, brush1)
         palette.setBrush(QPalette.Inactive, QPalette.Base, brush)
         palette.setBrush(QPalette.Inactive, QPalette.Window, brush)
+        brush3 = QBrush(QColor(251, 253, 255, 128))
+        brush3.setStyle(Qt.NoBrush)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette.Inactive, QPalette.PlaceholderText, brush3)
+#endif
         palette.setBrush(QPalette.Disabled, QPalette.Button, brush)
-        brush2 = QBrush(QColor(170, 171, 172, 255))
-        brush2.setStyle(Qt.SolidPattern)
-        palette.setBrush(QPalette.Disabled, QPalette.Text, brush2)
+        brush4 = QBrush(QColor(170, 171, 172, 255))
+        brush4.setStyle(Qt.SolidPattern)
+        palette.setBrush(QPalette.Disabled, QPalette.Text, brush4)
         palette.setBrush(QPalette.Disabled, QPalette.Base, brush)
         palette.setBrush(QPalette.Disabled, QPalette.Window, brush)
+        brush5 = QBrush(QColor(251, 253, 255, 128))
+        brush5.setStyle(Qt.NoBrush)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush5)
+#endif
         self.imageView.setPalette(palette)
         self.imageView.setContextMenuPolicy(Qt.CustomContextMenu)
         self.imageView.setAcceptDrops(True)
@@ -176,6 +194,7 @@ class Ui_sd_dreamer_main(object):
         font3.setPointSize(11)
         font3.setBold(False)
         font3.setItalic(True)
+        font3.setStyleStrategy(QFont.PreferAntialias)
         self.promptVal.setFont(font3)
         self.promptVal.setEditable(True)
         self.promptVal.setMaxVisibleItems(35)
@@ -233,14 +252,9 @@ class Ui_sd_dreamer_main(object):
         self.toolBox_3.setMaximumSize(QSize(500, 16777215))
         self.toolBox_3Page1 = QWidget()
         self.toolBox_3Page1.setObjectName(u"toolBox_3Page1")
-        self.toolBox_3Page1.setGeometry(QRect(0, 0, 483, 411))
+        self.toolBox_3Page1.setGeometry(QRect(0, 0, 519, 604))
         self.gridLayout_5 = QGridLayout(self.toolBox_3Page1)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.embeddingSelect = QToolButton(self.toolBox_3Page1)
-        self.embeddingSelect.setObjectName(u"embeddingSelect")
-
-        self.gridLayout_5.addWidget(self.embeddingSelect, 16, 5, 1, 1)
-
         self.thresholdValue = QSpinBox(self.toolBox_3Page1)
         self.thresholdValue.setObjectName(u"thresholdValue")
         self.thresholdValue.setMinimum(1)
@@ -323,11 +337,6 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout_5.addWidget(self.memFreeCheck, 13, 0, 1, 1)
 
-        self.embeddingInputFile = QLineEdit(self.toolBox_3Page1)
-        self.embeddingInputFile.setObjectName(u"embeddingInputFile")
-
-        self.gridLayout_5.addWidget(self.embeddingInputFile, 16, 0, 1, 5)
-
         self.perlinValue = QDoubleSpinBox(self.toolBox_3Page1)
         self.perlinValue.setObjectName(u"perlinValue")
         self.perlinValue.setMinimum(0.010000000000000)
@@ -391,6 +400,16 @@ class Ui_sd_dreamer_main(object):
         self.builtUpscaleScale.setObjectName(u"builtUpscaleScale")
 
         self.gridLayout_5.addWidget(self.builtUpscaleScale, 3, 2, 1, 1)
+
+        self.embeddingInputFile = QLineEdit(self.toolBox_3Page1)
+        self.embeddingInputFile.setObjectName(u"embeddingInputFile")
+
+        self.gridLayout_5.addWidget(self.embeddingInputFile, 16, 0, 1, 4)
+
+        self.embeddingSelect = QToolButton(self.toolBox_3Page1)
+        self.embeddingSelect.setObjectName(u"embeddingSelect")
+
+        self.gridLayout_5.addWidget(self.embeddingSelect, 16, 4, 1, 1)
 
         self.toolBox_3.addItem(self.toolBox_3Page1, u"Options")
 
@@ -758,15 +777,15 @@ class Ui_sd_dreamer_main(object):
         self.tab_6.setAutoFillBackground(True)
         self.gridLayout_3 = QGridLayout(self.tab_6)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.outputFolderLine = QLineEdit(self.tab_6)
+        self.outputFolderLine.setObjectName(u"outputFolderLine")
+
+        self.gridLayout_3.addWidget(self.outputFolderLine, 4, 0, 1, 1)
+
         self.label_10 = QLabel(self.tab_6)
         self.label_10.setObjectName(u"label_10")
 
         self.gridLayout_3.addWidget(self.label_10, 3, 0, 1, 1)
-
-        self.label_18 = QLabel(self.tab_6)
-        self.label_18.setObjectName(u"label_18")
-
-        self.gridLayout_3.addWidget(self.label_18, 6, 0, 1, 1)
 
         self.line = QFrame(self.tab_6)
         self.line.setObjectName(u"line")
@@ -775,36 +794,20 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout_3.addWidget(self.line, 2, 0, 1, 1)
 
-        self.label_13 = QLabel(self.tab_6)
-        self.label_13.setObjectName(u"label_13")
-
-        self.gridLayout_3.addWidget(self.label_13, 0, 0, 1, 1)
-
-        self.custCheckpointSelect = QToolButton(self.tab_6)
-        self.custCheckpointSelect.setObjectName(u"custCheckpointSelect")
-
-        self.gridLayout_3.addWidget(self.custCheckpointSelect, 1, 1, 1, 1)
-
         self.outputFolderSelect = QToolButton(self.tab_6)
         self.outputFolderSelect.setObjectName(u"outputFolderSelect")
 
         self.gridLayout_3.addWidget(self.outputFolderSelect, 4, 1, 1, 1)
-
-        self.outputFolderLine = QLineEdit(self.tab_6)
-        self.outputFolderLine.setObjectName(u"outputFolderLine")
-
-        self.gridLayout_3.addWidget(self.outputFolderLine, 4, 0, 1, 1)
 
         self.pyBinSelect = QToolButton(self.tab_6)
         self.pyBinSelect.setObjectName(u"pyBinSelect")
 
         self.gridLayout_3.addWidget(self.pyBinSelect, 7, 1, 1, 1)
 
-        self.pyBinPath = QLineEdit(self.tab_6)
-        self.pyBinPath.setObjectName(u"pyBinPath")
-        self.pyBinPath.setReadOnly(False)
+        self.label_18 = QLabel(self.tab_6)
+        self.label_18.setObjectName(u"label_18")
 
-        self.gridLayout_3.addWidget(self.pyBinPath, 7, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.label_18, 6, 0, 1, 1)
 
         self.custCheckpointLine = QLineEdit(self.tab_6)
         self.custCheckpointLine.setObjectName(u"custCheckpointLine")
@@ -818,12 +821,35 @@ class Ui_sd_dreamer_main(object):
 
         self.gridLayout_3.addWidget(self.line_2, 5, 0, 1, 1)
 
+        self.custCheckpointSelect = QToolButton(self.tab_6)
+        self.custCheckpointSelect.setObjectName(u"custCheckpointSelect")
+
+        self.gridLayout_3.addWidget(self.custCheckpointSelect, 1, 1, 1, 1)
+
+        self.label_13 = QLabel(self.tab_6)
+        self.label_13.setObjectName(u"label_13")
+
+        self.gridLayout_3.addWidget(self.label_13, 0, 0, 1, 1)
+
+        self.pyBinPath = QLineEdit(self.tab_6)
+        self.pyBinPath.setObjectName(u"pyBinPath")
+        self.pyBinPath.setReadOnly(False)
+
+        self.gridLayout_3.addWidget(self.pyBinPath, 7, 0, 1, 1)
+
         self.line_3 = QFrame(self.tab_6)
         self.line_3.setObjectName(u"line_3")
         self.line_3.setFrameShape(QFrame.HLine)
         self.line_3.setFrameShadow(QFrame.Sunken)
 
-        self.gridLayout_3.addWidget(self.line_3, 8, 0, 1, 1)
+        self.gridLayout_3.addWidget(self.line_3, 9, 0, 1, 1)
+
+        self.restoreModelsCheck = QCheckBox(self.tab_6)
+        self.restoreModelsCheck.setObjectName(u"restoreModelsCheck")
+        self.restoreModelsCheck.setFont(font)
+        self.restoreModelsCheck.setChecked(True)
+
+        self.gridLayout_3.addWidget(self.restoreModelsCheck, 8, 0, 1, 1)
 
         self.mainTab.addTab(self.tab_6, "")
         self.tab_8 = QWidget()
@@ -914,7 +940,6 @@ class Ui_sd_dreamer_main(object):
 #if QT_CONFIG(shortcut)
         self.previousImgButton.setShortcut(QCoreApplication.translate("sd_dreamer_main", u"Left", None))
 #endif // QT_CONFIG(shortcut)
-        self.embeddingSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
 #if QT_CONFIG(tooltip)
         self.variantAmountCheck.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Generates variations of a seed. Used with iterations", None))
 #endif // QT_CONFIG(tooltip)
@@ -947,11 +972,6 @@ class Ui_sd_dreamer_main(object):
         self.seamlessCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Seamless textures", None))
         self.label_4.setText(QCoreApplication.translate("sd_dreamer_main", u"Strength", None))
         self.memFreeCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Free GPU mem", None))
-#if QT_CONFIG(tooltip)
-        self.embeddingInputFile.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select textual inversion embedding file (.bin or .pt)", None))
-#endif // QT_CONFIG(tooltip)
-        self.embeddingInputFile.setText("")
-        self.embeddingInputFile.setPlaceholderText(QCoreApplication.translate("sd_dreamer_main", u"Path to embedding file", None))
         self.faceRestoreBox.setTitle(QCoreApplication.translate("sd_dreamer_main", u"Face restore", None))
 #if QT_CONFIG(tooltip)
         self.gfpganStrength.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Strength of face restoration", None))
@@ -969,6 +989,12 @@ class Ui_sd_dreamer_main(object):
         self.builtUpscaleScale.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"2", None))
         self.builtUpscaleScale.setItemText(1, QCoreApplication.translate("sd_dreamer_main", u"4", None))
 
+#if QT_CONFIG(tooltip)
+        self.embeddingInputFile.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select textual inversion embedding file (.bin or .pt)", None))
+#endif // QT_CONFIG(tooltip)
+        self.embeddingInputFile.setText("")
+        self.embeddingInputFile.setPlaceholderText(QCoreApplication.translate("sd_dreamer_main", u"Path to embedding file", None))
+        self.embeddingSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.toolBox_3.setItemText(self.toolBox_3.indexOf(self.toolBox_3Page1), QCoreApplication.translate("sd_dreamer_main", u"Options", None))
         self.samplerToggle.setItemText(0, QCoreApplication.translate("sd_dreamer_main", u"k_euler", None))
         self.samplerToggle.setItemText(1, QCoreApplication.translate("sd_dreamer_main", u"k_euler_a", None))
@@ -1074,23 +1100,24 @@ class Ui_sd_dreamer_main(object):
         self.rnvModelSelect.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"ESRGAN model to use", None))
 #endif // QT_CONFIG(tooltip)
         self.mainTab.setTabText(self.mainTab.indexOf(self.tab_5), QCoreApplication.translate("sd_dreamer_main", u"Upscaling", None))
-        self.label_10.setText(QCoreApplication.translate("sd_dreamer_main", u"Image output folder:", None))
-        self.label_18.setText(QCoreApplication.translate("sd_dreamer_main", u"Python path (don't change):", None))
-        self.label_13.setText(QCoreApplication.translate("sd_dreamer_main", u"Stable diffusion model to use:", None))
-        self.custCheckpointSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
-        self.outputFolderSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
 #if QT_CONFIG(tooltip)
         self.outputFolderLine.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Where images will get output to", None))
 #endif // QT_CONFIG(tooltip)
         self.outputFolderLine.setText("")
+        self.label_10.setText(QCoreApplication.translate("sd_dreamer_main", u"Image output folder:", None))
+        self.outputFolderSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
         self.pyBinSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
+        self.label_18.setText(QCoreApplication.translate("sd_dreamer_main", u"Python path (don't change):", None))
+#if QT_CONFIG(tooltip)
+        self.custCheckpointLine.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select a model/checkpoint (.ckpt file)", None))
+#endif // QT_CONFIG(tooltip)
+        self.custCheckpointSelect.setText(QCoreApplication.translate("sd_dreamer_main", u"...", None))
+        self.label_13.setText(QCoreApplication.translate("sd_dreamer_main", u"Stable diffusion model to use:", None))
 #if QT_CONFIG(tooltip)
         self.pyBinPath.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Python binary", None))
 #endif // QT_CONFIG(tooltip)
         self.pyBinPath.setText(QCoreApplication.translate("sd_dreamer_main", u"python", None))
-#if QT_CONFIG(tooltip)
-        self.custCheckpointLine.setToolTip(QCoreApplication.translate("sd_dreamer_main", u"Select a model/checkpoint (.ckpt file)", None))
-#endif // QT_CONFIG(tooltip)
+        self.restoreModelsCheck.setText(QCoreApplication.translate("sd_dreamer_main", u"Load face restore/upscale models", None))
         self.mainTab.setTabText(self.mainTab.indexOf(self.tab_6), QCoreApplication.translate("sd_dreamer_main", u"Settings", None))
         self.plainTextEdit.setPlainText(QCoreApplication.translate("sd_dreamer_main", u"Tip: you can cycle through images with left and right arrow keys and scroll up and down with up/down keys. Holding down button/key repeat cycles through images\n"
 "\n"

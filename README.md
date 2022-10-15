@@ -1,5 +1,5 @@
 # sd-dreamer
-Qt based Linux/Windows GUI for Stable Diffusion (Invoke-AI 2.0)
+Qt based Linux/Windows/Mac GUI for Stable Diffusion (Invoke-AI 2.0)
 
 Features txt2img, img2img, inpainting, paint app for img2img, upscaling, textual inversion embedding, k-diffusion samplers and more.
 

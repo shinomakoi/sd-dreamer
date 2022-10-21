@@ -216,7 +216,7 @@ class paintWindow(QMainWindow):
     def mouseMoveEvent(self, event):
 
         # checking if left button is pressed and drawing flag is true
-        if (event.buttons() & Qt.LeftButton) & self.drawing and noise == False:
+        if (event.buttons() and Qt.LeftButton) and self.drawing and noise == False:
 
             # creating painter object
             painter = QPainter(self.image)

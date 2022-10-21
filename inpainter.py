@@ -153,7 +153,7 @@ class inpainter_window(QMainWindow):
     # method for tracking mouse activity
     def mouseMoveEvent(self, event):
 
-        if (event.buttons() & Qt.LeftButton) & self.drawing:
+        if (event.buttons() and Qt.LeftButton) and self.drawing:
 
             # creating painter object
             painter = QPainter(self.image)

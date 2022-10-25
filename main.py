@@ -260,7 +260,8 @@ class Worker(QRunnable):
             print(image)
 
             initimg_stripped_name=Path(fix_args["image_path"]).name
-            image.save(Path(SD_OUTPUT_FOLDER)/initimg_stripped_name)
+            os.makedirs(Path(SD_OUTPUT_FOLDER)/'upscales', exist_ok=True)
+            image.save(Path(SD_OUTPUT_FOLDER)/'upscales'/('face_restore_'+initimg_stripped_name))
 
         print("Thread complete")
 

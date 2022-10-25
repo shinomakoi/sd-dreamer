@@ -1,28 +1,3 @@
-################### BETA 0.5 ###################
-################### Work in progress ###################
-
-########## to do ##########
-# expand img2img
-# clean up code
-# moar comments
-# vram, ram view
-# save more settings
-# add drag and drop for images
-# progress bar
-# fix unicode prompt error on win with chinese characters, emojis etc
-# add config yaml path option
-# image viewer not loading with 1 image
-# batch img2img
-# img2img upscale with esrgan
-# use metadata to set fields
-# random artists
-# batch img2img processing
-# prompts from file
-# image thumbnails
-
-# add highres fix, perlin noise, threshold, outpainting, codeformer, change full
-# precision, free_gpu_mem, new precision options, !fix, !fetch, outcrop, prompt blending
-# session_peakmem
 
 import configparser
 import glob
@@ -34,6 +9,7 @@ from pathlib import Path
 
 import PIL
 from ldm.generate import Generate
+from ldm.invoke.args import metadata_from_png
 from ldm.invoke.restoration import Restoration
 from PIL import Image, ImageFilter, ImageOps
 from PySide6 import QtWidgets
@@ -44,6 +20,8 @@ from PySide6.QtGui import *
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import *
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QStyleFactory
+import platform
 
 from inpainter import inpainter_window
 from painter import paintWindow
@@ -52,22 +30,23 @@ from ui import Ui_sd_dreamer_main
 global loaded_model
 loaded_model = False
 
-home_dir_path = os.path.dirname(os.path.realpath(__file__))
-sd_folder_path = Path(home_dir_path).parent
+# constants
+HOME_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+SD_FOLDER_PATH = Path(HOME_DIR_PATH).parent
+SETTINGS_FILE = (Path(HOME_DIR_PATH)/'settings.ini')
+INPAINTING_DIR = Path(HOME_DIR_PATH)/'inpainting'
+LATENT_SR_PATH = Path(HOME_DIR_PATH)/'scripts'/'predict_sr.py'
+SD_OUTPUT_FOLDER = Path(SD_FOLDER_PATH)/'outputs'/'sd_dreamer'
+ESRGAN_OUT_PATH = Path(SD_OUTPUT_FOLDER)/'upscales'/'esrgan_out'
 
-print('SD Dreamer home directory: ', home_dir_path)
-print('SD install working directory:', sd_folder_path)
+print('SD Dreamer home directory: ', HOME_DIR_PATH)
+print('SD install working directory:', SD_FOLDER_PATH)
 
 # load settings.ini file
 config = configparser.ConfigParser()
-settings_file = (Path(home_dir_path)/'settings.ini')
+config.read(Path(HOME_DIR_PATH)/'settings.ini')
 
-config.read(Path(home_dir_path)/'settings.ini')
-
-inpainting_dir = Path(home_dir_path)/'inpainting'
-latent_sr_path = Path(home_dir_path)/'scripts'/'predict_sr.py'
-sd_output_folder = Path(sd_folder_path)/'outputs'/'sd_dreamer'
-esrgan_out_path = Path(sd_output_folder)/'upscales'/'esrgan_out'
+# load restore/upscale models
 
 
 def load_restore_models():
@@ -160,7 +139,7 @@ class Worker(QRunnable):
                 outdir=txt2img_args["outdir"],
 
                 facetool=txt2img_args["facetool"],
-                gfpgan_strength=txt2img_args["gfpgan_strength"],
+                face_strength=txt2img_args["face_strength"],
                 codeformer_fidelity=txt2img_args["codeformer_fidelity"],
 
                 grid=txt2img_args["grid"],
@@ -193,7 +172,7 @@ class Worker(QRunnable):
                 init_img=img2img_args["init_img"],
 
                 facetool=img2img_args["facetool"],
-                gfpgan_strength=img2img_args["gfpgan_strength"],
+                face_strength=img2img_args["face_strength"],
                 codeformer_fidelity=img2img_args["codeformer_fidelity"],
 
                 grid=img2img_args["grid"],
@@ -223,7 +202,7 @@ class Worker(QRunnable):
                 strength=inpaint_args["strength"],
 
                 facetool=inpaint_args["facetool"],
-                gfpgan_strength=inpaint_args["gfpgan_strength"],
+                face_strength=inpaint_args["face_strength"],
                 codeformer_fidelity=inpaint_args["codeformer_fidelity"],
 
                 # grid=inpaint_args["grid"],
@@ -245,7 +224,7 @@ class Worker(QRunnable):
         #     results = g.apply_postprocessor(
         #         tool='outcrop',
         #         outcrop={'top': 64},
-        #         image_path='',
+        #         image_path='/home/pigeondave/gits/InvokeAI/outputs/img-samples/000027.253549491.png',
         #         # top=outpaintcrop_args["top_crop"],
         #         # bottom=outpaintcrop_args["bottom_crop"],
         #         # left=outpaintcrop_args["left_crop"],
@@ -253,17 +232,35 @@ class Worker(QRunnable):
         #     )
         #     print('outpaintcropresults:', results)
 
-        # if mode == 'fix':
-        #     load_mode = 'txt2img_samples'
-        #     fix_args = mode_args
-        #     print('fix args:', fix_args)
+        if mode == 'fix':
 
-        #     results = g.apply_postprocessor(
-        #         image_path=fix_args["image_path"],
-        #         tool=fix_args["tool"],
-        #         codeformer_fidelity=fix_args["codeformer_fidelity"],
-        #     )
-        #     print('fixres', results)
+            load_mode = 'txt2img_samples'
+            fix_args = mode_args
+            print('fix args:', fix_args)
+
+            gfpgan, codeformer, esrgan = load_restore_models()
+
+            image = Image.open(fix_args["image_path"],)
+
+            if fix_args["tool"] == 'gfpgan':
+                image = gfpgan.process(
+                    image=image,
+                    strength=fix_args["face_strength"],
+                    seed=fix_args["seed"],
+                )
+            if fix_args["tool"] == 'codeformer':
+                image = codeformer.process(
+                    image=image,
+                    strength=fix_args["face_strength"],
+                    fidelity=fix_args["codeformer_fidelity"],
+                    seed=fix_args["seed"],
+                    device='cuda'
+                )
+
+            print(image)
+
+            initimg_stripped_name=Path(fix_args["image_path"]).name
+            image.save(Path(SD_OUTPUT_FOLDER)/initimg_stripped_name)
 
         print("Thread complete")
 
@@ -283,18 +280,18 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         self.threadpool = QThreadPool()
 
         icon = QIcon()
-        icon.addFile(str(Path(home_dir_path)/"appicon.png"),
+        icon.addFile(str(Path(HOME_DIR_PATH)/"appicon.png"),
                      QSize(), QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
 
-        pixmap = QPixmap(str(Path(home_dir_path)/('view_default.png')))
+        pixmap = QPixmap(str(Path(HOME_DIR_PATH)/('view_default.png')))
         self.imageView.setPixmap(pixmap)
 
         self.pyBinPath.setText(py_bin_path_ini)
         self.custCheckpointLine.setText(chkpt_ini)
 
         self.outputFolderLine.setText(
-            str(Path(sd_folder_path)/'outputs'/'sd_dreamer'))
+            str(Path(SD_FOLDER_PATH)/'outputs'/'sd_dreamer'))
 
         def art_op():
             art_source = self.imgFilename.text().replace('Filename: ', '')
@@ -303,10 +300,14 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         def read_metadata_op():
             filename = self.imgFilename.text().replace('Filename: ', '')
-            im = Image.open(filename)
-            im.load()
+
+            intimg_metadata = metadata_from_png(filename)
+            seed = intimg_metadata.seed
+            prompt = intimg_metadata.prompt
+            print(intimg_metadata)
+
             self.processOutput.appendPlainText(
-                'Metadata: '+im.info['Dream'])
+                f'Metadata: Seed: {seed}, Prompt: "{prompt}"')
 
         def openMenu(position):
 
@@ -319,7 +320,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             inpaintAction = img_menu.addAction("Inpaint")
             img2imgAction = img_menu.addAction("img2img")
             favouriteAction = img_menu.addAction("Send to favourites")
-            # codeformerAction = img_menu.addAction("Codeformer")
+            codeformerAction = img_menu.addAction("Face restore: Codeformer")
+            gfpganAction = img_menu.addAction("Face restore: GFPGAN")
 
             action = img_menu.exec(self.imageView.mapToGlobal(position))
 
@@ -352,13 +354,16 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             if action == favouriteAction:
                 source = self.imgFilename.text().replace('Filename: ', '')
                 file_stripped = Path(source).name
-                target = Path(sd_output_folder)/'favourites'
-                os.makedirs(Path(sd_output_folder)/'favourites', exist_ok=True)
+                target = Path(SD_OUTPUT_FOLDER)/'favourites'
+                os.makedirs(Path(SD_OUTPUT_FOLDER)/'favourites', exist_ok=True)
                 shutil.copyfile(source, Path(target/file_stripped))
                 self.errorMessages.setText(f'Sent image to {target}')
 
-            # if action == codeformerAction:
-            #     fix_dream('codeformer')
+            if action == codeformerAction:
+                fix_dream('codeformer')
+
+            if action == gfpganAction:
+                fix_dream('gfpgan')
 
         self.imageView.customContextMenuRequested.connect(openMenu)
 
@@ -366,18 +371,20 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             if first_run_ini == '0':
 
                 self.custCheckpointLine.setText(
-                    str(Path(sd_folder_path)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
+                    str(Path(SD_FOLDER_PATH)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
 
                 config.set('Settings', 'first_run', '1')
+
                 config.set('Settings', 'ckpt_path', str(
-                    Path(sd_folder_path)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
-                with open(settings_file, 'w') as configfile:
+                    Path(SD_FOLDER_PATH)/'models'/'ldm'/'stable-diffusion-v1'/'model.ckpt'))
+
+                with open(SETTINGS_FILE, 'w') as configfile:
                     config.write(configfile)
         first_run()
 
         def check_install():
             check_install = os.path.exists(
-                Path(sd_folder_path)/'environment.yml')
+                Path(SD_FOLDER_PATH)/'environment.yml')
             if check_install == False:
                 self.errorMessages.setText(
                     "WARNING: SD install folder seems incorrect. SD Dreamer folder must be in SD install folder")
@@ -386,7 +393,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 return
 
             try:
-                os.chdir(sd_folder_path)
+                os.chdir(SD_FOLDER_PATH)
             except:
                 print("SD FOLDER NOT FOUND")
                 self.errorMessages.setText("SD FOLDER NOT FOUND")
@@ -433,7 +440,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         def esrgan_models_func():
             try:
                 # generate ESRGAN model list
-                for x in os.listdir(Path(home_dir_path)/'ESRGAN'/'models'):
+                for x in os.listdir(Path(HOME_DIR_PATH)/'ESRGAN'/'models'):
                     if x.endswith(".pth"):
                         self.rnvModelSelect.addItem(x)
             except:
@@ -478,17 +485,17 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             if len(py_bin_path) > 0:
                 self.pyBinPath.setText(py_bin_path)
                 config.set('Settings', 'py_bin_path', py_bin_path)
-            with open(settings_file, 'w') as configfile:
+            with open(SETTINGS_FILE, 'w') as configfile:
                 config.write(configfile)
         self.pyBinSelect.clicked.connect(py_binSelect_select)
 
         def custCheckpointSelect_select():
             ckpt_path = (QFileDialog.getOpenFileName(
-                self, 'Open file', '', "Checkpoints (*.ckpt*)")[0])
+                self, 'Open file', '', "Checkpoints (*.ckpt, *.chkpt, *.pt)")[0])
             if len(ckpt_path) > 0:
                 self.custCheckpointLine.setText(ckpt_path)
                 config.set('Settings', 'ckpt_path', ckpt_path)
-            with open(settings_file, 'w') as configfile:
+            with open(SETTINGS_FILE, 'w') as configfile:
                 config.write(configfile)
         self.custCheckpointSelect.clicked.connect(custCheckpointSelect_select)
 
@@ -496,7 +503,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         def load_prompts():
             prompt_list = []
             try:
-                for old_prompt in reversed(list(open(Path(home_dir_path)/"sdd_prompt_archive.txt"))):
+                for old_prompt in reversed(list(open(Path(HOME_DIR_PATH)/"sdd_prompt_archive.txt"))):
                     if len(old_prompt) > 0:
                         prompt_list.append(old_prompt.strip())
                     prompt_list = list(dict.fromkeys(prompt_list))
@@ -510,7 +517,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
         def load_prompt_tags():
             prompt_tag_list = []
             try:
-                for old_prompt_tag in reversed(list(open(Path(home_dir_path)/"prompt_tags.txt"))):
+                for old_prompt_tag in reversed(list(open(Path(HOME_DIR_PATH)/"prompt_tags.txt"))):
                     if len(old_prompt_tag) > 0:
                         prompt_tag_list.append(old_prompt_tag.strip())
                     prompt_tag_list = list(dict.fromkeys(prompt_tag_list))
@@ -567,10 +574,10 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         def art(art_source, width, height):
             print('Launching art')
-            self.img2imgFile.setText(str(Path(sd_output_folder)/'art.png'))
+            self.img2imgFile.setText(str(Path(SD_OUTPUT_FOLDER)/'art.png'))
             self.mainTab.setCurrentIndex(1)
             self.art_win = paintWindow(
-                sd_folder_path, art_source, int(width), int(height))
+                SD_FOLDER_PATH, art_source, int(width), int(height))
             self.art_win.show()
         self.artButton.pressed.connect(lambda: art(
             False, self.widthThing.value(), self.heightThing.value()))
@@ -587,7 +594,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 if self.promptTag.currentText() not in self.promptTag.allItems():
                     if len(self.promptTag.currentText()) > 0:
                         self.promptTag.addItem(self.promptTag.currentText())
-                    with open(Path(home_dir_path)/"prompt_tags.txt", "a", encoding='utf-8') as f:
+                    with open(Path(HOME_DIR_PATH)/"prompt_tags.txt", "a", encoding='utf-8') as f:
                         f.write('\n'+self.promptTag.currentText())
 
         self.promptTagAdd.clicked.connect(add_prompt_tag)
@@ -628,12 +635,12 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
             self.promptVal.addItem(self.promptVal.currentText())
 
-            with open(Path(home_dir_path)/"sdd_prompt_archive.txt", "a", encoding='utf-8') as f:
+            with open(Path(HOME_DIR_PATH)/"sdd_prompt_archive.txt", "a", encoding='utf-8') as f:
                 f.write('\n'+self.promptVal.currentText())
 
             mode_load_images = Load_Images_Class()
             load_img_things = mode_load_images.load_images(
-                sd_output_folder, False, dream_images_to_load)
+                SD_OUTPUT_FOLDER, False, dream_images_to_load)
             (image_to_display, image_index, images_path) = load_img_things
 
             # self.cancelButton.setEnabled(False)
@@ -648,20 +655,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
         def dreamer_new():
 
-            if self.mainTab.currentIndex() > 2:
-                return
-
             global loaded_model
             global g
             model_ckpt = self.custCheckpointLine.text()
 
             gfpgan, codeformer, esrgan = None, None, None
 
-
-            if self.restoreModelsCheck.isChecked():
-                gfpgan, codeformer, esrgan = load_restore_models()
-
             if loaded_model == False:
+
+                print('SDD Model ckpt:', model_ckpt)
+
+                if self.restoreModelsCheck.isChecked():
+                    gfpgan, codeformer, esrgan = load_restore_models()
+
                 if self.precisionToggle.isChecked() and self.embeddingCheck.isChecked() == False:
                     g = Generate(weights=model_ckpt, gfpgan=gfpgan,
                                  codeformer=codeformer, esrgan=esrgan, precision='float32')
@@ -676,6 +682,9 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.errorMessages.setText(f"SD Dreamer: Loading model...")
                 loaded_model = True
 
+            if self.mainTab.currentIndex() > 2:
+                return
+
             pos_prompt = str(self.promptVal.currentText())
             neg_prompt = str(self.negPromptVal.text())
 
@@ -687,19 +696,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             steps = int(self.stepsVal.value())
             iterations = int(self.itsVal.value())
             seed = int(self.seedVal.text())
-            outpath = Path(sd_output_folder)/'txt2img_samples'
+            outpath = Path(SD_OUTPUT_FOLDER)/'txt2img_samples'
             width = int(self.widthThing.value())
             height = int(self.heightThing.value())
             scale = float(self.scaleVal.value())
             set_sampler = str(self.samplerToggle.currentText())
             init_img = self.img2imgFile.text()
             strength = float(self.img2imgStrength.value())
-            gfpgan_strength = float(self.gfpganStrength.value())
+            face_strength = float(self.faceStrength.value())
             codeformer_fidelity = float(self.codeformerValue.value())
             facetool = None
 
             if self.mainTab.currentIndex() == 2:
-                outpath = Path(sd_output_folder)/'inpaint_samples'
+                outpath = Path(SD_OUTPUT_FOLDER)/'inpaint_samples'
 
             if self.gfpganCheck.isChecked():
                 facetool = 'gfpgan'
@@ -754,7 +763,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 'scale': scale,
                 'sampler': set_sampler,
                 'outdir': outpath,
-                'gfpgan_strength': gfpgan_strength,
+                'face_strength': face_strength,
                 'grid': grid,
                 'seamless': seamless,
                 'variation_amount': variation_amount,
@@ -798,7 +807,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             (dream_base_args, prompt, steps, seed, scale,
              set_sampler, width, height, strength, init_img) = dreamer_new()
 
-            outpath = Path(sd_output_folder)/'img2img_samples'
+            outpath = Path(SD_OUTPUT_FOLDER)/'img2img_samples'
             img2img_args = dream_base_args
 
             if context_menu_op == True:
@@ -838,19 +847,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             launch_img2img()
 
         def inpaint_dream():
-            (dream_base_args, init_img, strength, *args) = dreamer_new()
+            (dream_base_args, init_img, *args) = dreamer_new()
 
-            # outpath = Path(sd_output_folder)/'inpaint_samples'
+            # outpath = Path(SD_OUTPUT_FOLDER)/'inpaint_samples'
             inpaint_args = dream_base_args
-            init_img = Path(inpainting_dir)/'masking'/'image.png'
-            init_mask = Path(inpainting_dir)/'masking' / \
+            init_img = Path(INPAINTING_DIR)/'masking'/'image.png'
+            init_mask = Path(INPAINTING_DIR)/'masking' / \
                 'out'/'init_mask.png'
             inpaint_args["init_img"] = str(init_img)
             inpaint_args["init_mask"] = init_mask
             inpaint_args["strength"] = float(self.img2imgStrength.value())
 
             def gen_masks():
-                im_a = Image.open(Path(inpainting_dir) /
+                im_a = Image.open(Path(INPAINTING_DIR) /
                                   'masking'/'image_mask.png').convert('RGB')
                 if self.invertMaskCheck.isChecked():
                     im_invert = ImageOps.invert(im_a)
@@ -875,23 +884,33 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.threadpool.start(worker)
             launch_inpaint()
 
-        # def fix_dream(fix_type):
-        #     (dream_base_args, init_img, *args) = dreamer_new()
+        def fix_dream(fix_type):
+            (init_img, *args) = dreamer_new()
 
-        #     fix_args = {}
+            fix_args = {}
 
-        #     init_img = self.imgFilename.text().replace('Filename: ', '')
-        #     fix_args["image_path"] = str(init_img)
+            init_img = self.imgFilename.text().replace('Filename: ', '')
+            seed = int(self.seedVal.text())
+            face_strength = float(self.faceStrength.value())
+            outpath = Path(SD_OUTPUT_FOLDER)/'txt2img_samples'
 
-        #     if fix_type == 'codeformer':
-        #         fix_args["tool"] = 'codeformer'
-        #         fix_args["codeformer_fidelity"] = 0.75
+            fix_args["image_path"] = str(init_img)
+            fix_args["seed"] = seed
+            fix_args["face_strength"] = face_strength
 
-        #     self.errorMessages.setText(
-        #         f"SD Dreamer: Dreaming (fix)...")
-        #     worker = Worker('fix', fix_args, g)
-        #     worker.signals.result.connect(thread_result)
-        #     self.threadpool.start(worker)
+            if fix_type == 'codeformer':
+                fix_args["tool"] = 'codeformer'
+                fix_args["codeformer_fidelity"] = float(
+                    self.codeformerValue.value())
+
+            if fix_type == 'gfpgan':
+                fix_args["tool"] = 'gfpgan'
+
+            self.errorMessages.setText(
+                f"SD Dreamer: Dreaming (fix)...")
+            worker = Worker('fix', fix_args, g)
+            worker.signals.result.connect(thread_result)
+            self.threadpool.start(worker)
 
         # def outpaintcrop_dream():
         #     (dream_base_args, init_img, *args) = dreamer_new()
@@ -936,19 +955,19 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
             else:
                 op_input_path = Path(images_path.replace('*.png', ''))
 
-            esrgan_out_path = Path(
+            ESRGAN_OUT_PATH = Path(
                 self.outputFolderLine.text())/'upscales'/'esrgan_out'
-            os.makedirs(esrgan_out_path, exist_ok=True)
+            os.makedirs(ESRGAN_OUT_PATH, exist_ok=True)
             print('Upscaling, folder in: ', op_input_path)
-            print('Upscaling, folder out ', esrgan_out_path)
+            print('Upscaling, folder out ', ESRGAN_OUT_PATH)
 
-            esrgan_args = [str(Path(home_dir_path)/'ESRGAN'/'upscale.py'), str(Path(home_dir_path)/'ESRGAN'/'models'/self.rnvModelSelect.currentText(
-            )), '--input', str(op_input_path), '--output', str(esrgan_out_path)]
+            esrgan_args = [str(Path(HOME_DIR_PATH)/'ESRGAN'/'upscale.py'), str(Path(HOME_DIR_PATH)/'ESRGAN'/'models'/self.rnvModelSelect.currentText(
+            )), '--input', str(op_input_path), '--output', str(ESRGAN_OUT_PATH)]
 
             if context_menu_op == True:
-                os.makedirs(Path(esrgan_out_path.parent) /
+                os.makedirs(Path(ESRGAN_OUT_PATH.parent) /
                             ('inputs'), exist_ok=True)
-                one_op_path = Path(esrgan_out_path.parent)/('inputs')
+                one_op_path = Path(ESRGAN_OUT_PATH.parent)/('inputs')
                 single_image = Path(single_image).name
                 shutil.copyfile(op_input_path, Path(one_op_path/single_image))
                 esrgan_args[-3] = str(Path(one_op_path))
@@ -971,7 +990,7 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
                 self.outputFolderLine.text())/'upscales'/'latent_sr'
             os.makedirs(latent_sr_out, exist_ok=True)
 
-            latent_sr_args = [str(latent_sr_path), '--img_path', str(op_input_path),
+            latent_sr_args = [str(LATENT_SR_PATH), '--img_path', str(op_input_path),
                               '--steps', self.latentSRSteps.text(), '--out_path', str(latent_sr_out)]
 
             if context_menu_op == True:
@@ -1042,6 +1061,8 @@ class sd_dreamer_main(QtWidgets.QFrame, Ui_sd_dreamer_main):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
+    if platform.system() == 'Windows':
+        app.setStyle('Fusion')
     window = sd_dreamer_main()
     window.show()
     app.exec()

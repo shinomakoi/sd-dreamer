@@ -12,16 +12,17 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import *
 from PySide6.QtWidgets import QFileDialog
 
+# constants
 SPRAY_PARTICLES = 45
 SPRAY_DIAMETER = 15
-home_dir_path = os.path.dirname(os.path.realpath(__file__))
+HOME_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
 class paintWindow(QMainWindow):
     def __init__(self, sd_folder_path, art_source, paint_w, paint_h):
         super().__init__()
 
         icon = QIcon()
-        icon.addFile(str(Path(home_dir_path)/"appicon.png"), QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(str(Path(HOME_DIR_PATH)/"appicon.png"), QSize(), QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
 
         print('Art image: ', art_source)
@@ -249,7 +250,7 @@ class paintWindow(QMainWindow):
                 xo = random.gauss(0, SPRAY_DIAMETER)
                 yo = random.gauss(0, SPRAY_DIAMETER)
                 painter.setPen(pen)
-                painter.drawPoint(event.x() + xo, event.y() + yo)
+                painter.drawPoint(event.position().x() + xo, event.position().y() + yo)
 
                 self.update()
             painter.end()

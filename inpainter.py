@@ -9,9 +9,10 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import *
 from PySide6.QtWidgets import QFileDialog
 
-home_dir_path = os.path.dirname(os.path.realpath(__file__))
-sd_folder_path = Path(home_dir_path).parent
-inpainting_dir = Path(home_dir_path)/'inpainting'
+# constants
+HOME_DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+SD_FOLDER_PATH = Path(HOME_DIR_PATH).parent
+INPAINTING_DIR = Path(HOME_DIR_PATH)/'inpainting'
 
 
 class inpainter_window(QMainWindow):
@@ -19,11 +20,11 @@ class inpainter_window(QMainWindow):
     def __init__(self, inpaint_source):
         super().__init__()
         self.inpainter_process = None
-        sd_folder_path = Path(home_dir_path).parent
+        SD_FOLDER_PATH = Path(HOME_DIR_PATH).parent
         self.inpaint_source = inpaint_source
 
         icon = QIcon()
-        icon.addFile(str(Path(home_dir_path)/"appicon.png"),
+        icon.addFile(str(Path(HOME_DIR_PATH)/"appicon.png"),
                      QSize(), QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
 
@@ -32,7 +33,7 @@ class inpainter_window(QMainWindow):
         im = Image.open(inpaint_source)
         inpaint_width, inpaint_height = im.size
 
-        os.chdir(sd_folder_path)
+        os.chdir(SD_FOLDER_PATH)
 
         self.setWindowTitle("SD Dreamer - Inpaint")
 
@@ -129,14 +130,14 @@ class inpainter_window(QMainWindow):
     def load_img(self, inpaint_source):
 
         im_rgb = Image.open(inpaint_source)
-        im_rgb.save(Path(str(inpainting_dir))/'masking'/'image.png')
+        im_rgb.save(Path(str(INPAINTING_DIR))/'masking'/'image.png')
 
         im_rgba = im_rgb.copy()
         im_rgba.putalpha(215)
-        im_rgba.save(Path(str(inpainting_dir))/'inpaint_view.png')
+        im_rgba.save(Path(str(INPAINTING_DIR))/'inpaint_view.png')
 
         label = QLabel(self)
-        pixy = Path(inpainting_dir)/'inpaint_view.png'
+        pixy = Path(INPAINTING_DIR)/'inpaint_view.png'
         pixmap = QPixmap(str(pixy))
         label.setPixmap(pixmap)
         self.setCentralWidget(label)
@@ -183,7 +184,7 @@ class inpainter_window(QMainWindow):
         canvasPainter.drawImage(self.rect(), self.image, self.image.rect())
 
     def inpy(self):
-        img_mask_s = (str(Path(inpainting_dir)/'masking'/'image_mask.png'))
+        img_mask_s = (str(Path(INPAINTING_DIR)/'masking'/'image_mask.png'))
         self.image.save(img_mask_s)
         self.setWindowTitle("Saved. Press 'Dream (inpaint)' to inpaint")
 

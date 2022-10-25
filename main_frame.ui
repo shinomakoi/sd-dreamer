@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1351</width>
-    <height>1068</height>
+    <width>1345</width>
+    <height>1078</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -15,6 +15,313 @@
     <width>16777215</width>
     <height>16777215</height>
    </size>
+  </property>
+  <property name="palette">
+   <palette>
+    <active>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>247</green>
+        <blue>247</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>76</red>
+        <green>81</green>
+        <blue>88</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>250</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>250</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>35</red>
+        <green>36</green>
+        <blue>40</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>20</red>
+        <green>20</green>
+        <blue>20</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>40</red>
+        <green>115</green>
+        <blue>152</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>250</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>247</green>
+        <blue>247</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>76</red>
+        <green>81</green>
+        <blue>88</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>250</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>250</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>35</red>
+        <green>36</green>
+        <blue>40</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>20</red>
+        <green>20</green>
+        <blue>20</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>40</red>
+        <green>115</green>
+        <blue>152</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>250</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="WindowText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Button">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>76</red>
+        <green>81</green>
+        <blue>88</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Dark">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Text">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ButtonText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Base">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Window">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>54</red>
+        <green>57</green>
+        <blue>63</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="Shadow">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>20</red>
+        <green>20</green>
+        <blue>20</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="AlternateBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>40</red>
+        <green>115</green>
+        <blue>152</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipBase">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>45</red>
+        <green>47</green>
+        <blue>49</blue>
+       </color>
+      </brush>
+     </colorrole>
+     <colorrole role="ToolTipText">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>247</red>
+        <green>250</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
   </property>
   <property name="font">
    <font>
@@ -26,195 +333,14 @@
    <string>SD Dreamer</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="4">
-    <widget class="QPushButton" name="generateButton">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>265</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-       <underline>false</underline>
-      </font>
-     </property>
-     <property name="toolTip">
-      <string>Generate images</string>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(147, 217, 255);</string>
-     </property>
-     <property name="text">
-      <string>Dream (txt2img)</string>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>appicon.png</normaloff>appicon.png</iconset>
-     </property>
-     <property name="iconSize">
-      <size>
-       <width>24</width>
-       <height>24</height>
-      </size>
-     </property>
-     <property name="shortcut">
-      <string>Return</string>
-     </property>
-     <property name="checkable">
-      <bool>false</bool>
-     </property>
-     <property name="autoDefault">
-      <bool>true</bool>
-     </property>
-     <property name="default">
-      <bool>false</bool>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1" colspan="5">
-    <widget class="QGroupBox" name="groupBox_4">
-     <property name="title">
-      <string/>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_12">
-      <item row="0" column="0" colspan="7">
-       <widget class="QLineEdit" name="imgFilename">
-        <property name="acceptDrops">
-         <bool>false</bool>
-        </property>
-        <property name="toolTip">
-         <string>Image filename</string>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Filename:</string>
-        </property>
-        <property name="frame">
-         <bool>false</bool>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-        <property name="clearButtonEnabled">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QComboBox" name="operationBox">
-        <property name="toolTip">
-         <string>Operations to perform</string>
-        </property>
-        <property name="currentIndex">
-         <number>0</number>
-        </property>
-        <item>
-         <property name="text">
-          <string>Upscale folder: ESRGAN</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Upscale folder: LDSR</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="label_9">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Operation:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QPushButton" name="imageLoadButton">
-        <property name="toolTip">
-         <string>Refresh the viewer with images from custom folder</string>
-        </property>
-        <property name="text">
-         <string>Refresh</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QToolButton" name="operationFolderSelect">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QLineEdit" name="operationFolder">
-        <property name="toolTip">
-         <string>Load a custom folder of images</string>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="placeholderText">
-         <string>Load custom images folder</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3" colspan="2">
-       <widget class="QPushButton" name="operationsGoButton">
-        <property name="font">
-         <font>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Go</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="8" column="0">
+   <item row="9" column="0">
     <widget class="QLabel" name="errorMessages">
      <property name="text">
       <string>Ready</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="2" alignment="Qt::AlignHCenter">
-    <widget class="QLabel" name="label_12">
-     <property name="text">
-      <string>Right click image for actions</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1" rowspan="2" colspan="5">
+   <item row="3" column="1" rowspan="3" colspan="5">
     <widget class="QScrollArea" name="scrollArea">
      <property name="acceptDrops">
       <bool>true</bool>
@@ -233,8 +359,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>825</width>
-        <height>672</height>
+        <width>819</width>
+        <height>726</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
@@ -403,69 +529,146 @@
      </widget>
     </widget>
    </item>
-   <item row="0" column="0" colspan="4">
-    <widget class="QComboBox" name="promptVal">
-     <property name="maximumSize">
-      <size>
-       <width>991</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>50</weight>
-       <italic>true</italic>
-       <bold>false</bold>
-      </font>
-     </property>
+   <item row="6" column="1" alignment="Qt::AlignLeft">
+    <widget class="QPushButton" name="previousImgButton">
      <property name="toolTip">
-      <string>The prompt to generate images with. No quotations</string>
+      <string>Previous image</string>
      </property>
-     <property name="editable">
-      <bool>true</bool>
+     <property name="text">
+      <string>&lt; Previous</string>
      </property>
-     <property name="currentIndex">
-      <number>-1</number>
-     </property>
-     <property name="maxVisibleItems">
-      <number>35</number>
-     </property>
-     <property name="maxCount">
-      <number>100</number>
-     </property>
-     <property name="insertPolicy">
-      <enum>QComboBox::InsertAtTop</enum>
-     </property>
-     <property name="frame">
-      <bool>true</bool>
+     <property name="shortcut">
+      <string>Left</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="4">
-    <widget class="QLineEdit" name="negPromptVal">
-     <property name="placeholderText">
-      <string>Negative prompt</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="5">
-    <widget class="QPushButton" name="cancelButton">
+   <item row="0" column="4">
+    <widget class="QPushButton" name="generateButton">
      <property name="enabled">
       <bool>true</bool>
      </property>
      <property name="maximumSize">
       <size>
-       <width>198</width>
+       <width>265</width>
        <height>16777215</height>
       </size>
      </property>
+     <property name="baseSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <underline>false</underline>
+       <stylestrategy>PreferDefault</stylestrategy>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string>Generate images</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(147, 217, 255);</string>
+     </property>
      <property name="text">
-      <string>Cancel</string>
+      <string>Dream (txt2img)</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>appicon.png</normaloff>appicon.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>24</width>
+       <height>24</height>
+      </size>
+     </property>
+     <property name="shortcut">
+      <string>Return</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>true</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
      </property>
     </widget>
    </item>
-   <item row="7" column="0" colspan="6">
+   <item row="0" column="0" colspan="4">
+    <widget class="QFrame" name="frame">
+     <property name="maximumSize">
+      <size>
+       <width>1160</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QComboBox" name="promptVal">
+        <property name="font">
+         <font>
+          <pointsize>11</pointsize>
+          <weight>50</weight>
+          <italic>true</italic>
+          <bold>false</bold>
+          <stylestrategy>PreferAntialias</stylestrategy>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>The prompt to generate images with. No quotations</string>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="currentIndex">
+         <number>-1</number>
+        </property>
+        <property name="maxVisibleItems">
+         <number>35</number>
+        </property>
+        <property name="maxCount">
+         <number>100</number>
+        </property>
+        <property name="insertPolicy">
+         <enum>QComboBox::InsertAtTop</enum>
+        </property>
+        <property name="frame">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="negPromptVal">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <italic>true</italic>
+          <bold>false</bold>
+          <stylestrategy>PreferAntialias</stylestrategy>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Negative prompt to use</string>
+        </property>
+        <property name="placeholderText">
+         <string>Negative prompt</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="6">
     <widget class="QPlainTextEdit" name="processOutput">
      <property name="enabled">
       <bool>true</bool>
@@ -514,7 +717,7 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="5" alignment="Qt::AlignRight">
+   <item row="6" column="5" alignment="Qt::AlignRight">
     <widget class="QPushButton" name="nextImageButton">
      <property name="toolTip">
       <string>Next image</string>
@@ -527,127 +730,177 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1" alignment="Qt::AlignLeft">
-    <widget class="QPushButton" name="previousImgButton">
-     <property name="toolTip">
-      <string>Previous image</string>
+   <item row="0" column="5">
+    <widget class="QPushButton" name="cancelButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>198</width>
+       <height>16777215</height>
+      </size>
      </property>
      <property name="text">
-      <string>&lt; Previous</string>
-     </property>
-     <property name="shortcut">
-      <string>Left</string>
+      <string>Cancel</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" rowspan="3">
-    <widget class="QToolBox" name="toolBox_3">
+   <item row="7" column="1" colspan="5">
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string/>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_12">
+      <item row="1" column="4">
+       <widget class="QPushButton" name="imageLoadButton">
+        <property name="toolTip">
+         <string>Refresh the viewer with images from custom folder</string>
+        </property>
+        <property name="text">
+         <string>Refresh</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="7">
+       <widget class="QLineEdit" name="imgFilename">
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Image filename</string>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Filename:</string>
+        </property>
+        <property name="frame">
+         <bool>false</bool>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QToolButton" name="operationFolderSelect">
+        <property name="toolTip">
+         <string>Select a folder</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_9">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+          <stylestrategy>PreferAntialias</stylestrategy>
+         </font>
+        </property>
+        <property name="text">
+         <string>Operation:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3" colspan="2">
+       <widget class="QPushButton" name="operationsGoButton">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+          <stylestrategy>PreferAntialias</stylestrategy>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>Perform operation</string>
+        </property>
+        <property name="text">
+         <string>Go</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QComboBox" name="operationBox">
+        <property name="toolTip">
+         <string>Operations to perform</string>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>Upscale folder: ESRGAN</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Upscale folder: LDSR</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="operationFolder">
+        <property name="toolTip">
+         <string>Load a custom folder of images</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="placeholderText">
+         <string>Load custom images folder</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="6" column="2">
+    <widget class="QLabel" name="label_12">
+     <property name="text">
+      <string>Right click image for actions</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" rowspan="4">
+    <widget class="QScrollArea" name="scrollArea_2">
      <property name="maximumSize">
       <size>
        <width>500</width>
        <height>16777215</height>
       </size>
      </property>
-     <property name="tabSpacing">
-      <number>6</number>
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+       <stylestrategy>PreferAntialias</stylestrategy>
+      </font>
      </property>
-     <widget class="QWidget" name="toolBox_3Page1">
+     <widget class="QWidget" name="scrollAreaWidgetContents_3">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>483</width>
-        <height>411</height>
+        <width>475</width>
+        <height>610</height>
        </rect>
       </property>
-      <attribute name="label">
-       <string>Options</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="16" column="5">
-        <widget class="QToolButton" name="embeddingSelect">
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="4">
-        <widget class="QSpinBox" name="thresholdValue">
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>100</number>
-         </property>
-         <property name="value">
-          <number>5</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QCheckBox" name="variantAmountCheck">
-         <property name="toolTip">
-          <string>Generates variations of a seed. Used with iterations</string>
-         </property>
-         <property name="text">
-          <string>Variant amount</string>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="0">
-        <widget class="QCheckBox" name="perlinCheck">
-         <property name="text">
-          <string>Perlin noise</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="0">
-        <widget class="QCheckBox" name="thresholdCheck">
-         <property name="text">
-          <string>Threshold</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="4">
-        <widget class="QDoubleSpinBox" name="variantAmountValue">
-         <property name="minimum">
-          <double>0.010000000000000</double>
-         </property>
-         <property name="maximum">
-          <double>0.990000000000000</double>
-         </property>
-         <property name="singleStep">
-          <double>0.020000000000000</double>
-         </property>
-         <property name="value">
-          <double>0.500000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="0">
-        <widget class="QCheckBox" name="precisionToggle">
-         <property name="toolTip">
-          <string>Full precision mode. Slower, more VRAM</string>
-         </property>
-         <property name="text">
-          <string>Full precision (select before loading model)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" rowspan="2" colspan="2">
-        <widget class="QCheckBox" name="seedCheck">
-         <property name="toolTip">
-          <string>Enable random seeding</string>
-         </property>
-         <property name="text">
-          <string>Random seed</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="15" column="0">
+      <layout class="QGridLayout" name="gridLayout_17">
+       <item row="17" column="1">
         <widget class="QCheckBox" name="embeddingCheck">
          <property name="toolTip">
           <string>Use an embedding made with textual inversion</string>
@@ -657,17 +910,7 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QCheckBox" name="builtUpscaleCheck">
-         <property name="toolTip">
-          <string>Upscale each image with Real-ESRGAN</string>
-         </property>
-         <property name="text">
-          <string>Upscale</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="4">
+       <item row="2" column="3">
         <widget class="QDoubleSpinBox" name="builtUpscaleStrength">
          <property name="toolTip">
           <string>Strength of upscale effect</string>
@@ -682,18 +925,11 @@
           <double>0.020000000000000</double>
          </property>
          <property name="value">
-          <double>0.600000000000000</double>
+          <double>0.750000000000000</double>
          </property>
         </widget>
        </item>
-       <item row="12" column="0">
-        <widget class="QCheckBox" name="hiresfixCheck">
-         <property name="text">
-          <string>High-res fix</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0" colspan="2">
+       <item row="11" column="1">
         <widget class="QCheckBox" name="seamlessCheck">
          <property name="toolTip">
           <string>Generates seamless tiling tetures</string>
@@ -704,33 +940,152 @@
         </widget>
        </item>
        <item row="3" column="3">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Strength</string>
+        <widget class="QDoubleSpinBox" name="variantAmountValue">
+         <property name="minimum">
+          <double>0.010000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>0.990000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.020000000000000</double>
+         </property>
+         <property name="value">
+          <double>0.300000000000000</double>
          </property>
         </widget>
        </item>
-       <item row="13" column="0">
-        <widget class="QCheckBox" name="memFreeCheck">
-         <property name="text">
-          <string>Free GPU mem</string>
+       <item row="10" column="1" colspan="3">
+        <widget class="QGroupBox" name="faceRestoreBox">
+         <property name="title">
+          <string>Face restore</string>
          </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="codeformerCheck">
+            <property name="text">
+             <string>CodeFormer</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="radioButton">
+            <property name="toolTip">
+             <string>Don't apply face restoration model</string>
+            </property>
+            <property name="text">
+             <string>None</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="gfpganCheck">
+            <property name="toolTip">
+             <string>Enable GFPGAN face restoration. Higher value, stronger effect</string>
+            </property>
+            <property name="text">
+             <string>GFPGAN</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QDoubleSpinBox" name="codeformerValue">
+            <property name="toolTip">
+             <string>Strength of CodeFormer face restoration</string>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>0.990000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.020000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.750000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QDoubleSpinBox" name="faceStrength">
+            <property name="toolTip">
+             <string>Strength of GFPGAN face restoration</string>
+            </property>
+            <property name="minimum">
+             <double>0.100000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>0.990000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.020000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.750000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Strength</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>Fidelity</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="16" column="0" colspan="5">
-        <widget class="QLineEdit" name="embeddingInputFile">
+       <item row="2" column="1">
+        <widget class="QCheckBox" name="builtUpscaleCheck">
          <property name="toolTip">
-          <string>Select textual inversion embedding file (.bin or .pt)</string>
+          <string>Upscale each image with Real-ESRGAN</string>
          </property>
          <property name="text">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string>Path to embedding file</string>
+          <string>Upscale</string>
          </property>
         </widget>
        </item>
-       <item row="11" column="4">
+       <item row="12" column="3">
+        <widget class="QSpinBox" name="thresholdValue">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>100</number>
+         </property>
+         <property name="value">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="1">
+        <widget class="QCheckBox" name="precisionToggle">
+         <property name="toolTip">
+          <string>Full precision (float32) mode. Slower, more VRAM</string>
+         </property>
+         <property name="text">
+          <string>Full precision (select before loading model)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="3">
         <widget class="QDoubleSpinBox" name="perlinValue">
          <property name="minimum">
           <double>0.010000000000000</double>
@@ -746,94 +1101,7 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0" colspan="5">
-        <widget class="QGroupBox" name="faceRestoreBox">
-         <property name="title">
-          <string>Face restore</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="2" column="1">
-           <widget class="QDoubleSpinBox" name="codeformerValue">
-            <property name="minimum">
-             <double>0.100000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>0.990000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.020000000000000</double>
-            </property>
-            <property name="value">
-             <double>0.750000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="gfpganStrength">
-            <property name="toolTip">
-             <string>Strength of face restoration</string>
-            </property>
-            <property name="minimum">
-             <double>0.100000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>0.990000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.020000000000000</double>
-            </property>
-            <property name="value">
-             <double>0.750000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QRadioButton" name="codeformerCheck">
-            <property name="text">
-             <string>CodeFormer, fidelity</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="gfpganCheck">
-            <property name="toolTip">
-             <string>Enable GFPGAN face restoration. Higher value, stronger effect</string>
-            </property>
-            <property name="text">
-             <string>GFPGAN, strength</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="radioButton">
-            <property name="text">
-             <string>None</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QCheckBox" name="gridCheck">
-         <property name="toolTip">
-          <string>Don't make a grid</string>
-         </property>
-         <property name="text">
-          <string>Grid</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
+       <item row="2" column="2">
         <widget class="QComboBox" name="builtUpscaleScale">
          <item>
           <property name="text">
@@ -845,6 +1113,99 @@
            <string>4</string>
           </property>
          </item>
+        </widget>
+       </item>
+       <item row="14" column="1">
+        <widget class="QCheckBox" name="hiresfixCheck">
+         <property name="toolTip">
+          <string>Reduces tiling in higher res images at cost of some speed</string>
+         </property>
+         <property name="text">
+          <string>High-res fix</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QCheckBox" name="perlinCheck">
+         <property name="toolTip">
+          <string>Amount of perlin noise mixed into the initial noise</string>
+         </property>
+         <property name="text">
+          <string>Perlin noise</string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="1">
+        <widget class="QCheckBox" name="memFreeCheck">
+         <property name="toolTip">
+          <string>Free GPU memory after image generation</string>
+         </property>
+         <property name="text">
+          <string>Free GPU mem</string>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="1" colspan="2">
+        <widget class="QLineEdit" name="embeddingInputFile">
+         <property name="toolTip">
+          <string>Select textual inversion embedding file (.bin or .pt)</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="placeholderText">
+          <string>Path to embedding file</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QCheckBox" name="variantAmountCheck">
+         <property name="toolTip">
+          <string>Generates variations of a seed. Used with iterations</string>
+         </property>
+         <property name="text">
+          <string>Variant amount</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <widget class="QCheckBox" name="thresholdCheck">
+         <property name="toolTip">
+          <string>Thresholding amount. Helps combat oversaturation with higher CFG scale values</string>
+         </property>
+         <property name="text">
+          <string>Threshold</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="gridCheck">
+         <property name="toolTip">
+          <string>Don't make a grid</string>
+         </property>
+         <property name="text">
+          <string>Grid</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="seedCheck">
+         <property name="toolTip">
+          <string>Enable random seeding</string>
+         </property>
+         <property name="text">
+          <string>Random seed</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="3">
+        <widget class="QToolButton" name="embeddingSelect">
+         <property name="text">
+          <string>...</string>
+         </property>
         </widget>
        </item>
       </layout>
@@ -870,6 +1231,156 @@
        <string>Standard</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="3" column="2">
+        <widget class="QSpinBox" name="heightThing">
+         <property name="minimum">
+          <number>256</number>
+         </property>
+         <property name="maximum">
+          <number>2048</number>
+         </property>
+         <property name="singleStep">
+          <number>64</number>
+         </property>
+         <property name="value">
+          <number>512</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
+          </font>
+         </property>
+         <property name="text">
+          <string>Prompt tag</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QPushButton" name="promptTagAdd">
+         <property name="toolTip">
+          <string>Add tag to prompt</string>
+         </property>
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="scale">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
+          </font>
+         </property>
+         <property name="text">
+          <string>CFG scale</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QSpinBox" name="widthThing">
+         <property name="minimum">
+          <number>256</number>
+         </property>
+         <property name="maximum">
+          <number>2048</number>
+         </property>
+         <property name="singleStep">
+          <number>64</number>
+         </property>
+         <property name="value">
+          <number>512</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="seedVal">
+         <property name="toolTip">
+          <string>The random noise seed to initialise. Same prompt, settings and seed = same image</string>
+         </property>
+         <property name="text">
+          <string>42</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QSlider" name="itsVal">
+         <property name="toolTip">
+          <string>Number of images to generate</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>60</number>
+         </property>
+         <property name="value">
+          <number>2</number>
+         </property>
+         <property name="sliderPosition">
+          <number>2</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::NoTicks</enum>
+         </property>
+         <property name="tickInterval">
+          <number>6</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_20">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
+          </font>
+         </property>
+         <property name="text">
+          <string>Sampler</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QSlider" name="stepsVal">
+         <property name="toolTip">
+          <string>Number of steps. Max recommended 150</string>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>30</number>
+         </property>
+         <property name="sliderPosition">
+          <number>30</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::NoTicks</enum>
+         </property>
+         <property name="tickInterval">
+          <number>20</number>
+         </property>
+        </widget>
+       </item>
        <item row="7" column="2">
         <widget class="QComboBox" name="samplerToggle">
          <property name="toolTip">
@@ -920,64 +1431,6 @@
          </item>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QSpinBox" name="widthThing">
-         <property name="minimum">
-          <number>256</number>
-         </property>
-         <property name="maximum">
-          <number>2048</number>
-         </property>
-         <property name="singleStep">
-          <number>64</number>
-         </property>
-         <property name="value">
-          <number>512</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="2">
-        <widget class="QSlider" name="stepsVal">
-         <property name="toolTip">
-          <string>Number of steps. Max recommended 150</string>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>200</number>
-         </property>
-         <property name="value">
-          <number>30</number>
-         </property>
-         <property name="sliderPosition">
-          <number>30</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="tickInterval">
-          <number>20</number>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="3">
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>2</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <widget class="QPushButton" name="promptTagAdd">
-         <property name="toolTip">
-          <string>Add tag to prompt</string>
-         </property>
-         <property name="text">
-          <string>Add</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="2">
         <widget class="QComboBox" name="promptTag">
          <property name="toolTip">
@@ -994,159 +1447,17 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="2">
-        <widget class="QSlider" name="itsVal">
-         <property name="toolTip">
-          <string>Number of images to generate</string>
-         </property>
-         <property name="minimum">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <number>60</number>
-         </property>
-         <property name="value">
-          <number>2</number>
-         </property>
-         <property name="sliderPosition">
-          <number>2</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="tickPosition">
-          <enum>QSlider::NoTicks</enum>
-         </property>
-         <property name="tickInterval">
-          <number>10</number>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLabel" name="label_20">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Sampler</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Height</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="Steps">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Steps</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>30</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="scale">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>CFG scale</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QLineEdit" name="seedVal">
-         <property name="toolTip">
-          <string>The random noise seed to initialise. Same prompt, settings and seed = same image</string>
-         </property>
-         <property name="text">
-          <string>42</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="scale_2">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Seed</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="font">
-          <font>
-           <weight>50</weight>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Prompt tag</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="label">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Width</string>
-         </property>
-        </widget>
-       </item>
        <item row="6" column="0">
         <widget class="QLabel" name="scale_3">
          <property name="font">
           <font>
            <weight>75</weight>
            <bold>true</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
           </font>
          </property>
          <property name="text">
           <string>Iterations</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="3">
-        <widget class="QLabel" name="label_25">
-         <property name="text">
-          <string>8</string>
          </property>
         </widget>
        </item>
@@ -1173,21 +1484,88 @@
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
+         <property name="tickPosition">
+          <enum>QSlider::NoTicks</enum>
+         </property>
+         <property name="tickInterval">
+          <number>3</number>
+         </property>
         </widget>
        </item>
-       <item row="3" column="2">
-        <widget class="QSpinBox" name="heightThing">
-         <property name="minimum">
-          <number>256</number>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
+          </font>
          </property>
-         <property name="maximum">
-          <number>2048</number>
+         <property name="text">
+          <string>Width</string>
          </property>
-         <property name="singleStep">
-          <number>64</number>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="QLabel" name="label_25">
+         <property name="text">
+          <string>8</string>
          </property>
-         <property name="value">
-          <number>512</number>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="scale_2">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
+          </font>
+         </property>
+         <property name="text">
+          <string>Seed</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="Steps">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
+          </font>
+         </property>
+         <property name="text">
+          <string>Steps</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
+          </font>
+         </property>
+         <property name="text">
+          <string>Height</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>30</string>
          </property>
         </widget>
        </item>
@@ -1300,6 +1678,9 @@
           </item>
           <item row="3" column="1">
            <widget class="QSpinBox" name="embiggenScale">
+            <property name="toolTip">
+             <string>Upscale 2x or 4x</string>
+            </property>
             <property name="minimum">
              <number>2</number>
             </property>
@@ -1313,6 +1694,9 @@
           </item>
           <item row="0" column="0">
            <widget class="QCheckBox" name="embiggenCheck">
+            <property name="toolTip">
+             <string>Upscales generated image. Uses img2img 'Strength' value. Set to 0.2 - 0.4 for best results</string>
+            </property>
             <property name="text">
              <string>Enable</string>
             </property>
@@ -1327,6 +1711,9 @@
           </item>
           <item row="4" column="1">
            <widget class="QDoubleSpinBox" name="embiggenStrength">
+            <property name="toolTip">
+             <string>Strength of upscale effect</string>
+            </property>
             <property name="minimum">
              <double>0.100000000000000</double>
             </property>
@@ -1350,6 +1737,9 @@
           </item>
           <item row="5" column="1">
            <widget class="QDoubleSpinBox" name="embiggenOverlap">
+            <property name="toolTip">
+             <string>Tile overlap for embiggen</string>
+            </property>
             <property name="minimum">
              <double>0.100000000000000</double>
             </property>
@@ -1409,6 +1799,9 @@
           </item>
           <item row="1" column="2">
            <widget class="QToolButton" name="inpaint_img_select">
+            <property name="toolTip">
+             <string>Select image to inpaint</string>
+            </property>
             <property name="text">
              <string>...</string>
             </property>
@@ -1416,6 +1809,9 @@
           </item>
           <item row="2" column="0" colspan="3">
            <widget class="QPushButton" name="inpaintButton">
+            <property name="toolTip">
+             <string>Launch editor for inpainting</string>
+            </property>
             <property name="text">
              <string>Inpaint editor</string>
             </property>
@@ -1538,24 +1934,60 @@
        <string>Settings</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_10">
-         <property name="text">
-          <string>Image output folder:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="label_18">
-         <property name="text">
-          <string>Python path (don't change):</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="Line" name="line">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLineEdit" name="pyBinPath">
+         <property name="toolTip">
+          <string>Python binary</string>
+         </property>
+         <property name="text">
+          <string>python</string>
+         </property>
+         <property name="readOnly">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="Line" name="line_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QCheckBox" name="restoreModelsCheck">
+         <property name="font">
+          <font>
+           <weight>50</weight>
+           <bold>false</bold>
+           <stylestrategy>PreferAntialias</stylestrategy>
+          </font>
+         </property>
+         <property name="acceptDrops">
+          <bool>false</bool>
+         </property>
+         <property name="toolTip">
+          <string>Autoload face restore and esrgan models</string>
+         </property>
+         <property name="text">
+          <string>Load face restore/upscale models</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QToolButton" name="outputFolderSelect">
+         <property name="text">
+          <string>...</string>
          </property>
         </widget>
        </item>
@@ -1573,8 +2005,8 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QToolButton" name="outputFolderSelect">
+       <item row="7" column="1">
+        <widget class="QToolButton" name="pyBinSelect">
          <property name="text">
           <string>...</string>
          </property>
@@ -1587,26 +2019,6 @@
          </property>
          <property name="text">
           <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1">
-        <widget class="QToolButton" name="pyBinSelect">
-         <property name="text">
-          <string>...</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0">
-        <widget class="QLineEdit" name="pyBinPath">
-         <property name="toolTip">
-          <string>Python binary</string>
-         </property>
-         <property name="text">
-          <string>python</string>
-         </property>
-         <property name="readOnly">
-          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -1624,10 +2036,17 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="Line" name="line_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Image output folder:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>Python path (don't change):</string>
          </property>
         </widget>
        </item>
@@ -1675,12 +2094,28 @@ Right click image in viewer to perform operations</string>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>294</x>
-     <y>311</y>
+     <x>354</x>
+     <y>378</y>
     </hint>
     <hint type="destinationlabel">
      <x>495</x>
-     <y>312</y>
+     <y>378</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>itsVal</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_8</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>340</x>
+     <y>482</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>495</x>
+     <y>482</y>
     </hint>
    </hints>
   </connection>
@@ -1692,27 +2127,11 @@ Right click image in viewer to perform operations</string>
    <hints>
     <hint type="sourcelabel">
      <x>405</x>
-     <y>339</y>
+     <y>440</y>
     </hint>
     <hint type="destinationlabel">
      <x>495</x>
-     <y>340</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>itsVal</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>label_8</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>280</x>
-     <y>367</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>495</x>
-     <y>368</y>
+     <y>440</y>
     </hint>
    </hints>
   </connection>
